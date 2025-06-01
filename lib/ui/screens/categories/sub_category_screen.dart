@@ -23,7 +23,7 @@ class SubCategoryItem {
   });
 }
 
-// Exact mapping from React's subCategories.ts
+// Exact mapping from React's subCategories.ts - Updated with 50-entity system
 const Map<String, List<SubCategoryItem>> categorySubcategories = {
   'PETS': [
     SubCategoryItem(
@@ -53,7 +53,7 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'cleaningGrooming',
       displayName: 'Cleaning & Grooming',
       icon: Icons.content_cut,
-      entityTypes: [EntitySubtype.groomer],
+      entityTypes: [EntitySubtype.petGroomer],
       tagName: 'PETS__GROOMING',
       color: Color(0xFF9C27B0),
     ),
@@ -66,7 +66,7 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       color: Color(0xFFF44336),
     ),
   ],
-  'SOCIAL_INTERESTS': [ // MODIFIED KEY from 'SOCIAL_INTERESTS'
+  'SOCIAL_INTERESTS': [
     SubCategoryItem(
       name: 'socialPlans',
       displayName: 'Social Plans',
@@ -92,7 +92,7 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'events',
       displayName: 'Events',
       icon: Icons.event,
-      entityTypes: [EntitySubtype.event, EntitySubtype.eventSubentity],
+      entityTypes: [EntitySubtype.event, EntitySubtype.guestListInvite],
       color: Color(0xFF00BCD4),
     ),
     SubCategoryItem(
@@ -122,12 +122,8 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'schools',
       displayName: 'Schools',
       icon: Icons.account_balance,
-      entityTypes: [
-        EntitySubtype.school,
-        EntitySubtype.schoolBreak,
-        EntitySubtype.schoolTerm,
-        EntitySubtype.schoolYear
-      ],
+      entityTypes: [EntitySubtype.school],
+      // Note: schoolBreak, schoolTerm, schoolYear not in 50-entity system
       color: Color(0xFF3F51B5),
     ),
     SubCategoryItem(
@@ -150,21 +146,21 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'employees',
       displayName: 'Employees',
       icon: Icons.business_center,
-      entityTypes: [EntitySubtype.employee],
+      entityTypes: [EntitySubtype.colleague, EntitySubtype.work],
       color: Color(0xFF2196F3),
     ),
     SubCategoryItem(
       name: 'daysOff',
       displayName: 'Days Off',
       icon: Icons.beach_access,
-      entityTypes: [EntitySubtype.daysOff],
+      entityTypes: [], // daysOff not in 50-entity system
       color: Color(0xFF4CAF50),
     ),
     SubCategoryItem(
       name: 'careerGoals',
       displayName: 'Career Goals',
       icon: Icons.trending_up,
-      entityTypes: [EntitySubtype.careerGoal],
+      entityTypes: [], // careerGoal not in 50-entity system
       color: Color(0xFFFF9800),
     ),
   ],
@@ -180,62 +176,58 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'myTravelPlans',
       displayName: 'My Travel Plans',
       icon: Icons.map,
-      entityTypes: [EntitySubtype.travelPlan],
+      entityTypes: [], // travelPlan not in 50-entity system
       color: Color(0xFF2196F3),
     ),
     SubCategoryItem(
       name: 'flights',
       displayName: 'Flights',
       icon: Icons.airplanemode_active,
-      entityTypes: [EntitySubtype.flight],
+      entityTypes: [], // flight not in 50-entity system
       color: Color(0xFF3F51B5),
     ),
     SubCategoryItem(
       name: 'accommodation',
       displayName: 'Accommodation',
       icon: Icons.hotel,
-      entityTypes: [EntitySubtype.hotelOrRental, EntitySubtype.stayWithFriend],
+      entityTypes: [], // hotelOrRental, stayWithFriend not in 50-entity system
       color: Color(0xFF4CAF50),
     ),
     SubCategoryItem(
       name: 'transport',
       displayName: 'Transport',
       icon: Icons.directions_car,
-      entityTypes: [
-        EntitySubtype.rentalCar,
-        EntitySubtype.taxiOrTransfer,
-        EntitySubtype.trainBusFerry
-      ],
+      entityTypes: [], // rentalCar, taxiOrTransfer, trainBusFerry not in 50-entity system
       color: Color(0xFF607D8B),
     ),
   ],
-  'HEALTH_BEAUTY': [ // MODIFIED KEY from 'HEALTH_BEAUTY'
+  'HEALTH_BEAUTY': [
     SubCategoryItem(
       name: 'patients',
       displayName: 'Patients',
       icon: Icons.person,
-      entityTypes: [EntitySubtype.patient],
+      entityTypes: [], // patient not in 50-entity system
       color: Color(0xFF4CAF50),
     ),
     SubCategoryItem(
       name: 'appointments',
       displayName: 'Appointments',
       icon: Icons.event_available,
-      entityTypes: [EntitySubtype.appointment],
+      entityTypes: [], // appointment not in 50-entity system
       color: Color(0xFF2196F3),
     ),
     SubCategoryItem(
       name: 'healthGoals',
       displayName: 'Health Goals',
       icon: Icons.fitness_center,
-      entityTypes: [EntitySubtype.healthGoal],
+      entityTypes: [], // healthGoal not in 50-entity system
       color: Color(0xFFFF9800),
     ),
     SubCategoryItem(
       name: 'healthBeauty',
       displayName: 'Health & Beauty',
       icon: Icons.spa,
-      entityTypes: [EntitySubtype.healthBeauty],
+      entityTypes: [EntitySubtype.beautySalon, EntitySubtype.dentist, EntitySubtype.doctor, EntitySubtype.stylist],
       color: Color(0xFFE91E63),
     ),
   ],
@@ -251,7 +243,7 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'appliances',
       displayName: 'Appliances',
       icon: Icons.kitchen,
-      entityTypes: [EntitySubtype.homeAppliance],
+      entityTypes: [EntitySubtype.appliance],
       color: Color(0xFF607D8B),
     ),
   ],
@@ -260,7 +252,7 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'gardens',
       displayName: 'Gardens',
       icon: Icons.local_florist,
-      entityTypes: [EntitySubtype.garden],
+      entityTypes: [EntitySubtype.gardenTool, EntitySubtype.plant],
       color: Color(0xFF4CAF50),
     ),
   ],
@@ -276,7 +268,7 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'food',
       displayName: 'Food Items',
       icon: Icons.fastfood,
-      entityTypes: [EntitySubtype.food],
+      entityTypes: [EntitySubtype.recipe, EntitySubtype.restaurant],
       color: Color(0xFFF44336),
     ),
   ],
@@ -285,7 +277,7 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'laundryPlans',
       displayName: 'Laundry Plans',
       icon: Icons.local_laundry_service,
-      entityTypes: [EntitySubtype.laundryPlan],
+      entityTypes: [EntitySubtype.laundryItem, EntitySubtype.dryCleaners],
       color: Color(0xFF607D8B),
     ),
   ],
@@ -294,7 +286,7 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'myFinances',
       displayName: 'My Finances',
       icon: Icons.account_balance,
-      entityTypes: [EntitySubtype.finance],
+      entityTypes: [EntitySubtype.bank, EntitySubtype.bankAccount, EntitySubtype.creditCard],
       color: Color(0xFF795548),
     ),
   ],
@@ -324,7 +316,7 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'vehicles',
       displayName: 'Other Vehicles',
       icon: Icons.commute,
-      entityTypes: [EntitySubtype.vehicle],
+      entityTypes: [], // vehicle not in 50-entity system
       color: Color(0xFF9C27B0),
     ),
   ],
@@ -333,21 +325,21 @@ const Map<String, List<SubCategoryItem>> categorySubcategories = {
       name: 'charities',
       displayName: 'Charities',
       icon: Icons.volunteer_activism,
-      entityTypes: [EntitySubtype.charity, EntitySubtype.donation],
+      entityTypes: [], // charity, donation not in 50-entity system
       color: Color(0xFFFF5722),
     ),
     SubCategoryItem(
       name: 'religious',
       displayName: 'Religious Organizations',
       icon: Icons.church,
-      entityTypes: [EntitySubtype.religiousOrganization, EntitySubtype.religiousService],
+      entityTypes: [], // religiousOrganization, religiousService not in 50-entity system
       color: Color(0xFF9C27B0),
     ),
     SubCategoryItem(
       name: 'charityEvents',
       displayName: 'Charity Events',
       icon: Icons.event,
-      entityTypes: [EntitySubtype.charityEvent],
+      entityTypes: [], // charityEvent not in 50-entity system
       color: Color(0xFF4CAF50),
     ),
   ],
@@ -418,13 +410,13 @@ class SubCategoryScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              "This category doesn't have subcategories yet for ID: $parentCategoryId. Looked up with name: $parentCategoryName", // Updated and fixed string
+              "This category doesn't have subcategories yet for ID: $parentCategoryId. Looked up with name: $parentCategoryName",
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey.shade600,
               ),
               textAlign: TextAlign.center,
-            ), // Removed const from Text as it contains interpolation
+            ),
           ],
         ),
       ),
@@ -516,9 +508,9 @@ class SubCategoryScreen extends ConsumerWidget {
         context,
         MaterialPageRoute(
           builder: (context) => EntityListScreen(
-            appCategoryId: _mapParentCategoryNameToAppId(currentParentCatId), // Changed to appCategoryId and new mapping function
-            categoryName: subCategory.displayName, // This is the name of the sub-category, which becomes the title of the EntityListScreen
-            defaultSubtypeForNew: subCategory.entityTypes.first, // Use the first entity type as the default for new items
+            appCategoryId: _mapParentCategoryNameToAppId(currentParentCatId),
+            categoryName: subCategory.displayName,
+            defaultSubtypeForNew: subCategory.entityTypes.first,
           ),
         ),
       );
@@ -559,7 +551,7 @@ class SubCategoryScreen extends ConsumerWidget {
         return 5;
       case 'HEALTH_BEAUTY':
         return 6;
-      case 'HOME': // HOME_GARDEN group in UI, but HOME is a distinct category
+      case 'HOME':
         return 7;
       case 'GARDEN':
         return 8;
@@ -572,13 +564,7 @@ class SubCategoryScreen extends ConsumerWidget {
       case 'TRANSPORT':
         return 12;
       // CHARITY_RELIGION was not in the list of 12 predefined categories with IDs.
-      // Need to decide how to handle this. For now, returning a placeholder or throwing error.
-      // Assuming 'REFERENCES' and 'EDUCATION_CAREER' are UI groupings, not direct app_category_ids.
       default:
-        // Log an error or throw an exception for unmapped categories
-        // For now, returning a common placeholder like 0 or -1, or a specific ID if 'Other' exists.
-        // This needs to align with how `app_categories` table handles unknown/default.
-        // Let's assume 0 is not a valid app_category_id and can signify an issue.
         // Warning: Unmapped parentCategoryName to app_category_id: $parentCategoryName
         return 0; // Placeholder for unmapped category
     }

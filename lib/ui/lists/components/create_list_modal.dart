@@ -108,7 +108,7 @@ class _CreateListModalState extends ConsumerState<CreateListModal>
                     ),
                     indicatorSize: TabBarIndicatorSize.tab,
                     dividerColor: Colors.transparent,
-                    overlayColor: MaterialStateProperty.all(Colors.transparent),
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
                   ),
                 ),
               ],

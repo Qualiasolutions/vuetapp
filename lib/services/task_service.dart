@@ -31,6 +31,8 @@ class TaskService extends ChangeNotifier {
   /// Stream controller for task updates
   final StreamController<List<TaskModel>> _taskUpdatesController = StreamController<List<TaskModel>>.broadcast();
   
+  bool _isDisposed = false; // Add this line
+
   /// Constructor
   TaskService({
     required TaskRepository repository,
@@ -53,12 +55,15 @@ class TaskService extends ChangeNotifier {
   /// Load tasks from repository
   Future<void> _loadTasks() async {
     if (!_isAuthenticated) return;
+    if (_isDisposed) return; // Add this check early
     
     try {
       _tasks = await _repository.getTasks();
+      if (_isDisposed) return; // Add this check after await
       notifyListeners();
       _taskUpdatesController.add(_tasks);
     } catch (e) {
+      if (_isDisposed) return; 
       ErrorHandler.handleError('Failed to load tasks', e);
     }
   }
@@ -562,6 +567,7 @@ class TaskService extends ChangeNotifier {
 
   @override
   void dispose() {
+    _isDisposed = true; // Set the flag to true
     _taskUpdatesController.close();
     super.dispose();
   }

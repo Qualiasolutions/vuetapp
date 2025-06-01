@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vuet_app/config/supabase_config.dart';
 import 'package:vuet_app/mcp_tools/supabase_mcp_tool.dart';
 import 'package:vuet_app/utils/logger.dart';
@@ -54,7 +51,7 @@ class SchemaVerificationTest {
       final client = SupabaseConfig.client;
       
       // Simple query to test connection
-      final result = await client.from('_schema_verification_test')
+      await client.from('_schema_verification_test')
           .select()
           .limit(1)
           .maybeSingle()
@@ -265,7 +262,7 @@ class SchemaVerificationTest {
         final columnInfo = await client.rpc('run_sql', 
           params: {'query': columnQuery}).select();
         
-        if (columnInfo != null && columnInfo.isNotEmpty) {
+        if (columnInfo.isNotEmpty) {
           // Process column info
           final columnMap = <String, Map<String, dynamic>>{};
           for (final column in columnInfo) {
@@ -511,7 +508,7 @@ class SchemaVerificationTest {
                     fixes['manual_actions']['alter_columns'] = <String>[];
                   }
                   fixes['manual_actions']['alter_columns'].add(
-                    'Alter column "$columnName" in table "$tableName" from type ' +
+                    'Alter column "$columnName" in table "$tableName" from type '
                     '"${mismatchInfo['actual_type']}" to "${mismatchInfo['expected_type']}" manually');
                 }
               } else if (issue == 'Nullability mismatch') {
@@ -528,8 +525,8 @@ class SchemaVerificationTest {
                     fixes['manual_actions']['alter_columns'] = <String>[];
                   }
                   fixes['manual_actions']['alter_columns'].add(
-                    'Alter column "$columnName" in table "$tableName" to be ' +
-                    (mismatchInfo['expected_nullable'] ? 'nullable' : 'NOT NULL') + ' manually');
+                    'Alter column "$columnName" in table "$tableName" to be '
+                    '${mismatchInfo['expected_nullable'] ? 'nullable' : 'NOT NULL'} manually');
                 }
               }
             }

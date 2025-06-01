@@ -255,66 +255,92 @@ class EntityOverviewTab extends ConsumerWidget {
   // Helper methods
   Color _getEntityColor(BaseEntityModel entity) {
     switch (entity.subtype) {
+      // Pets Category - Orange
       case EntitySubtype.pet:
       case EntitySubtype.vet:
-      case EntitySubtype.walker:
-      case EntitySubtype.groomer:
-      case EntitySubtype.sitter:
+      case EntitySubtype.petWalker:
+      case EntitySubtype.petGroomer:
+      case EntitySubtype.petSitter:
       case EntitySubtype.microchipCompany:
-      case EntitySubtype.insuranceCompany:
-      case EntitySubtype.insurancePolicy:
+      case EntitySubtype.petInsuranceCompany:
+      case EntitySubtype.petInsurancePolicy:
         return const Color(0xFFE49F30);
+      
+      // Social Category - Purple  
+      case EntitySubtype.anniversary:
+      case EntitySubtype.anniversaryPlan:
+      case EntitySubtype.birthday:
       case EntitySubtype.event:
-      case EntitySubtype.eventSubentity:
-      case EntitySubtype.hobby:
-      case EntitySubtype.socialPlan:
-      case EntitySubtype.socialMedia:
       case EntitySubtype.guestListInvite:
-        return const Color(0xFF9C27B0);
-      case EntitySubtype.academicPlan:
-      case EntitySubtype.extracurricularPlan:
-      case EntitySubtype.school:
-      case EntitySubtype.schoolBreak:
-      case EntitySubtype.schoolTerm:
-      case EntitySubtype.schoolYear:
-      case EntitySubtype.student:
-      case EntitySubtype.careerGoal:
-      case EntitySubtype.daysOff:
-      case EntitySubtype.employee:
-        return const Color(0xFF2196F3);
-      case EntitySubtype.trip:
-      case EntitySubtype.travelPlan:
-      case EntitySubtype.flight:
-      case EntitySubtype.trainBusFerry:
-      case EntitySubtype.rentalCar:
-      case EntitySubtype.taxiOrTransfer:
-      case EntitySubtype.driveTime:
-      case EntitySubtype.hotelOrRental:
-      case EntitySubtype.stayWithFriend:
+      case EntitySubtype.hobby:
       case EntitySubtype.holiday:
       case EntitySubtype.holidayPlan:
+      case EntitySubtype.socialMedia:
+      case EntitySubtype.socialPlan:
+        return const Color(0xFF9C27B0);
+      
+      // Education Category - Blue
+      case EntitySubtype.academicPlan:
+      case EntitySubtype.courseWork:
+      case EntitySubtype.extracurricularPlan:
+      case EntitySubtype.school:
+      case EntitySubtype.student:
+      case EntitySubtype.subject:
+      case EntitySubtype.teacher:
+      case EntitySubtype.tutor:
+        return const Color(0xFF2196F3);
+      
+      // Career Category - Indigo
+      case EntitySubtype.colleague:
+      case EntitySubtype.work:
+        return const Color(0xFF3F51B5);
+      
+      // Travel Category - Cyan
+      case EntitySubtype.trip:
         return const Color(0xFF00BCD4);
-      case EntitySubtype.healthBeauty:
-      case EntitySubtype.healthGoal:
-      case EntitySubtype.patient:
-      case EntitySubtype.appointment:
+      
+      // Health Category - Green
+      case EntitySubtype.beautySalon:
+      case EntitySubtype.dentist:
+      case EntitySubtype.doctor:
+      case EntitySubtype.stylist:
         return const Color(0xFF4CAF50);
+      
+      // Home Category - Teal
+      case EntitySubtype.appliance:
+      case EntitySubtype.contractor:
+      case EntitySubtype.furniture:
       case EntitySubtype.home:
-      case EntitySubtype.homeAppliance:
-      case EntitySubtype.garden:
-      case EntitySubtype.food:
+      case EntitySubtype.room:
+        return const Color(0xFF009688);
+      
+      // Garden Category - Light Green
+      case EntitySubtype.gardenTool:
+      case EntitySubtype.plant:
+        return const Color(0xFF8BC34A);
+      
+      // Food Category - Orange Red
       case EntitySubtype.foodPlan:
-      case EntitySubtype.laundryPlan:
-        return const Color(0xFF1A6E68);
-      case EntitySubtype.finance:
+      case EntitySubtype.recipe:
+      case EntitySubtype.restaurant:
+        return const Color(0xFFFF5722);
+      
+      // Laundry Category - Deep Purple
+      case EntitySubtype.dryCleaners:
+      case EntitySubtype.laundryItem:
+        return const Color(0xFF673AB7);
+      
+      // Finance Category - Brown
+      case EntitySubtype.bank:
+      case EntitySubtype.bankAccount:
+      case EntitySubtype.creditCard:
         return const Color(0xFF795548);
-      case EntitySubtype.car:
+      
+      // Transport Category - Blue Grey
       case EntitySubtype.boat:
+      case EntitySubtype.car:
       case EntitySubtype.publicTransport:
-      case EntitySubtype.vehicle:
         return const Color(0xFF607D8B);
-      default:
-        return const Color(0xFF79858D);
     }
   }
 

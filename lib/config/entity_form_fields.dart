@@ -1,853 +1,360 @@
-import 'package:vuet_app/models/entity_model.dart';
+ import 'package:vuet_app/models/entity_model.dart';
 import 'package:vuet_app/models/form_field_definition.dart';
 
 final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
-  EntitySubtype.car: [
-    const FormFieldDefinition(
-        name: 'make',
-        label: 'Make',
-        type: FormFieldType.text,
-        isRequired: true,
-        hintText: 'e.g., Toyota, Honda'),
-    const FormFieldDefinition(
-        name: 'model',
-        label: 'Model',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., Camry, Civic'),
-    const FormFieldDefinition(
-        name: 'registration',
-        label: 'Registration/Plate',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'date_registered',
-        label: 'Date Registered',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'serviceDueDate',
-        label: 'Service Due Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'insuranceDueDate',
-        label: 'Insurance Due Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'vehicle_type_car',
-        label: 'Vehicle Type',
-        type: FormFieldType.dropdown,
-        isRequired: false,
-        options: [
-          FormFieldOption(value: 'CAR', label: 'Car'),
-          FormFieldOption(value: 'MOTORBIKE', label: 'Motorbike'),
-        ]),
-    const FormFieldDefinition(
-        name: 'vin',
-        label: 'VIN Number',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'color',
-        label: 'Color',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'purchaseDate',
-        label: 'Purchase Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'purchasePrice',
-        label: 'Purchase Price',
-        type: FormFieldType.number,
-        isRequired: false,
-        hintText: 'e.g., 25000'),
-    const FormFieldDefinition(
-        name: 'carNotes',
-        label: 'Car Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
+  // ========== PETS CATEGORY (Category 1) - 8 entity types ==========
   EntitySubtype.pet: [
-    const FormFieldDefinition(
-        name: 'type',
-        label: 'Pet Type',
-        type: FormFieldType.text,
-        isRequired: true,
-        hintText: 'e.g., Dog, Cat, Bird'),
-    const FormFieldDefinition(
-        name: 'breed',
-        label: 'Breed',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., Labrador, Siamese'),
-    const FormFieldDefinition(
-        name: 'dob',
-        label: 'Date of Birth',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'microchip_number',
-        label: 'Microchip ID',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'microchip_company_name',
-        label: 'Microchip Company',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'vetName',
-        label: 'Vet Name',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'vetPhoneNumber',
-        label: 'Vet Phone Number',
-        type: FormFieldType.phone,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'walker_name',
-        label: 'Walker Name',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'groomer_name',
-        label: 'Groomer Name',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'sitter_name',
-        label: 'Sitter Name',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'insurance_company_name',
-        label: 'Insurance Company',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'insurancePolicyNumber',
-        label: 'Insurance Policy Number',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'petNotes',
-        label: 'Pet Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
+    const FormFieldDefinition(name: 'type', label: 'Pet Type', type: FormFieldType.text, isRequired: true, hintText: 'e.g., Dog, Cat, Bird'),
+    const FormFieldDefinition(name: 'breed', label: 'Breed', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'dob', label: 'Date of Birth', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'microchip_number', label: 'Microchip ID', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'notes', label: 'Notes', type: FormFieldType.multilineText, isRequired: false),
   ],
-  EntitySubtype.homeAppliance: [
-    const FormFieldDefinition(
-        name: 'applianceType',
-        label: 'Appliance Type',
-        type: FormFieldType.text,
-        isRequired: true,
-        hintText: 'e.g., Refrigerator, Washing Machine'),
-    const FormFieldDefinition(
-        name: 'brand',
-        label: 'Brand',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'modelNumber',
-        label: 'Model Number',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'serialNumber',
-        label: 'Serial Number',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'purchaseDateAppliance',
-        label: 'Purchase Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'warrantyExpiryDate',
-        label: 'Warranty Expiry Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'manualUrl',
-        label: 'Manual URL',
-        type: FormFieldType.url,
-        hintText: 'Link to online manual if available',
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'applianceNotes',
-        label: 'Appliance Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.event: [
-    const FormFieldDefinition(
-        name: 'eventStartDate',
-        label: 'Start Date & Time',
-        type: FormFieldType.dateTime,
-        isRequired: true),
-    const FormFieldDefinition(
-        name: 'eventEndDate',
-        label: 'End Date & Time',
-        type: FormFieldType.dateTime,
-        isRequired: true),
-    const FormFieldDefinition(
-        name: 'location',
-        label: 'Location',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., Conference Hall A, Online'),
-    const FormFieldDefinition(
-      name: 'eventType',
-      label: 'Event Type',
-      type: FormFieldType.dropdown,
-      isRequired: false,
-      options: [
-        FormFieldOption(value: 'meeting', label: 'Meeting'),
-        FormFieldOption(value: 'conference', label: 'Conference'),
-        FormFieldOption(value: 'party', label: 'Party'),
-        FormFieldOption(value: 'webinar', label: 'Webinar'),
-        FormFieldOption(value: 'other', label: 'Other'),
-      ],
-    ),
-    const FormFieldDefinition(
-        name: 'agenda',
-        label: 'Agenda/Details',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'eventAdditionalDetails',
-        label: 'Other Details/Sub-items',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.holiday: [
-    const FormFieldDefinition(
-        name: 'destination',
-        label: 'Destination',
-        type: FormFieldType.text,
-        isRequired: true),
-    const FormFieldDefinition(
-        name: 'countryCode',
-        label: 'Country Code',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., US, GB, JP'),
-    const FormFieldDefinition(
-        name: 'startDate',
-        label: 'Start Date',
-        type: FormFieldType.date,
-        isRequired: true),
-    const FormFieldDefinition(
-        name: 'endDate',
-        label: 'End Date',
-        type: FormFieldType.date,
-        isRequired: true),
-    const FormFieldDefinition(
-      name: 'holidayType',
-      label: 'Type of Holiday',
-      type: FormFieldType.dropdown,
-      isRequired: false,
-      options: [
-        FormFieldOption(value: 'vacation', label: 'Vacation'),
-        FormFieldOption(value: 'business_trip', label: 'Business Trip'),
-        FormFieldOption(value: 'family_visit', label: 'Family Visit'),
-        FormFieldOption(value: 'adventure', label: 'Adventure'),
-        FormFieldOption(value: 'other', label: 'Other'),
-      ],
-    ),
-    const FormFieldDefinition(
-        name: 'transportationDetails',
-        label: 'Transportation Details',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'accommodationDetails',
-        label: 'Accommodation Details',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'budget',
-        label: 'Budget',
-        type: FormFieldType.number,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'holidayNotes',
-        label: 'Holiday Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.school: [
-    const FormFieldDefinition(
-        name: 'address',
-        label: 'Address',
-        type: FormFieldType.multilineText,
-        isRequired: false,
-        hintText: 'Enter school address'),
-    const FormFieldDefinition(
-        name: 'phone_number',
-        label: 'Phone Number',
-        type: FormFieldType.phone,
-        isRequired: false,
-        hintText: 'Enter school phone'),
-    const FormFieldDefinition(
-        name: 'email',
-        label: 'Email',
-        type: FormFieldType.email,
-        isRequired: false,
-        hintText: 'Enter school email'),
-    const FormFieldDefinition(
-        name: 'schoolNotes',
-        label: 'School Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.appointment: [
-    const FormFieldDefinition(
-        name: 'appointment_with',
-        label: 'Appointment With',
-        type: FormFieldType.text,
-        isRequired: true,
-        hintText: 'e.g., Dr. Smith, Dental Clinic'),
-    const FormFieldDefinition(
-        name: 'appointment_datetime',
-        label: 'Date & Time',
-        type: FormFieldType.dateTime,
-        isRequired: true),
-    const FormFieldDefinition(
-        name: 'location',
-        label: 'Location',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., City Hospital, Room 302'),
-    const FormFieldDefinition(
-        name: 'reason',
-        label: 'Reason for Appointment',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'appointment_notes',
-        label: 'Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.healthBeauty: [
-    const FormFieldDefinition(
-        name: 'hb_details',
-        label: 'Details',
-        type: FormFieldType.multilineText,
-        isRequired: false,
-        hintText: 'Enter any details for this health & beauty item.'),
-  ],
-  EntitySubtype.patient: [
-    const FormFieldDefinition(
-        name: 'patient_dob',
-        label: 'Date of Birth',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'patient_conditions',
-        label: 'Medical Conditions',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'patient_allergies',
-        label: 'Allergies',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'patient_medications',
-        label: 'Current Medications',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'patient_notes',
-        label: 'Patient Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.healthGoal: [
-    const FormFieldDefinition(
-        name: 'goal_description',
-        label: 'Goal Description',
-        type: FormFieldType.multilineText,
-        isRequired: true,
-        hintText: 'e.g., Run 5km, Drink 8 glasses of water daily'),
-    const FormFieldDefinition(
-        name: 'target_date',
-        label: 'Target Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'status',
-        label: 'Status',
-        type: FormFieldType.dropdown,
-        isRequired: false,
-        options: [
-          FormFieldOption(value: 'not_started', label: 'Not Started'),
-          FormFieldOption(value: 'in_progress', label: 'In Progress'),
-          FormFieldOption(value: 'achieved', label: 'Achieved'),
-          FormFieldOption(value: 'on_hold', label: 'On Hold'),
-        ]),
-    const FormFieldDefinition(
-        name: 'health_goal_notes',
-        label: 'Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.academicPlan: [
-    const FormFieldDefinition(
-        name: 'plan_details',
-        label: 'Plan Details',
-        type: FormFieldType.multilineText,
-        isRequired: false,
-        hintText: 'Describe the academic plan or goals.'),
-    const FormFieldDefinition(
-        name: 'subject_focus',
-        label: 'Subject/Focus Area',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'target_qualification',
-        label: 'Target Qualification',
-        type: FormFieldType.text,
-        isRequired: false),
-  ],
-  EntitySubtype.extracurricularPlan: [
-    const FormFieldDefinition(
-        name: 'activity_name',
-        label: 'Activity Name',
-        type: FormFieldType.text,
-        isRequired: true,
-        hintText: 'e.g., Piano Lessons, Debate Club'),
-    const FormFieldDefinition(
-        name: 'activity_details',
-        label: 'Activity Details',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'schedule_info',
-        label: 'Schedule/Frequency',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., Tuesdays at 4 PM, Every Saturday'),
-  ],
-  // Additional entity subtypes
-  EntitySubtype.student: [
-    const FormFieldDefinition(
-        name: 'student_name',
-        label: 'Student Name',
-        type: FormFieldType.text,
-        isRequired: true),
-    const FormFieldDefinition(
-        name: 'grade_level',
-        label: 'Grade Level',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., Grade 5, Year 10'),
-    const FormFieldDefinition(
-        name: 'student_id',
-        label: 'Student ID',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'emergency_contact',
-        label: 'Emergency Contact',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'student_notes',
-        label: 'Student Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.careerGoal: [
-    const FormFieldDefinition(
-        name: 'goal_title',
-        label: 'Career Goal',
-        type: FormFieldType.text,
-        isRequired: true,
-        hintText: 'e.g., Become Senior Developer'),
-    const FormFieldDefinition(
-        name: 'target_date',
-        label: 'Target Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'current_progress',
-        label: 'Current Progress',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'action_steps',
-        label: 'Action Steps',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'career_notes',
-        label: 'Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.employee: [
-    const FormFieldDefinition(
-        name: 'employee_name',
-        label: 'Employee Name',
-        type: FormFieldType.text,
-        isRequired: true),
-    const FormFieldDefinition(
-        name: 'position',
-        label: 'Position/Role',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'department',
-        label: 'Department',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'start_date',
-        label: 'Start Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'employee_email',
-        label: 'Email',
-        type: FormFieldType.email,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'employee_phone',
-        label: 'Phone',
-        type: FormFieldType.phone,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'employee_notes',
-        label: 'Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.daysOff: [
-    const FormFieldDefinition(
-        name: 'leave_type',
-        label: 'Leave Type',
-        type: FormFieldType.dropdown,
-        isRequired: false,
-        options: [
-          FormFieldOption(value: 'annual_leave', label: 'Annual Leave'),
-          FormFieldOption(value: 'sick_leave', label: 'Sick Leave'),
-          FormFieldOption(value: 'personal_leave', label: 'Personal Leave'),
-          FormFieldOption(value: 'maternity_leave', label: 'Maternity Leave'),
-          FormFieldOption(value: 'study_leave', label: 'Study Leave'),
-          FormFieldOption(value: 'other', label: 'Other'),
-        ]),
-    const FormFieldDefinition(
-        name: 'start_date',
-        label: 'Start Date',
-        type: FormFieldType.date,
-        isRequired: true),
-    const FormFieldDefinition(
-        name: 'end_date',
-        label: 'End Date',
-        type: FormFieldType.date,
-        isRequired: true),
-    const FormFieldDefinition(
-        name: 'reason',
-        label: 'Reason',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'approved',
-        label: 'Approved',
-        type: FormFieldType.boolean,
-        isRequired: false),
-  ],
-  EntitySubtype.finance: [
-    const FormFieldDefinition(
-        name: 'account_type',
-        label: 'Account Type',
-        type: FormFieldType.dropdown,
-        isRequired: false,
-        options: [
-          FormFieldOption(value: 'checking', label: 'Checking Account'),
-          FormFieldOption(value: 'savings', label: 'Savings Account'),
-          FormFieldOption(value: 'investment', label: 'Investment Account'),
-          FormFieldOption(value: 'credit_card', label: 'Credit Card'),
-          FormFieldOption(value: 'loan', label: 'Loan'),
-          FormFieldOption(value: 'mortgage', label: 'Mortgage'),
-          FormFieldOption(value: 'other', label: 'Other'),
-        ]),
-    const FormFieldDefinition(
-        name: 'account_number',
-        label: 'Account Number',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'bank_name',
-        label: 'Bank/Institution',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'balance',
-        label: 'Current Balance',
-        type: FormFieldType.number,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'interest_rate',
-        label: 'Interest Rate (%)',
-        type: FormFieldType.number,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'finance_notes',
-        label: 'Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.food: [
-    const FormFieldDefinition(
-        name: 'food_type',
-        label: 'Food Type',
-        type: FormFieldType.dropdown,
-        isRequired: false,
-        options: [
-          FormFieldOption(value: 'recipe', label: 'Recipe'),
-          FormFieldOption(value: 'restaurant', label: 'Restaurant'),
-          FormFieldOption(value: 'grocery_item', label: 'Grocery Item'),
-          FormFieldOption(value: 'meal_plan', label: 'Meal Plan'),
-          FormFieldOption(value: 'dietary_restriction', label: 'Dietary Restriction'),
-          FormFieldOption(value: 'other', label: 'Other'),
-        ]),
-    const FormFieldDefinition(
-        name: 'cuisine_type',
-        label: 'Cuisine Type',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., Italian, Chinese, Mexican'),
-    const FormFieldDefinition(
-        name: 'ingredients',
-        label: 'Ingredients',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'instructions',
-        label: 'Instructions/Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'prep_time',
-        label: 'Prep Time (minutes)',
-        type: FormFieldType.number,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'servings',
-        label: 'Servings',
-        type: FormFieldType.number,
-        isRequired: false),
-  ],
-  EntitySubtype.foodPlan: [
-    const FormFieldDefinition(
-        name: 'plan_type',
-        label: 'Plan Type',
-        type: FormFieldType.dropdown,
-        isRequired: false,
-        options: [
-          FormFieldOption(value: 'weekly_meal_plan', label: 'Weekly Meal Plan'),
-          FormFieldOption(value: 'monthly_meal_plan', label: 'Monthly Meal Plan'),
-          FormFieldOption(value: 'diet_plan', label: 'Diet Plan'),
-          FormFieldOption(value: 'grocery_plan', label: 'Grocery Plan'),
-          FormFieldOption(value: 'other', label: 'Other'),
-        ]),
-    const FormFieldDefinition(
-        name: 'start_date',
-        label: 'Start Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'end_date',
-        label: 'End Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'plan_details',
-        label: 'Plan Details',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'shopping_list',
-        label: 'Shopping List',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.garden: [
-    const FormFieldDefinition(
-        name: 'garden_type',
-        label: 'Garden Type',
-        type: FormFieldType.dropdown,
-        isRequired: false,
-        options: [
-          FormFieldOption(value: 'vegetable_garden', label: 'Vegetable Garden'),
-          FormFieldOption(value: 'flower_garden', label: 'Flower Garden'),
-          FormFieldOption(value: 'herb_garden', label: 'Herb Garden'),
-          FormFieldOption(value: 'fruit_garden', label: 'Fruit Garden'),
-          FormFieldOption(value: 'indoor_garden', label: 'Indoor Garden'),
-          FormFieldOption(value: 'other', label: 'Other'),
-        ]),
-    const FormFieldDefinition(
-        name: 'location',
-        label: 'Location',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., Backyard, Balcony, Greenhouse'),
-    const FormFieldDefinition(
-        name: 'size',
-        label: 'Size',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., 10x10 feet, 5 pots'),
-    const FormFieldDefinition(
-        name: 'plants',
-        label: 'Plants/Crops',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'planting_date',
-        label: 'Planting Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'harvest_date',
-        label: 'Expected Harvest Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'garden_notes',
-        label: 'Garden Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.laundryPlan: [
-    const FormFieldDefinition(
-        name: 'schedule',
-        label: 'Laundry Schedule',
-        type: FormFieldType.text,
-        isRequired: false,
-        hintText: 'e.g., Every Monday, Twice a week'),
-    const FormFieldDefinition(
-        name: 'laundry_type',
-        label: 'Laundry Type',
-        type: FormFieldType.dropdown,
-        isRequired: false,
-        options: [
-          FormFieldOption(value: 'regular_wash', label: 'Regular Wash'),
-          FormFieldOption(value: 'delicate_wash', label: 'Delicate Wash'),
-          FormFieldOption(value: 'dry_cleaning', label: 'Dry Cleaning'),
-          FormFieldOption(value: 'hand_wash', label: 'Hand Wash'),
-          FormFieldOption(value: 'other', label: 'Other'),
-        ]),
-    const FormFieldDefinition(
-        name: 'items',
-        label: 'Items/Clothing',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'special_instructions',
-        label: 'Special Instructions',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'laundry_notes',
-        label: 'Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  EntitySubtype.home: [
-    const FormFieldDefinition(
-        name: 'home_type',
-        label: 'Home Type',
-        type: FormFieldType.dropdown,
-        isRequired: false,
-        options: [
-          FormFieldOption(value: 'house', label: 'House'),
-          FormFieldOption(value: 'apartment', label: 'Apartment'),
-          FormFieldOption(value: 'condo', label: 'Condo'),
-          FormFieldOption(value: 'townhouse', label: 'Townhouse'),
-          FormFieldOption(value: 'other', label: 'Other'),
-        ]),
-    const FormFieldDefinition(
-        name: 'address',
-        label: 'Address',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'bedrooms',
-        label: 'Bedrooms',
-        type: FormFieldType.number,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'bathrooms',
-        label: 'Bathrooms',
-        type: FormFieldType.number,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'square_footage',
-        label: 'Square Footage',
-        type: FormFieldType.number,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'purchase_date',
-        label: 'Purchase/Move-in Date',
-        type: FormFieldType.date,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'home_notes',
-        label: 'Home Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-  ],
-  // Additional pet-related entities
+
   EntitySubtype.vet: [
-    const FormFieldDefinition(
-        name: 'clinic_name',
-        label: 'Clinic Name',
-        type: FormFieldType.text,
-        isRequired: true),
-    const FormFieldDefinition(
-        name: 'vet_name',
-        label: 'Veterinarian Name',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'address',
-        label: 'Address',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'phone_number',
-        label: 'Phone Number',
-        type: FormFieldType.phone,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'email',
-        label: 'Email',
-        type: FormFieldType.email,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'emergency_hours',
-        label: 'Emergency Hours',
-        type: FormFieldType.text,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'specialties',
-        label: 'Specialties',
-        type: FormFieldType.multilineText,
-        isRequired: false),
-    const FormFieldDefinition(
-        name: 'vet_notes',
-        label: 'Notes',
-        type: FormFieldType.multilineText,
-        isRequired: false),
+    const FormFieldDefinition(name: 'clinic_name', label: 'Clinic Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'vet_name', label: 'Veterinarian Name', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+    const FormFieldDefinition(name: 'address', label: 'Address', type: FormFieldType.multilineText, isRequired: false),
+  ],
+
+  EntitySubtype.petWalker: [
+    const FormFieldDefinition(name: 'walker_name', label: 'Walker Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+    const FormFieldDefinition(name: 'rate', label: 'Rate per Walk', type: FormFieldType.number, isRequired: false),
+  ],
+
+  EntitySubtype.petGroomer: [
+    const FormFieldDefinition(name: 'groomer_name', label: 'Groomer Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+    const FormFieldDefinition(name: 'services', label: 'Services Offered', type: FormFieldType.multilineText, isRequired: false),
+  ],
+
+  EntitySubtype.petSitter: [
+    const FormFieldDefinition(name: 'sitter_name', label: 'Sitter Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+    const FormFieldDefinition(name: 'rate_per_day', label: 'Rate per Day', type: FormFieldType.number, isRequired: false),
+  ],
+
+  EntitySubtype.microchipCompany: [
+    const FormFieldDefinition(name: 'company_name', label: 'Company Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+    const FormFieldDefinition(name: 'website', label: 'Website', type: FormFieldType.url, isRequired: false),
+  ],
+
+  EntitySubtype.petInsuranceCompany: [
+    const FormFieldDefinition(name: 'company_name', label: 'Insurance Company', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+    const FormFieldDefinition(name: 'coverage_types', label: 'Coverage Types', type: FormFieldType.multilineText, isRequired: false),
+  ],
+
+  EntitySubtype.petInsurancePolicy: [
+    const FormFieldDefinition(name: 'policy_number', label: 'Policy Number', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'coverage_amount', label: 'Coverage Amount', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'premium', label: 'Monthly Premium', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'start_date', label: 'Policy Start Date', type: FormFieldType.date, isRequired: false),
+  ],
+
+  // ========== SOCIAL CATEGORY (Category 2) - 10 entity types ==========
+  EntitySubtype.anniversary: [
+    const FormFieldDefinition(name: 'anniversary_type', label: 'Anniversary Type', type: FormFieldType.text, isRequired: true, hintText: 'e.g., Wedding, First Date'),
+    const FormFieldDefinition(name: 'date', label: 'Anniversary Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'people_involved', label: 'People Involved', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.anniversaryPlan: [
+    const FormFieldDefinition(name: 'plan_title', label: 'Plan Title', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'anniversary_date', label: 'Anniversary Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'activities', label: 'Planned Activities', type: FormFieldType.multilineText, isRequired: false),
+  ],
+
+  EntitySubtype.birthday: [
+    const FormFieldDefinition(name: 'person_name', label: 'Person Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'birthday_date', label: 'Birthday Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'age', label: 'Age (this year)', type: FormFieldType.number, isRequired: false),
+  ],
+
+  EntitySubtype.event: [
+    const FormFieldDefinition(name: 'start_datetime', label: 'Start Date & Time', type: FormFieldType.dateTime, isRequired: true),
+    const FormFieldDefinition(name: 'location', label: 'Location', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'attendees', label: 'Attendees', type: FormFieldType.multilineText, isRequired: false),
+  ],
+
+  EntitySubtype.guestListInvite: [
+    const FormFieldDefinition(name: 'guest_name', label: 'Guest Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'email', label: 'Email', type: FormFieldType.email, isRequired: false),
+    const FormFieldDefinition(name: 'rsvp_status', label: 'RSVP Status', type: FormFieldType.dropdown, isRequired: false, options: [
+      FormFieldOption(value: 'pending', label: 'Pending'),
+      FormFieldOption(value: 'attending', label: 'Attending'),
+      FormFieldOption(value: 'not_attending', label: 'Not Attending'),
+    ]),
+  ],
+
+  EntitySubtype.hobby: [
+    const FormFieldDefinition(name: 'hobby_type', label: 'Hobby Type', type: FormFieldType.text, isRequired: true, hintText: 'e.g., Photography, Painting'),
+    const FormFieldDefinition(name: 'skill_level', label: 'Skill Level', type: FormFieldType.dropdown, isRequired: false, options: [
+      FormFieldOption(value: 'beginner', label: 'Beginner'),
+      FormFieldOption(value: 'intermediate', label: 'Intermediate'),
+      FormFieldOption(value: 'advanced', label: 'Advanced'),
+    ]),
+  ],
+
+  EntitySubtype.holiday: [
+    const FormFieldDefinition(name: 'destination', label: 'Destination', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'start_date', label: 'Start Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'end_date', label: 'End Date', type: FormFieldType.date, isRequired: true),
+  ],
+
+  EntitySubtype.holidayPlan: [
+    const FormFieldDefinition(name: 'plan_title', label: 'Plan Title', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'destination', label: 'Destination', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'activities', label: 'Planned Activities', type: FormFieldType.multilineText, isRequired: false),
+  ],
+
+  EntitySubtype.socialMedia: [
+    const FormFieldDefinition(name: 'platform', label: 'Platform', type: FormFieldType.dropdown, isRequired: true, options: [
+      FormFieldOption(value: 'facebook', label: 'Facebook'),
+      FormFieldOption(value: 'instagram', label: 'Instagram'),
+      FormFieldOption(value: 'twitter', label: 'Twitter'),
+      FormFieldOption(value: 'linkedin', label: 'LinkedIn'),
+    ]),
+    const FormFieldDefinition(name: 'username', label: 'Username/Handle', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.socialPlan: [
+    const FormFieldDefinition(name: 'plan_type', label: 'Plan Type', type: FormFieldType.text, isRequired: true, hintText: 'e.g., Dinner Party, Game Night'),
+    const FormFieldDefinition(name: 'date', label: 'Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'location', label: 'Location', type: FormFieldType.text, isRequired: false),
+  ],
+
+  // ========== EDUCATION CATEGORY (Category 3) - 8 entity types ==========
+  EntitySubtype.academicPlan: [
+    const FormFieldDefinition(name: 'plan_title', label: 'Plan Title', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'institution', label: 'Institution', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'start_date', label: 'Start Date', type: FormFieldType.date, isRequired: false),
+  ],
+
+  EntitySubtype.courseWork: [
+    const FormFieldDefinition(name: 'course_name', label: 'Course Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'instructor', label: 'Instructor', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'semester', label: 'Semester/Term', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.extracurricularPlan: [
+    const FormFieldDefinition(name: 'activity_name', label: 'Activity Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'organization', label: 'Organization/Club', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'schedule', label: 'Schedule', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.school: [
+    const FormFieldDefinition(name: 'school_type', label: 'School Type', type: FormFieldType.dropdown, isRequired: false, options: [
+      FormFieldOption(value: 'elementary', label: 'Elementary School'),
+      FormFieldOption(value: 'high', label: 'High School'),
+      FormFieldOption(value: 'university', label: 'University'),
+    ]),
+    const FormFieldDefinition(name: 'address', label: 'Address', type: FormFieldType.multilineText, isRequired: false),
+  ],
+
+  EntitySubtype.student: [
+    const FormFieldDefinition(name: 'student_name', label: 'Student Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'grade_level', label: 'Grade Level', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'student_id', label: 'Student ID', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.subject: [
+    const FormFieldDefinition(name: 'subject_name', label: 'Subject Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'subject_code', label: 'Subject Code', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'grade_level', label: 'Grade Level', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.teacher: [
+    const FormFieldDefinition(name: 'teacher_name', label: 'Teacher Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'subject_taught', label: 'Subject Taught', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'contact_email', label: 'Contact Email', type: FormFieldType.email, isRequired: false),
+  ],
+
+  EntitySubtype.tutor: [
+    const FormFieldDefinition(name: 'tutor_name', label: 'Tutor Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'subject_speciality', label: 'Subject Speciality', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'hourly_rate', label: 'Hourly Rate', type: FormFieldType.number, isRequired: false),
+  ],
+
+  // ========== CAREER CATEGORY (Category 4) - 2 entity types ==========
+  EntitySubtype.colleague: [
+    const FormFieldDefinition(name: 'colleague_name', label: 'Colleague Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'position', label: 'Position/Role', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'department', label: 'Department', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.work: [
+    const FormFieldDefinition(name: 'company_name', label: 'Company Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'job_title', label: 'Job Title', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'start_date', label: 'Start Date', type: FormFieldType.date, isRequired: false),
+  ],
+
+  // ========== TRAVEL CATEGORY (Category 5) - 1 entity type ==========
+  EntitySubtype.trip: [
+    const FormFieldDefinition(name: 'destination', label: 'Destination', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'start_date', label: 'Start Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'end_date', label: 'End Date', type: FormFieldType.date, isRequired: true),
+  ],
+
+  // ========== HEALTH CATEGORY (Category 6) - 4 entity types ==========
+  EntitySubtype.beautySalon: [
+    const FormFieldDefinition(name: 'salon_name', label: 'Salon Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'services', label: 'Services Offered', type: FormFieldType.multilineText, isRequired: false),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+  ],
+
+  EntitySubtype.dentist: [
+    const FormFieldDefinition(name: 'dentist_name', label: 'Dentist Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'practice_name', label: 'Practice Name', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+  ],
+
+  EntitySubtype.doctor: [
+    const FormFieldDefinition(name: 'doctor_name', label: 'Doctor Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'specialty', label: 'Specialty', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'practice_name', label: 'Practice/Hospital Name', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.stylist: [
+    const FormFieldDefinition(name: 'stylist_name', label: 'Stylist Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'salon_name', label: 'Salon Name', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'specialties', label: 'Specialties', type: FormFieldType.multilineText, isRequired: false),
+  ],
+
+  // ========== HOME CATEGORY (Category 7) - 5 entity types ==========
+  EntitySubtype.appliance: [
+    const FormFieldDefinition(name: 'appliance_type', label: 'Appliance Type', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'brand', label: 'Brand', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'model_number', label: 'Model Number', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.contractor: [
+    const FormFieldDefinition(name: 'contractor_name', label: 'Contractor Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'trade_type', label: 'Trade Type', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+  ],
+
+  EntitySubtype.furniture: [
+    const FormFieldDefinition(name: 'furniture_type', label: 'Furniture Type', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'brand', label: 'Brand', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'room_location', label: 'Room Location', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.home: [
+    const FormFieldDefinition(name: 'home_type', label: 'Home Type', type: FormFieldType.dropdown, isRequired: false, options: [
+      FormFieldOption(value: 'house', label: 'House'),
+      FormFieldOption(value: 'apartment', label: 'Apartment'),
+      FormFieldOption(value: 'condo', label: 'Condo'),
+    ]),
+    const FormFieldDefinition(name: 'address', label: 'Address', type: FormFieldType.multilineText, isRequired: false),
+  ],
+
+  EntitySubtype.room: [
+    const FormFieldDefinition(name: 'room_name', label: 'Room Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'room_type', label: 'Room Type', type: FormFieldType.dropdown, isRequired: false, options: [
+      FormFieldOption(value: 'bedroom', label: 'Bedroom'),
+      FormFieldOption(value: 'kitchen', label: 'Kitchen'),
+      FormFieldOption(value: 'living_room', label: 'Living Room'),
+    ]),
+  ],
+
+  // ========== GARDEN CATEGORY (Category 8) - 2 entity types ==========
+  EntitySubtype.gardenTool: [
+    const FormFieldDefinition(name: 'tool_name', label: 'Tool Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'brand', label: 'Brand', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'maintenance_schedule', label: 'Maintenance Schedule', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.plant: [
+    const FormFieldDefinition(name: 'plant_name', label: 'Plant Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'plant_type', label: 'Plant Type', type: FormFieldType.dropdown, isRequired: false, options: [
+      FormFieldOption(value: 'flower', label: 'Flower'),
+      FormFieldOption(value: 'vegetable', label: 'Vegetable'),
+      FormFieldOption(value: 'herb', label: 'Herb'),
+    ]),
+    const FormFieldDefinition(name: 'location', label: 'Location', type: FormFieldType.text, isRequired: false),
+  ],
+
+  // ========== FOOD CATEGORY (Category 9) - 3 entity types ==========
+  EntitySubtype.foodPlan: [
+    const FormFieldDefinition(name: 'plan_type', label: 'Plan Type', type: FormFieldType.dropdown, isRequired: false, options: [
+      FormFieldOption(value: 'weekly_meal_plan', label: 'Weekly Meal Plan'),
+      FormFieldOption(value: 'diet_plan', label: 'Diet Plan'),
+      FormFieldOption(value: 'grocery_plan', label: 'Grocery Plan'),
+    ]),
+    const FormFieldDefinition(name: 'start_date', label: 'Start Date', type: FormFieldType.date, isRequired: false),
+  ],
+
+  EntitySubtype.recipe: [
+    const FormFieldDefinition(name: 'recipe_name', label: 'Recipe Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'cuisine_type', label: 'Cuisine Type', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'ingredients', label: 'Ingredients', type: FormFieldType.multilineText, isRequired: true),
+  ],
+
+  EntitySubtype.restaurant: [
+    const FormFieldDefinition(name: 'restaurant_name', label: 'Restaurant Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'cuisine_type', label: 'Cuisine Type', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'address', label: 'Address', type: FormFieldType.multilineText, isRequired: false),
+  ],
+
+  // ========== LAUNDRY CATEGORY (Category 10) - 2 entity types ==========
+  EntitySubtype.dryCleaners: [
+    const FormFieldDefinition(name: 'business_name', label: 'Business Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'address', label: 'Address', type: FormFieldType.multilineText, isRequired: false),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+  ],
+
+  EntitySubtype.laundryItem: [
+    const FormFieldDefinition(name: 'item_name', label: 'Item Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'care_instructions', label: 'Care Instructions', type: FormFieldType.multilineText, isRequired: false),
+    const FormFieldDefinition(name: 'color', label: 'Color', type: FormFieldType.text, isRequired: false),
+  ],
+
+  // ========== FINANCE CATEGORY (Category 11) - 3 entity types ==========
+  EntitySubtype.bank: [
+    const FormFieldDefinition(name: 'bank_name', label: 'Bank Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'branch_address', label: 'Branch Address', type: FormFieldType.multilineText, isRequired: false),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+  ],
+
+  EntitySubtype.bankAccount: [
+    const FormFieldDefinition(name: 'account_type', label: 'Account Type', type: FormFieldType.dropdown, isRequired: false, options: [
+      FormFieldOption(value: 'checking', label: 'Checking'),
+      FormFieldOption(value: 'savings', label: 'Savings'),
+      FormFieldOption(value: 'investment', label: 'Investment'),
+    ]),
+    const FormFieldDefinition(name: 'account_number', label: 'Account Number', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.creditCard: [
+    const FormFieldDefinition(name: 'card_name', label: 'Card Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'last_four_digits', label: 'Last Four Digits', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'expiry_date', label: 'Expiry Date', type: FormFieldType.date, isRequired: false),
+  ],
+
+  // ========== TRANSPORT CATEGORY (Category 12) - 3 entity types ==========
+  EntitySubtype.boat: [
+    const FormFieldDefinition(name: 'boat_name', label: 'Boat Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'boat_type', label: 'Boat Type', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'registration', label: 'Registration Number', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.car: [
+    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true, hintText: 'e.g., Toyota, Honda'),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: false, hintText: 'e.g., Camry, Civic'),
+    const FormFieldDefinition(name: 'registration', label: 'Registration/Plate', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.publicTransport: [
+    const FormFieldDefinition(name: 'transport_type', label: 'Transport Type', type: FormFieldType.dropdown, isRequired: false, options: [
+      FormFieldOption(value: 'bus', label: 'Bus'),
+      FormFieldOption(value: 'train', label: 'Train'),
+      FormFieldOption(value: 'subway', label: 'Subway'),
+      FormFieldOption(value: 'ferry', label: 'Ferry'),
+    ]),
+    const FormFieldDefinition(name: 'route_info', label: 'Route Information', type: FormFieldType.text, isRequired: false),
   ],
 };

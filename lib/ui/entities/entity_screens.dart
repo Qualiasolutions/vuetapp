@@ -241,7 +241,7 @@ class EntityFormScreenState extends ConsumerState<EntityFormScreen> {
             'service_due_date': _formValues['serviceDueDate']?.toString(),
           };
           break;
-        case EntitySubtype.homeAppliance:
+        case EntitySubtype.appliance:
           specificData = {
             'appliance_type': _formValues['applianceType'] as String?,
             'brand': _formValues['brand'] as String?,

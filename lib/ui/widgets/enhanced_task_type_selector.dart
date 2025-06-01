@@ -81,7 +81,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
           label: 'Transport Subtype',
           value: _selectedTaskSubtype != null
               ? TransportSubtype.values.firstWhere(
-                  (e) => e.toString() == 'TransportSubtype.${_selectedTaskSubtype}',
+                  (e) => e.toString() == 'TransportSubtype.$_selectedTaskSubtype',
                   orElse: () => TransportSubtype.other,
                 )
               : null,
@@ -103,7 +103,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
           label: 'Activity Subtype',
           value: _selectedTaskSubtype != null
               ? ActivitySubtype.values.firstWhere(
-                  (e) => e.toString() == 'ActivitySubtype.${_selectedTaskSubtype}',
+                  (e) => e.toString() == 'ActivitySubtype.$_selectedTaskSubtype',
                   orElse: () => ActivitySubtype.other,
                 )
               : null,
@@ -125,7 +125,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
           label: 'Accommodation Subtype',
           value: _selectedTaskSubtype != null
               ? AccommodationSubtype.values.firstWhere(
-                  (e) => e.toString() == 'AccommodationSubtype.${_selectedTaskSubtype}',
+                  (e) => e.toString() == 'AccommodationSubtype.$_selectedTaskSubtype',
                   orElse: () => AccommodationSubtype.other,
                 )
               : null,
@@ -147,7 +147,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
           label: 'Anniversary Subtype',
           value: _selectedTaskSubtype != null
               ? AnniversarySubtype.values.firstWhere(
-                  (e) => e.toString() == 'AnniversarySubtype.${_selectedTaskSubtype}',
+                  (e) => e.toString() == 'AnniversarySubtype.$_selectedTaskSubtype',
                   orElse: () => AnniversarySubtype.other,
                 )
               : null,

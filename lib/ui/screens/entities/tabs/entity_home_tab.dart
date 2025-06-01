@@ -31,81 +31,11 @@ class EntityHomeTab extends ConsumerWidget {
   Widget _buildEntitySpecificHome(BaseEntityModel entity) {
     // Build entity-specific home page based on entity type
     switch (entity.subtype) {
-      case EntitySubtype.list:
-        return _buildListEntityHome(entity);
       case EntitySubtype.event:
         return _buildEventEntityHome(entity);
       default:
         return _buildGenericEntityHome(entity);
     }
-  }
-
-  Widget _buildListEntityHome(BaseEntityModel entity) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ModernComponents.modernCard(
-            margin: EdgeInsets.zero,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.list_alt,
-                      color: Colors.blue.shade600,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'List Management',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade800,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Manage items in this list. Add, edit, and organize your list items.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Builder(
-                  builder: (context) => ElevatedButton.icon(
-                    onPressed: () {
-                      // TODO: Navigate to list item management
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('List item management coming soon!')),
-                      );
-                    },
-                    icon: const Icon(Icons.add),
-                    label: const Text('Add List Item'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade600,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          ModernComponents.modernEmptyState(
-            icon: Icons.checklist,
-            title: 'List Items',
-            subtitle: 'List item management will be implemented here.\n\nYou\'ll be able to add, edit, and check off items in this list.',
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildEventEntityHome(BaseEntityModel entity) {
@@ -244,8 +174,6 @@ class EntityHomeTab extends ConsumerWidget {
         return 'Event';
       case EntitySubtype.hobby:
         return 'Hobby';
-      case EntitySubtype.list:
-        return 'List';
       default:
         return subtype.toString().split('.').last;
     }

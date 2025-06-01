@@ -228,8 +228,6 @@ class _DynamicEntityFormState extends ConsumerState<DynamicEntityForm> {
              _customFieldsData[fieldDef.name] = value;
           },
         );
-      default:
-        return Text('Unsupported field type: ${fieldDef.type}');
     }
   }
 

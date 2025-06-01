@@ -473,26 +473,32 @@ class _ModernizedHomeScreenState extends ConsumerState<ModernizedHomeScreen>
                   ],
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  event.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                Flexible( // Wrap title Text with Flexible
+                  child: Text(
+                    event.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                    maxLines: 1, // Add maxLines
+                    overflow: TextOverflow.ellipsis, // Add overflow
                   ),
                 ),
                 if (event.description != null && event.description!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      event.description!,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 14,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        event.description!, // Positional data argument
+                        style: TextStyle(   // Named argument 'style'
+                          color: Colors.grey.shade600,
+                          fontSize: 14,
+                        ),
+                        maxLines: 2,        // Named argument 'maxLines'
+                        overflow: TextOverflow.ellipsis, // Named argument 'overflow'
+                      ), // End Text()
+                    ), // End Padding()
+                  ), // End Flexible()
               ],
             ),
           ),

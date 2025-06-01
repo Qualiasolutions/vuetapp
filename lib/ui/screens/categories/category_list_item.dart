@@ -84,7 +84,7 @@ class ColorUtils {
 
   /// Convert a Color object to a hex color string (e.g., "#RRGGBB").
   static String toHex(Color color, {bool includeHash = true}) {
-    final hex = color.value.toRadixString(16).substring(2); // Remove alpha channel
+    final hex = color.toARGB32().toRadixString(16).substring(2); // Remove alpha channel
     return includeHash ? '#$hex' : hex;
   }
 }

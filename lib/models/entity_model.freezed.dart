@@ -24,11 +24,9 @@ mixin _$BaseEntityModel {
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   @JsonKey(name: 'user_id')
-  String get userId =>
-      throw _privateConstructorUsedError; // Corrected to user_id
+  String get userId => throw _privateConstructorUsedError;
   @JsonKey(name: 'app_category_id')
-  int? get appCategoryId =>
-      throw _privateConstructorUsedError; // Changed from categoryId, type to int?
+  int? get appCategoryId => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
   String? get parentId => throw _privateConstructorUsedError;
   @JsonKey(name: 'entity_type_id')
@@ -328,11 +326,9 @@ class _$BaseEntityModelImpl implements _BaseEntityModel {
   @override
   @JsonKey(name: 'user_id')
   final String userId;
-// Corrected to user_id
   @override
   @JsonKey(name: 'app_category_id')
   final int? appCategoryId;
-// Changed from categoryId, type to int?
   @override
   final String? imageUrl;
   @override
@@ -476,10 +472,10 @@ abstract class _BaseEntityModel implements BaseEntityModel {
   String? get description;
   @override
   @JsonKey(name: 'user_id')
-  String get userId; // Corrected to user_id
+  String get userId;
   @override
   @JsonKey(name: 'app_category_id')
-  int? get appCategoryId; // Changed from categoryId, type to int?
+  int? get appCategoryId;
   @override
   String? get imageUrl;
   @override

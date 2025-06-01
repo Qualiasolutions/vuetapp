@@ -38,7 +38,7 @@ Widget getEntityDisplayWidget(BaseEntityModel entity) {
   switch (entity.subtype) { 
     case EntitySubtype.pet:
       return PetEntityWidget(entity: entity, specificData: entity.customFields);
-    case EntitySubtype.homeAppliance:
+    case EntitySubtype.appliance:
       return HomeApplianceEntityWidget(entity: entity, specificData: entity.customFields);
     case EntitySubtype.holiday:
       return HolidayEntityWidget(entity: entity, specificData: entity.customFields);
@@ -319,7 +319,7 @@ Widget getEntityFormWidget(BaseEntityModel? entity, {required ValueChanged<Map<S
       return CarEntityForm(onFormValuesChange: onFormValuesChange, initialValues: initialValues);
     case EntitySubtype.holiday:
       return HolidayEntityForm(onFormValuesChange: onFormValuesChange, initialValues: initialValues);
-    case EntitySubtype.homeAppliance: 
+    case EntitySubtype.appliance: 
       return HomeApplianceEntityForm(onFormValuesChange: onFormValuesChange, initialValues: initialValues);
     default:
       return DefaultEntityForm(onFormValuesChange: onFormValuesChange, initialValues: initialValues);

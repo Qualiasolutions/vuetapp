@@ -5,7 +5,7 @@ import 'package:vuet_app/providers/routine_providers.dart';
 import 'package:vuet_app/providers/lists_providers.dart' as lists_providers;
 import 'package:vuet_app/providers/timeblock_providers.dart'
     as timeblock_providers;
-import 'package:vuet_app/providers/auth_providers.dart';
+
 import 'package:vuet_app/models/routine_model.dart';
 import 'package:vuet_app/models/list_model.dart';
 import 'package:vuet_app/models/task_model.dart';

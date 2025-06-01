@@ -117,8 +117,7 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
   int _getInitialTabIndex(BaseEntityModel entity) {
     // Determine initial tab based on entity type (matching React original)
     switch (entity.subtype) {
-      case EntitySubtype.list:
-        return _availableTabs.indexWhere((tab) => tab.name == 'home');
+      // Note: 'list' is not in 50-entity system - keeping for backwards compatibility
       case EntitySubtype.event:
         return _availableTabs.indexWhere((tab) => tab.name == 'overview');
       default:
@@ -129,7 +128,6 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
   static bool _hasSpecializedHomePage(BaseEntityModel entity) {
     // Entities that have specialized home pages (matching React original)
     switch (entity.subtype) {
-      case EntitySubtype.list:
       case EntitySubtype.event:
         return true;
       default:
@@ -302,7 +300,7 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
       context,
       MaterialPageRoute(
         builder: (context) => CreateEditEntityScreen(
-          appCategoryId: entity.appCategoryId ?? 0, // Changed to appCategoryId
+          appCategoryId: entity.appCategoryId ?? 0,
           entityId: entity.id,
         ),
       ),
@@ -325,7 +323,7 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
       context,
       MaterialPageRoute(
         builder: (context) => CreateEditEntityScreen(
-          appCategoryId: entity.appCategoryId ?? 0, // Changed to appCategoryId
+          appCategoryId: entity.appCategoryId ?? 0,
           // TODO: Pass duplicated entity data when create/edit screen supports it
         ),
       ),
@@ -370,69 +368,95 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
     );
   }
 
-  // Helper methods for entity styling (reused from EntityDetailScreen)
+  // Helper methods for entity styling (updated for 50-entity system)
   Color _getEntityColor(BaseEntityModel entity) {
     switch (entity.subtype) {
+      // Pets category (1) - Orange
       case EntitySubtype.pet:
       case EntitySubtype.vet:
-      case EntitySubtype.walker:
-      case EntitySubtype.groomer:
-      case EntitySubtype.sitter:
+      case EntitySubtype.petWalker:
+      case EntitySubtype.petGroomer:
+      case EntitySubtype.petSitter:
       case EntitySubtype.microchipCompany:
-      case EntitySubtype.insuranceCompany:
-      case EntitySubtype.insurancePolicy:
+      case EntitySubtype.petInsuranceCompany:
+      case EntitySubtype.petInsurancePolicy:
         return const Color(0xFFE49F30);
+      
+      // Social Interests category (2) - Purple
+      case EntitySubtype.anniversary:
+      case EntitySubtype.anniversaryPlan:
+      case EntitySubtype.birthday:
       case EntitySubtype.event:
-      case EntitySubtype.eventSubentity:
-      case EntitySubtype.hobby:
-      case EntitySubtype.socialPlan:
-      case EntitySubtype.socialMedia:
       case EntitySubtype.guestListInvite:
-        return const Color(0xFF9C27B0);
-      case EntitySubtype.academicPlan:
-      case EntitySubtype.extracurricularPlan:
-      case EntitySubtype.school:
-      case EntitySubtype.schoolBreak:
-      case EntitySubtype.schoolTerm:
-      case EntitySubtype.schoolYear:
-      case EntitySubtype.student:
-      case EntitySubtype.careerGoal:
-      case EntitySubtype.daysOff:
-      case EntitySubtype.employee:
-        return const Color(0xFF2196F3);
-      case EntitySubtype.trip:
-      case EntitySubtype.travelPlan:
-      case EntitySubtype.flight:
-      case EntitySubtype.trainBusFerry:
-      case EntitySubtype.rentalCar:
-      case EntitySubtype.taxiOrTransfer:
-      case EntitySubtype.driveTime:
-      case EntitySubtype.hotelOrRental:
-      case EntitySubtype.stayWithFriend:
+      case EntitySubtype.hobby:
       case EntitySubtype.holiday:
       case EntitySubtype.holidayPlan:
+      case EntitySubtype.socialMedia:
+      case EntitySubtype.socialPlan:
+        return const Color(0xFF9C27B0);
+      
+      // Education category (3) - Blue
+      case EntitySubtype.academicPlan:
+      case EntitySubtype.courseWork:
+      case EntitySubtype.extracurricularPlan:
+      case EntitySubtype.school:
+      case EntitySubtype.student:
+      case EntitySubtype.subject:
+      case EntitySubtype.teacher:
+      case EntitySubtype.tutor:
+        return const Color(0xFF2196F3);
+      
+      // Career category (4) - Blue
+      case EntitySubtype.colleague:
+      case EntitySubtype.work:
+        return const Color(0xFF2196F3);
+      
+      // Travel category (5) - Cyan
+      case EntitySubtype.trip:
         return const Color(0xFF00BCD4);
-      case EntitySubtype.healthBeauty:
-      case EntitySubtype.healthGoal:
-      case EntitySubtype.patient:
-      case EntitySubtype.appointment:
+      
+      // Health category (6) - Green
+      case EntitySubtype.beautySalon:
+      case EntitySubtype.dentist:
+      case EntitySubtype.doctor:
+      case EntitySubtype.stylist:
         return const Color(0xFF4CAF50);
+      
+      // Home category (7) - Teal
+      case EntitySubtype.appliance:
+      case EntitySubtype.contractor:
+      case EntitySubtype.furniture:
       case EntitySubtype.home:
-      case EntitySubtype.homeAppliance:
-      case EntitySubtype.garden:
-      case EntitySubtype.food:
-      case EntitySubtype.foodPlan:
-      case EntitySubtype.laundryPlan:
+      case EntitySubtype.room:
         return const Color(0xFF1A6E68);
-      case EntitySubtype.finance:
-        return const Color(0xFF795548);
-      case EntitySubtype.car:
-      case EntitySubtype.boat:
-      case EntitySubtype.publicTransport:
-      case EntitySubtype.vehicle:
+      
+      // Garden category (8) - Green
+      case EntitySubtype.gardenTool:
+      case EntitySubtype.plant:
+        return const Color(0xFF4CAF50);
+      
+      // Food category (9) - Orange
+      case EntitySubtype.foodPlan:
+      case EntitySubtype.recipe:
+      case EntitySubtype.restaurant:
+        return const Color(0xFFFF9800);
+      
+      // Laundry category (10) - Blue Grey
+      case EntitySubtype.dryCleaners:
+      case EntitySubtype.laundryItem:
         return const Color(0xFF607D8B);
-      default:
-        return const Color(0xFF79858D);
+      
+      // Finance category (11) - Brown
+      case EntitySubtype.bank:
+      case EntitySubtype.bankAccount:
+      case EntitySubtype.creditCard:
+        return const Color(0xFF795548);
+      
+      // Transport category (12) - Blue Grey
+      case EntitySubtype.boat:
+      case EntitySubtype.car:
+      case EntitySubtype.publicTransport:
+        return const Color(0xFF607D8B);
     }
   }
 

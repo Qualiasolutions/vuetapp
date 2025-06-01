@@ -331,7 +331,7 @@ class _TaskCardState extends State<TaskCard> {
         return Icons.fitness_center;
       case '57846': // restaurant
         return Icons.restaurant;
-      case '58717': // book
+      case '57444': // book (changed to avoid duplicate)
         return Icons.book;
       case '58648': // flight
         return Icons.flight;
