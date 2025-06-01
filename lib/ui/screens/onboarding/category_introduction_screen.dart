@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/constants/setup_content.dart';
 import 'package:vuet_app/services/setup_service.dart';
 import 'package:vuet_app/ui/theme/app_theme.dart';
-import 'package:vuet_app/ui/widgets/loading_indicator.dart';
 import 'package:vuet_app/providers/family_providers.dart';
 
 /// Modern, interactive category introduction screen with beautiful animations

@@ -25,25 +25,17 @@ mixin _$TimeblockModel {
   String? get title => throw _privateConstructorUsedError;
   int get dayOfWeek =>
       throw _privateConstructorUsedError; // 1 for Monday, 7 for Sunday
-  String get startTime => throw _privateConstructorUsedError; // HH:mm:ss format
-  String get endTime => throw _privateConstructorUsedError; // HH:mm:ss format
+  String get startTime =>
+      throw _privateConstructorUsedError; // Format: "HH:mm:ss"
+  String get endTime =>
+      throw _privateConstructorUsedError; // Format: "HH:mm:ss"
   String? get color =>
       throw _privateConstructorUsedError; // Hex color code e.g., #RRGGBB
   String? get description => throw _privateConstructorUsedError;
-
-  /// Activity type for categorization (work, exercise, personal, etc.)
   String? get activityType => throw _privateConstructorUsedError;
-
-  /// ID of the routine this timeblock is linked to (if applicable)
   String? get linkedRoutineId => throw _privateConstructorUsedError;
-
-  /// ID of the task this timeblock is linked to (if applicable)
   String? get linkedTaskId => throw _privateConstructorUsedError;
-
-  /// Whether this timeblock should sync with external calendar
   bool get syncWithCalendar => throw _privateConstructorUsedError;
-
-  /// External calendar event ID (for bidirectional sync)
   String? get externalCalendarEventId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
@@ -332,34 +324,24 @@ class _$TimeblockModelImpl implements _TimeblockModel {
 // 1 for Monday, 7 for Sunday
   @override
   final String startTime;
-// HH:mm:ss format
+// Format: "HH:mm:ss"
   @override
   final String endTime;
-// HH:mm:ss format
+// Format: "HH:mm:ss"
   @override
   final String? color;
 // Hex color code e.g., #RRGGBB
   @override
   final String? description;
-
-  /// Activity type for categorization (work, exercise, personal, etc.)
   @override
   final String? activityType;
-
-  /// ID of the routine this timeblock is linked to (if applicable)
   @override
   final String? linkedRoutineId;
-
-  /// ID of the task this timeblock is linked to (if applicable)
   @override
   final String? linkedTaskId;
-
-  /// Whether this timeblock should sync with external calendar
   @override
   @JsonKey()
   final bool syncWithCalendar;
-
-  /// External calendar event ID (for bidirectional sync)
   @override
   final String? externalCalendarEventId;
   @override
@@ -472,31 +454,21 @@ abstract class _TimeblockModel implements TimeblockModel {
   @override
   int get dayOfWeek; // 1 for Monday, 7 for Sunday
   @override
-  String get startTime; // HH:mm:ss format
+  String get startTime; // Format: "HH:mm:ss"
   @override
-  String get endTime; // HH:mm:ss format
+  String get endTime; // Format: "HH:mm:ss"
   @override
   String? get color; // Hex color code e.g., #RRGGBB
   @override
   String? get description;
-
-  /// Activity type for categorization (work, exercise, personal, etc.)
   @override
   String? get activityType;
-
-  /// ID of the routine this timeblock is linked to (if applicable)
   @override
   String? get linkedRoutineId;
-
-  /// ID of the task this timeblock is linked to (if applicable)
   @override
   String? get linkedTaskId;
-
-  /// Whether this timeblock should sync with external calendar
   @override
   bool get syncWithCalendar;
-
-  /// External calendar event ID (for bidirectional sync)
   @override
   String? get externalCalendarEventId;
   @override
@@ -509,5 +481,516 @@ abstract class _TimeblockModel implements TimeblockModel {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$TimeblockModelImplCopyWith<_$TimeblockModelImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+RoutineModel _$RoutineModelFromJson(Map<String, dynamic> json) {
+  return _RoutineModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$RoutineModel {
+  String get id => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
+  String get title => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
+  String? get color =>
+      throw _privateConstructorUsedError; // Days of the week (boolean for each day)
+  bool get monday => throw _privateConstructorUsedError;
+  bool get tuesday => throw _privateConstructorUsedError;
+  bool get wednesday => throw _privateConstructorUsedError;
+  bool get thursday => throw _privateConstructorUsedError;
+  bool get friday => throw _privateConstructorUsedError;
+  bool get saturday => throw _privateConstructorUsedError;
+  bool get sunday => throw _privateConstructorUsedError;
+  String get startTime => throw _privateConstructorUsedError; // Format: "HH:mm"
+  String get endTime => throw _privateConstructorUsedError; // Format: "HH:mm"
+  bool get isActive => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
+
+  /// Serializes this RoutineModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of RoutineModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $RoutineModelCopyWith<RoutineModel> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RoutineModelCopyWith<$Res> {
+  factory $RoutineModelCopyWith(
+          RoutineModel value, $Res Function(RoutineModel) then) =
+      _$RoutineModelCopyWithImpl<$Res, RoutineModel>;
+  @useResult
+  $Res call(
+      {String id,
+      String userId,
+      String title,
+      String? description,
+      String? color,
+      bool monday,
+      bool tuesday,
+      bool wednesday,
+      bool thursday,
+      bool friday,
+      bool saturday,
+      bool sunday,
+      String startTime,
+      String endTime,
+      bool isActive,
+      DateTime? createdAt,
+      DateTime? updatedAt});
+}
+
+/// @nodoc
+class _$RoutineModelCopyWithImpl<$Res, $Val extends RoutineModel>
+    implements $RoutineModelCopyWith<$Res> {
+  _$RoutineModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of RoutineModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? userId = null,
+    Object? title = null,
+    Object? description = freezed,
+    Object? color = freezed,
+    Object? monday = null,
+    Object? tuesday = null,
+    Object? wednesday = null,
+    Object? thursday = null,
+    Object? friday = null,
+    Object? saturday = null,
+    Object? sunday = null,
+    Object? startTime = null,
+    Object? endTime = null,
+    Object? isActive = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      color: freezed == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as String?,
+      monday: null == monday
+          ? _value.monday
+          : monday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      tuesday: null == tuesday
+          ? _value.tuesday
+          : tuesday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      wednesday: null == wednesday
+          ? _value.wednesday
+          : wednesday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      thursday: null == thursday
+          ? _value.thursday
+          : thursday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      friday: null == friday
+          ? _value.friday
+          : friday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      saturday: null == saturday
+          ? _value.saturday
+          : saturday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      sunday: null == sunday
+          ? _value.sunday
+          : sunday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      startTime: null == startTime
+          ? _value.startTime
+          : startTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      endTime: null == endTime
+          ? _value.endTime
+          : endTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$RoutineModelImplCopyWith<$Res>
+    implements $RoutineModelCopyWith<$Res> {
+  factory _$$RoutineModelImplCopyWith(
+          _$RoutineModelImpl value, $Res Function(_$RoutineModelImpl) then) =
+      __$$RoutineModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String userId,
+      String title,
+      String? description,
+      String? color,
+      bool monday,
+      bool tuesday,
+      bool wednesday,
+      bool thursday,
+      bool friday,
+      bool saturday,
+      bool sunday,
+      String startTime,
+      String endTime,
+      bool isActive,
+      DateTime? createdAt,
+      DateTime? updatedAt});
+}
+
+/// @nodoc
+class __$$RoutineModelImplCopyWithImpl<$Res>
+    extends _$RoutineModelCopyWithImpl<$Res, _$RoutineModelImpl>
+    implements _$$RoutineModelImplCopyWith<$Res> {
+  __$$RoutineModelImplCopyWithImpl(
+      _$RoutineModelImpl _value, $Res Function(_$RoutineModelImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of RoutineModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? userId = null,
+    Object? title = null,
+    Object? description = freezed,
+    Object? color = freezed,
+    Object? monday = null,
+    Object? tuesday = null,
+    Object? wednesday = null,
+    Object? thursday = null,
+    Object? friday = null,
+    Object? saturday = null,
+    Object? sunday = null,
+    Object? startTime = null,
+    Object? endTime = null,
+    Object? isActive = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
+  }) {
+    return _then(_$RoutineModelImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
+      title: null == title
+          ? _value.title
+          : title // ignore: cast_nullable_to_non_nullable
+              as String,
+      description: freezed == description
+          ? _value.description
+          : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      color: freezed == color
+          ? _value.color
+          : color // ignore: cast_nullable_to_non_nullable
+              as String?,
+      monday: null == monday
+          ? _value.monday
+          : monday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      tuesday: null == tuesday
+          ? _value.tuesday
+          : tuesday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      wednesday: null == wednesday
+          ? _value.wednesday
+          : wednesday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      thursday: null == thursday
+          ? _value.thursday
+          : thursday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      friday: null == friday
+          ? _value.friday
+          : friday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      saturday: null == saturday
+          ? _value.saturday
+          : saturday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      sunday: null == sunday
+          ? _value.sunday
+          : sunday // ignore: cast_nullable_to_non_nullable
+              as bool,
+      startTime: null == startTime
+          ? _value.startTime
+          : startTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      endTime: null == endTime
+          ? _value.endTime
+          : endTime // ignore: cast_nullable_to_non_nullable
+              as String,
+      isActive: null == isActive
+          ? _value.isActive
+          : isActive // ignore: cast_nullable_to_non_nullable
+              as bool,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$RoutineModelImpl implements _RoutineModel {
+  const _$RoutineModelImpl(
+      {required this.id,
+      required this.userId,
+      required this.title,
+      this.description,
+      this.color,
+      this.monday = false,
+      this.tuesday = false,
+      this.wednesday = false,
+      this.thursday = false,
+      this.friday = false,
+      this.saturday = false,
+      this.sunday = false,
+      required this.startTime,
+      required this.endTime,
+      this.isActive = true,
+      this.createdAt,
+      this.updatedAt});
+
+  factory _$RoutineModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RoutineModelImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String userId;
+  @override
+  final String title;
+  @override
+  final String? description;
+  @override
+  final String? color;
+// Days of the week (boolean for each day)
+  @override
+  @JsonKey()
+  final bool monday;
+  @override
+  @JsonKey()
+  final bool tuesday;
+  @override
+  @JsonKey()
+  final bool wednesday;
+  @override
+  @JsonKey()
+  final bool thursday;
+  @override
+  @JsonKey()
+  final bool friday;
+  @override
+  @JsonKey()
+  final bool saturday;
+  @override
+  @JsonKey()
+  final bool sunday;
+  @override
+  final String startTime;
+// Format: "HH:mm"
+  @override
+  final String endTime;
+// Format: "HH:mm"
+  @override
+  @JsonKey()
+  final bool isActive;
+  @override
+  final DateTime? createdAt;
+  @override
+  final DateTime? updatedAt;
+
+  @override
+  String toString() {
+    return 'RoutineModel(id: $id, userId: $userId, title: $title, description: $description, color: $color, monday: $monday, tuesday: $tuesday, wednesday: $wednesday, thursday: $thursday, friday: $friday, saturday: $saturday, sunday: $sunday, startTime: $startTime, endTime: $endTime, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$RoutineModelImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            (identical(other.color, color) || other.color == color) &&
+            (identical(other.monday, monday) || other.monday == monday) &&
+            (identical(other.tuesday, tuesday) || other.tuesday == tuesday) &&
+            (identical(other.wednesday, wednesday) ||
+                other.wednesday == wednesday) &&
+            (identical(other.thursday, thursday) ||
+                other.thursday == thursday) &&
+            (identical(other.friday, friday) || other.friday == friday) &&
+            (identical(other.saturday, saturday) ||
+                other.saturday == saturday) &&
+            (identical(other.sunday, sunday) || other.sunday == sunday) &&
+            (identical(other.startTime, startTime) ||
+                other.startTime == startTime) &&
+            (identical(other.endTime, endTime) || other.endTime == endTime) &&
+            (identical(other.isActive, isActive) ||
+                other.isActive == isActive) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      userId,
+      title,
+      description,
+      color,
+      monday,
+      tuesday,
+      wednesday,
+      thursday,
+      friday,
+      saturday,
+      sunday,
+      startTime,
+      endTime,
+      isActive,
+      createdAt,
+      updatedAt);
+
+  /// Create a copy of RoutineModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$RoutineModelImplCopyWith<_$RoutineModelImpl> get copyWith =>
+      __$$RoutineModelImplCopyWithImpl<_$RoutineModelImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$RoutineModelImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _RoutineModel implements RoutineModel {
+  const factory _RoutineModel(
+      {required final String id,
+      required final String userId,
+      required final String title,
+      final String? description,
+      final String? color,
+      final bool monday,
+      final bool tuesday,
+      final bool wednesday,
+      final bool thursday,
+      final bool friday,
+      final bool saturday,
+      final bool sunday,
+      required final String startTime,
+      required final String endTime,
+      final bool isActive,
+      final DateTime? createdAt,
+      final DateTime? updatedAt}) = _$RoutineModelImpl;
+
+  factory _RoutineModel.fromJson(Map<String, dynamic> json) =
+      _$RoutineModelImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get userId;
+  @override
+  String get title;
+  @override
+  String? get description;
+  @override
+  String? get color; // Days of the week (boolean for each day)
+  @override
+  bool get monday;
+  @override
+  bool get tuesday;
+  @override
+  bool get wednesday;
+  @override
+  bool get thursday;
+  @override
+  bool get friday;
+  @override
+  bool get saturday;
+  @override
+  bool get sunday;
+  @override
+  String get startTime; // Format: "HH:mm"
+  @override
+  String get endTime; // Format: "HH:mm"
+  @override
+  bool get isActive;
+  @override
+  DateTime? get createdAt;
+  @override
+  DateTime? get updatedAt;
+
+  /// Create a copy of RoutineModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$RoutineModelImplCopyWith<_$RoutineModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

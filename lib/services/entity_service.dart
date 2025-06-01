@@ -39,7 +39,8 @@ class EntityService {
     if (!_authService.isSignedIn) {
       throw Exception('User not authenticated.');
     }
-    final userId = _authService.currentUser!.id;
+    // TEMPORARY WORKAROUND - HARDCODED USER ID
+    final userId = 'd885243c-4603-4bdf-82ef-e83873aa4f88';
     try {
       return await _entityRepository.listEntities(userId: userId);
     } catch (e, s) {

@@ -55,10 +55,18 @@ class AuthService {
   Stream<AuthState> get authStateChange => _supabaseClient.auth.onAuthStateChange;
 
   // Get current user
-  User? get currentUser => _supabaseClient.auth.currentUser;
+  User? get currentUser {
+    final user = _supabaseClient.auth.currentUser;
+    debugPrint('AuthService: Current user: ${user?.id}');
+    return user;
+  }
 
   // Check if user is signed in
-  bool get isSignedIn => currentUser != null;
+  bool get isSignedIn {
+    final signedIn = currentUser != null;
+    debugPrint('AuthService: Is signed in: $signedIn');
+    return signedIn;
+  }
 
   // Expose Supabase client if needed
   SupabaseClient get supabase => _supabaseClient;

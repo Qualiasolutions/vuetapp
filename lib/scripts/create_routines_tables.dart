@@ -4,10 +4,10 @@ import 'package:logger/logger.dart';
 Future<void> main() async {
   final logger = Logger();
   // Initialize Supabase client
-  await Supabase.initialize(
-    url: 'https://xrloafqzfdzewdoawysh.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhybG9hZnF6ZmR6ZXdkb2F3eXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0MjY5NDEsImV4cCI6MjA2MzAwMjk0MX0.czspEL9cWQKNnNaNrjObokPO20Lty9okrvnrBD93u0M',
-  );
+  // await Supabase.initialize(
+  //   url: 'https://xrloafqzfdzewdoawysh.supabase.co',
+  //   anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhybG9hZnF6ZmR6ZXdkb2F3eXNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc0MjY5NDEsImV4cCI6MjA2MzAwMjk0MX0.czspEL9cWQKNnNaNrjObokPO20Lty9okrvnrBD93u0M',
+  // );
 
   final supabase = Supabase.instance.client;
 

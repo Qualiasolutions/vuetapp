@@ -25,11 +25,27 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
   @override
   void initState() {
     super.initState();
+
+    // Load initial session
+    Future.microtask(() async {
+      try {
+        // Correct way to get the current session synchronously
+        final initialSession = Supabase.instance.client.auth.currentSession;
+        if (initialSession != null) {
+          // === INITIAL SESSION LOADED (AuthWrapper) ===
+          // User: ${initialSession.user.id}
+          // Email: ${initialSession.user.email}
+        } else {
+          // === NO INITIAL SESSION FOUND (AuthWrapper) ===
+        }
+      } catch (e) {
+        // === ERROR LOADING INITIAL SESSION (AuthWrapper) ===
+        // Exception: $e
+      }
+    });
     
     // Listen for specific auth errors, including refresh token errors
     Future.microtask(() {
-      final authService = ref.read(authServiceProvider);
-      // Access the Supabase client through the service
       Supabase.instance.client.auth.onAuthStateChange.listen((state) {
         _handleAuthStateChange(state);
       });
@@ -49,8 +65,6 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
   // Handle refresh token errors
   Future<void> _handleRefreshTokenError() async {
     if (!mounted) return;
-    
-    final authService = ref.read(authServiceProvider);
     
     // Show error message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -136,7 +150,7 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
                 TextButton(
                   onPressed: () async {
                     // Force sign out and go to login
-                    final authService = ref.read(authServiceProvider);
+                    final authService = ref.read(auth_service.authServiceProvider);
                     await authService.signOut();
                   },
                   child: const Text('Sign Out & Login Again'),

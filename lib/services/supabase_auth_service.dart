@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vuet_app/config/supabase_config.dart';
 import 'package:vuet_app/models/user_model.dart';
+import 'package:vuet_app/config/auth_config.dart';
 
 // Result wrapper for enhanced error handling
 class SupabaseAuthResult {
@@ -444,6 +445,32 @@ class SupabaseAuthService {
         debugPrint('SupabaseAuthService ResendConfirmation Error: ${error.message}');
         rethrow;
       }
+    }
+  }
+
+  // Sign in with Google
+  Future<void> signInWithGoogle() async {
+    try {
+      debugPrint('SupabaseAuthService: Starting Google sign-in');
+      
+      // This will open a browser or webview with Google's auth flow
+      await _supabaseClient.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: kIsWeb 
+            ? null  // Let Supabase handle web redirects automatically
+            : AuthConfig.oAuthRedirectUrl,  // For mobile deep linking
+      );
+      
+      // Note: signInWithOAuth initiates the OAuth flow but doesn't return session data directly
+      // The session will be available through the onAuthStateChange listener
+      // or via _supabaseClient.auth.currentSession after the flow completes
+      
+    } on AuthException catch (authError) {
+      debugPrint('SupabaseAuthService Google Sign-in Error: ${authError.message}');
+      rethrow;
+    } catch (error) {
+      debugPrint('SupabaseAuthService Google Sign-in Unexpected Error: $error');
+      rethrow;
     }
   }
 }

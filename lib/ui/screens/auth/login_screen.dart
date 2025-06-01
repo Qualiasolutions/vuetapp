@@ -225,6 +225,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           : widget.onRegisterPressed,
                       child: const Text('Create Account'),
                     ),
+                    const SizedBox(height: 24),
+                    
+                    // Divider with "or" text
+                    Row(
+                      children: const [
+                        Expanded(child: Divider()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text('or continue with'),
+                        ),
+                        Expanded(child: Divider()),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Google Sign-In button
+                    OutlinedButton.icon(
+                      onPressed: _isLoading 
+                          ? null 
+                          : _handleGoogleSignIn,
+                      icon: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: Image.asset(
+                          'assets/images/google_logo.png',
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.g_mobiledata, size: 24, color: Colors.blue);
+                          },
+                        ),
+                      ),
+                      label: const Text('Sign in with Google'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -233,5 +268,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final authService = ref.read(supabaseAuthServiceProvider);
+      await authService.signInWithGoogle();
+      // The auth state change listener will handle navigation on successful sign-in
+    } catch (e) {
+      setState(() {
+        _errorMessage = AuthHelper.getErrorMessage(e);
+        _isLoading = false;
+      });
+    }
   }
 }

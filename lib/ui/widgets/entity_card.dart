@@ -154,301 +154,217 @@ class EntityCard extends StatelessWidget {
   }
 
   IconData _getSubtypeIcon() {
-    switch (entity.subtype) {
+    return switch (entity.subtype) {
       // Pets category (1)
-      case EntitySubtype.pet:
-        return Icons.pets;
-      case EntitySubtype.vet:
-        return Icons.medical_services;
-      case EntitySubtype.petWalker:
-        return Icons.directions_walk;
-      case EntitySubtype.petGroomer:
-        return Icons.content_cut;
-      case EntitySubtype.petSitter:
-        return Icons.home;
-      case EntitySubtype.microchipCompany:
-        return Icons.memory;
-      case EntitySubtype.petInsuranceCompany:
-        return Icons.shield;
-      case EntitySubtype.petInsurancePolicy:
-        return Icons.policy;
+      EntitySubtype.pet => Icons.pets,
+      EntitySubtype.vet => Icons.medical_services,
+      EntitySubtype.petWalker => Icons.directions_walk,
+      EntitySubtype.petGroomer => Icons.content_cut,
+      EntitySubtype.petSitter => Icons.home,
+      EntitySubtype.microchipCompany => Icons.memory,
+      EntitySubtype.petInsuranceCompany => Icons.shield,
+      EntitySubtype.petInsurancePolicy => Icons.policy,
 
       // Social Interests category (2)
-      case EntitySubtype.anniversary:
-        return Icons.favorite;
-      case EntitySubtype.anniversaryPlan:
-        return Icons.event_note;
-      case EntitySubtype.birthday:
-        return Icons.cake;
-      case EntitySubtype.event:
-        return Icons.event;
-      case EntitySubtype.guestListInvite:
-        return Icons.person_add;
-      case EntitySubtype.hobby:
-        return Icons.sports_esports;
-      case EntitySubtype.holiday:
-        return Icons.beach_access;
-      case EntitySubtype.holidayPlan:
-        return Icons.event_available;
-      case EntitySubtype.socialMedia:
-        return Icons.share;
-      case EntitySubtype.socialPlan:
-        return Icons.people;
+      EntitySubtype.anniversary => Icons.favorite,
+      EntitySubtype.anniversaryPlan => Icons.event_note,
+      EntitySubtype.birthday => Icons.cake,
+      EntitySubtype.event => Icons.event,
+      EntitySubtype.guestListInvite => Icons.person_add,
+      EntitySubtype.hobby => Icons.sports_esports,
+      EntitySubtype.holiday => Icons.beach_access,
+      EntitySubtype.holidayPlan => Icons.event_available,
+      EntitySubtype.socialMedia => Icons.share,
+      EntitySubtype.socialPlan => Icons.people,
 
       // Education category (3)
-      case EntitySubtype.academicPlan:
-        return Icons.school;
-      case EntitySubtype.courseWork:
-        return Icons.assignment;
-      case EntitySubtype.extracurricularPlan:
-        return Icons.sports;
-      case EntitySubtype.school:
-        return Icons.account_balance;
-      case EntitySubtype.student:
-        return Icons.person;
-      case EntitySubtype.subject:
-        return Icons.book;
-      case EntitySubtype.teacher:
-        return Icons.person;
-      case EntitySubtype.tutor:
-        return Icons.school;
+      EntitySubtype.academicPlan => Icons.school,
+      EntitySubtype.courseWork => Icons.assignment,
+      EntitySubtype.extracurricularPlan => Icons.sports,
+      EntitySubtype.school => Icons.account_balance,
+      EntitySubtype.student => Icons.person,
+      EntitySubtype.subject => Icons.book,
+      EntitySubtype.teacher => Icons.person,
+      EntitySubtype.tutor => Icons.school,
 
       // Career category (4)
-      case EntitySubtype.colleague:
-        return Icons.badge;
-      case EntitySubtype.work:
-        return Icons.business_center;
+      EntitySubtype.colleague => Icons.badge,
+      EntitySubtype.work => Icons.business_center,
 
       // Travel category (5)
-      case EntitySubtype.trip:
-        return Icons.flight;
+      EntitySubtype.trip => Icons.flight,
 
       // Health category (6)
-      case EntitySubtype.beautySalon:
-        return Icons.spa;
-      case EntitySubtype.dentist:
-        return Icons.medical_services;
-      case EntitySubtype.doctor:
-        return Icons.local_hospital;
-      case EntitySubtype.stylist:
-        return Icons.content_cut;
-      case EntitySubtype.therapist:
-        return Icons.psychology;
-      case EntitySubtype.physiotherapist:
-        return Icons.healing;
-      case EntitySubtype.specialist:
-        return Icons.medical_services;
-      case EntitySubtype.surgeon:
-        return Icons.medical_services;
+      EntitySubtype.beautySalon => Icons.spa,
+      EntitySubtype.dentist => Icons.medical_services,
+      EntitySubtype.doctor => Icons.local_hospital,
+      EntitySubtype.stylist => Icons.content_cut,
+      EntitySubtype.therapist => Icons.psychology,
+      EntitySubtype.physiotherapist => Icons.healing,
+      EntitySubtype.specialist => Icons.medical_services,
+      EntitySubtype.surgeon => Icons.medical_services,
 
       // Home category (7)
-      case EntitySubtype.appliance:
-        return Icons.kitchen;
-      case EntitySubtype.contractor:
-        return Icons.build;
-      case EntitySubtype.furniture:
-        return Icons.chair;
-      case EntitySubtype.home:
-        return Icons.home;
-      case EntitySubtype.room:
-        return Icons.meeting_room;
+      EntitySubtype.appliance => Icons.kitchen,
+      EntitySubtype.contractor => Icons.build,
+      EntitySubtype.furniture => Icons.chair,
+      EntitySubtype.home => Icons.home,
+      EntitySubtype.room => Icons.meeting_room,
 
       // Garden category (8)
-      case EntitySubtype.gardenTool:
-        return Icons.build;
-      case EntitySubtype.plant:
-        return Icons.local_florist;
+      EntitySubtype.gardenTool => Icons.build,
+      EntitySubtype.plant => Icons.local_florist,
 
       // Food category (9)
-      case EntitySubtype.foodPlan:
-        return Icons.restaurant_menu;
-      case EntitySubtype.recipe:
-        return Icons.restaurant;
-      case EntitySubtype.restaurant:
-        return Icons.restaurant;
+      EntitySubtype.foodPlan => Icons.restaurant_menu,
+      EntitySubtype.recipe => Icons.restaurant,
+      EntitySubtype.restaurant => Icons.restaurant,
 
       // Laundry category (10)
-      case EntitySubtype.dryCleaners:
-        return Icons.local_laundry_service;
-      case EntitySubtype.laundryItem:
-        return Icons.dry_cleaning;
+      EntitySubtype.dryCleaners => Icons.local_laundry_service,
+      EntitySubtype.laundryItem => Icons.dry_cleaning,
 
       // Finance category (11)
-      case EntitySubtype.bank:
-        return Icons.account_balance;
-      case EntitySubtype.bankAccount:
-        return Icons.account_balance_wallet;
-      case EntitySubtype.creditCard:
-        return Icons.credit_card;
+      EntitySubtype.bank => Icons.account_balance,
+      EntitySubtype.bankAccount => Icons.account_balance_wallet,
+      EntitySubtype.creditCard => Icons.credit_card,
 
       // Transport category (12)
-      case EntitySubtype.boat:
-        return Icons.directions_boat;
-      case EntitySubtype.car:
-        return Icons.directions_car;
-      case EntitySubtype.publicTransport:
-        return Icons.directions_bus;
-      case EntitySubtype.motorcycle:
-        return Icons.motorcycle;
-      case EntitySubtype.bicycle:
-        return Icons.pedal_bike;
-      case EntitySubtype.truck:
-        return Icons.local_shipping;
-      case EntitySubtype.van:
-        return Icons.airport_shuttle;
-      case EntitySubtype.rv:
-        return Icons.rv_hookup;
-      case EntitySubtype.atv:
-        return Icons.terrain;
-      case EntitySubtype.jetSki:
-        return Icons.sailing;
+      EntitySubtype.boat => Icons.directions_boat,
+      EntitySubtype.car => Icons.directions_car,
+      EntitySubtype.publicTransport => Icons.directions_bus,
+      EntitySubtype.motorcycle => Icons.motorcycle,
+      EntitySubtype.bicycle => Icons.pedal_bike,
+      EntitySubtype.truck => Icons.local_shipping,
+      EntitySubtype.van => Icons.airport_shuttle,
+      EntitySubtype.rv => Icons.rv_hookup,
+      EntitySubtype.atv => Icons.terrain,
+      EntitySubtype.jetSki => Icons.sailing,
         
       // Document entities (Category 14)
-      case EntitySubtype.document:
-        return Icons.description;
-      case EntitySubtype.passport:
-        return Icons.badge;
-      case EntitySubtype.license:
-        return Icons.card_membership;
-      case EntitySubtype.bankStatement:
-        return Icons.receipt;
-      case EntitySubtype.taxDocument:
-        return Icons.receipt_long;
-      case EntitySubtype.contract:
-        return Icons.description;
-      case EntitySubtype.will:
-        return Icons.description;
-      case EntitySubtype.medicalRecord:
-        return Icons.healing;
-      case EntitySubtype.prescription:
-        return Icons.local_pharmacy;
-      case EntitySubtype.resume:
-        return Icons.description;
-      case EntitySubtype.certificate:
-        return Icons.card_membership;
-        
-      default:
-        return Icons.folder;
-    }
+      EntitySubtype.document => Icons.description,
+      EntitySubtype.passport => Icons.badge,
+      EntitySubtype.license => Icons.card_membership,
+      EntitySubtype.bankStatement => Icons.receipt,
+      EntitySubtype.taxDocument => Icons.receipt_long,
+      EntitySubtype.contract => Icons.description,
+      EntitySubtype.will => Icons.description,
+      EntitySubtype.medicalRecord => Icons.healing,
+      EntitySubtype.prescription => Icons.local_pharmacy,
+      EntitySubtype.resume => Icons.description,
+      EntitySubtype.certificate => Icons.card_membership,
+      
+      // Handle any future enum extensions
+      // ignore: unreachable_switch_case
+      _ => Icons.folder,
+    };
   }
 
   Color _getSubtypeColor() {
-    switch (entity.subtype) {
+    return switch (entity.subtype) {
       // Pets category (1) - Orange
-      case EntitySubtype.pet:
-      case EntitySubtype.vet:
-      case EntitySubtype.petWalker:
-      case EntitySubtype.petGroomer:
-      case EntitySubtype.petSitter:
-      case EntitySubtype.microchipCompany:
-      case EntitySubtype.petInsuranceCompany:
-      case EntitySubtype.petInsurancePolicy:
-        return const Color(0xFFE49F30);
+      EntitySubtype.pet ||
+      EntitySubtype.vet ||
+      EntitySubtype.petWalker ||
+      EntitySubtype.petGroomer ||
+      EntitySubtype.petSitter ||
+      EntitySubtype.microchipCompany ||
+      EntitySubtype.petInsuranceCompany ||
+      EntitySubtype.petInsurancePolicy => const Color(0xFFE49F30),
 
       // Social Interests category (2) - Purple
-      case EntitySubtype.anniversary:
-      case EntitySubtype.anniversaryPlan:
-      case EntitySubtype.birthday:
-      case EntitySubtype.event:
-      case EntitySubtype.guestListInvite:
-      case EntitySubtype.hobby:
-      case EntitySubtype.holiday:
-      case EntitySubtype.holidayPlan:
-      case EntitySubtype.socialMedia:
-      case EntitySubtype.socialPlan:
-        return const Color(0xFF9C27B0);
+      EntitySubtype.anniversary ||
+      EntitySubtype.anniversaryPlan ||
+      EntitySubtype.birthday ||
+      EntitySubtype.event ||
+      EntitySubtype.guestListInvite ||
+      EntitySubtype.hobby ||
+      EntitySubtype.holiday ||
+      EntitySubtype.holidayPlan ||
+      EntitySubtype.socialMedia ||
+      EntitySubtype.socialPlan => const Color(0xFF9C27B0),
 
       // Education category (3) - Blue
-      case EntitySubtype.academicPlan:
-      case EntitySubtype.courseWork:
-      case EntitySubtype.extracurricularPlan:
-      case EntitySubtype.school:
-      case EntitySubtype.student:
-      case EntitySubtype.subject:
-      case EntitySubtype.teacher:
-      case EntitySubtype.tutor:
-        return const Color(0xFF2196F3);
+      EntitySubtype.academicPlan ||
+      EntitySubtype.courseWork ||
+      EntitySubtype.extracurricularPlan ||
+      EntitySubtype.school ||
+      EntitySubtype.student ||
+      EntitySubtype.subject ||
+      EntitySubtype.teacher ||
+      EntitySubtype.tutor => const Color(0xFF2196F3),
 
       // Career category (4) - Blue
-      case EntitySubtype.colleague:
-      case EntitySubtype.work:
-        return const Color(0xFF2196F3);
+      EntitySubtype.colleague ||
+      EntitySubtype.work => const Color(0xFF2196F3),
 
       // Travel category (5) - Cyan
-      case EntitySubtype.trip:
-        return const Color(0xFF00BCD4);
+      EntitySubtype.trip => const Color(0xFF00BCD4),
 
       // Health category (6) - Green
-      case EntitySubtype.beautySalon:
-      case EntitySubtype.dentist:
-      case EntitySubtype.doctor:
-      case EntitySubtype.stylist:
-      case EntitySubtype.therapist:
-      case EntitySubtype.physiotherapist:
-      case EntitySubtype.specialist:
-      case EntitySubtype.surgeon:
-        return const Color(0xFF4CAF50);
+      EntitySubtype.beautySalon ||
+      EntitySubtype.dentist ||
+      EntitySubtype.doctor ||
+      EntitySubtype.stylist ||
+      EntitySubtype.therapist ||
+      EntitySubtype.physiotherapist ||
+      EntitySubtype.specialist ||
+      EntitySubtype.surgeon => const Color(0xFF4CAF50),
 
       // Home category (7) - Teal
-      case EntitySubtype.appliance:
-      case EntitySubtype.contractor:
-      case EntitySubtype.furniture:
-      case EntitySubtype.home:
-      case EntitySubtype.room:
-        return const Color(0xFF1A6E68);
+      EntitySubtype.appliance ||
+      EntitySubtype.contractor ||
+      EntitySubtype.furniture ||
+      EntitySubtype.home ||
+      EntitySubtype.room => const Color(0xFF1A6E68),
 
       // Garden category (8) - Green
-      case EntitySubtype.gardenTool:
-      case EntitySubtype.plant:
-        return const Color(0xFF4CAF50);
+      EntitySubtype.gardenTool ||
+      EntitySubtype.plant => const Color(0xFF4CAF50),
 
       // Food category (9) - Orange
-      case EntitySubtype.foodPlan:
-      case EntitySubtype.recipe:
-      case EntitySubtype.restaurant:
-        return const Color(0xFFFF9800);
+      EntitySubtype.foodPlan ||
+      EntitySubtype.recipe ||
+      EntitySubtype.restaurant => const Color(0xFFFF9800),
 
       // Laundry category (10) - Blue Grey
-      case EntitySubtype.dryCleaners:
-      case EntitySubtype.laundryItem:
-        return const Color(0xFF607D8B);
+      EntitySubtype.dryCleaners ||
+      EntitySubtype.laundryItem => const Color(0xFF607D8B),
 
       // Finance category (11) - Brown
-      case EntitySubtype.bank:
-      case EntitySubtype.bankAccount:
-      case EntitySubtype.creditCard:
-        return const Color(0xFF795548);
+      EntitySubtype.bank ||
+      EntitySubtype.bankAccount ||
+      EntitySubtype.creditCard => const Color(0xFF795548),
 
       // Transport category (12) - Blue Grey
-      case EntitySubtype.boat:
-      case EntitySubtype.car:
-      case EntitySubtype.publicTransport:
-      case EntitySubtype.motorcycle:
-      case EntitySubtype.bicycle:
-      case EntitySubtype.truck:
-      case EntitySubtype.van:
-      case EntitySubtype.rv:
-      case EntitySubtype.atv:
-      case EntitySubtype.jetSki:
-        return const Color(0xFF607D8B);
+      EntitySubtype.boat ||
+      EntitySubtype.car ||
+      EntitySubtype.publicTransport ||
+      EntitySubtype.motorcycle ||
+      EntitySubtype.bicycle ||
+      EntitySubtype.truck ||
+      EntitySubtype.van ||
+      EntitySubtype.rv ||
+      EntitySubtype.atv ||
+      EntitySubtype.jetSki => const Color(0xFF607D8B),
         
       // Document entities (Category 14) - Light Blue
-      case EntitySubtype.document:
-      case EntitySubtype.passport:
-      case EntitySubtype.license:
-      case EntitySubtype.bankStatement:
-      case EntitySubtype.taxDocument:
-      case EntitySubtype.contract:
-      case EntitySubtype.will:
-      case EntitySubtype.medicalRecord:
-      case EntitySubtype.prescription:
-      case EntitySubtype.resume:
-      case EntitySubtype.certificate:
-        return const Color(0xFF03A9F4);
-        
-      // Grey color for any unhandled subtypes
-        return const Color(0xFF9E9E9E);
-    }
+      EntitySubtype.document ||
+      EntitySubtype.passport ||
+      EntitySubtype.license ||
+      EntitySubtype.bankStatement ||
+      EntitySubtype.taxDocument ||
+      EntitySubtype.contract ||
+      EntitySubtype.will ||
+      EntitySubtype.medicalRecord ||
+      EntitySubtype.prescription ||
+      EntitySubtype.resume ||
+      EntitySubtype.certificate => const Color(0xFF03A9F4),
+      
+      // Grey color for any other/future types
+      // ignore: unreachable_switch_case
+      _ => const Color(0xFF9E9E9E),
+    };
   }
 
   Color _getStatusColor() {
@@ -464,188 +380,116 @@ class EntityCard extends StatelessWidget {
         return Colors.red;
       case 'draft':
         return Colors.grey;
-      // Default color for other statuses
+      default:
         return Colors.blue;
     }
   }
 
   String _getSubtypeDisplayName() {
-    switch (entity.subtype) {
+    return switch (entity.subtype) {
       // Pets category (1)
-      case EntitySubtype.pet:
-        return 'Pet';
-      case EntitySubtype.vet:
-        return 'Veterinarian';
-      case EntitySubtype.petWalker:
-        return 'Pet Walker';
-      case EntitySubtype.petGroomer:
-        return 'Pet Groomer';
-      case EntitySubtype.petSitter:
-        return 'Pet Sitter';
-      case EntitySubtype.microchipCompany:
-        return 'Microchip Company';
-      case EntitySubtype.petInsuranceCompany:
-        return 'Pet Insurance Company';
-      case EntitySubtype.petInsurancePolicy:
-        return 'Pet Insurance Policy';
+      EntitySubtype.pet => 'Pet',
+      EntitySubtype.vet => 'Veterinarian',
+      EntitySubtype.petWalker => 'Pet Walker',
+      EntitySubtype.petGroomer => 'Pet Groomer',
+      EntitySubtype.petSitter => 'Pet Sitter',
+      EntitySubtype.microchipCompany => 'Microchip Company',
+      EntitySubtype.petInsuranceCompany => 'Pet Insurance Company',
+      EntitySubtype.petInsurancePolicy => 'Pet Insurance Policy',
 
       // Social Interests category (2)
-      case EntitySubtype.anniversary:
-        return 'Anniversary';
-      case EntitySubtype.anniversaryPlan:
-        return 'Anniversary Plan';
-      case EntitySubtype.birthday:
-        return 'Birthday';
-      case EntitySubtype.event:
-        return 'Event';
-      case EntitySubtype.guestListInvite:
-        return 'Guest List';
-      case EntitySubtype.hobby:
-        return 'Hobby';
-      case EntitySubtype.holiday:
-        return 'Holiday';
-      case EntitySubtype.holidayPlan:
-        return 'Holiday Plan';
-      case EntitySubtype.socialMedia:
-        return 'Social Media';
-      case EntitySubtype.socialPlan:
-        return 'Social Plan';
+      EntitySubtype.anniversary => 'Anniversary',
+      EntitySubtype.anniversaryPlan => 'Anniversary Plan',
+      EntitySubtype.birthday => 'Birthday',
+      EntitySubtype.event => 'Event',
+      EntitySubtype.guestListInvite => 'Guest List',
+      EntitySubtype.hobby => 'Hobby',
+      EntitySubtype.holiday => 'Holiday',
+      EntitySubtype.holidayPlan => 'Holiday Plan',
+      EntitySubtype.socialMedia => 'Social Media',
+      EntitySubtype.socialPlan => 'Social Plan',
 
       // Education category (3)
-      case EntitySubtype.academicPlan:
-        return 'Academic Plan';
-      case EntitySubtype.courseWork:
-        return 'Course Work';
-      case EntitySubtype.extracurricularPlan:
-        return 'Extracurricular Plan';
-      case EntitySubtype.school:
-        return 'School';
-      case EntitySubtype.student:
-        return 'Student';
-      case EntitySubtype.subject:
-        return 'Subject';
-      case EntitySubtype.teacher:
-        return 'Teacher';
-      case EntitySubtype.tutor:
-        return 'Tutor';
+      EntitySubtype.academicPlan => 'Academic Plan',
+      EntitySubtype.courseWork => 'Course Work',
+      EntitySubtype.extracurricularPlan => 'Extracurricular Plan',
+      EntitySubtype.school => 'School',
+      EntitySubtype.student => 'Student',
+      EntitySubtype.subject => 'Subject',
+      EntitySubtype.teacher => 'Teacher',
+      EntitySubtype.tutor => 'Tutor',
 
       // Career category (4)
-      case EntitySubtype.colleague:
-        return 'Colleague';
-      case EntitySubtype.work:
-        return 'Work';
+      EntitySubtype.colleague => 'Colleague',
+      EntitySubtype.work => 'Work',
 
       // Travel category (5)
-      case EntitySubtype.trip:
-        return 'Trip';
+      EntitySubtype.trip => 'Trip',
 
       // Health category (6)
-      case EntitySubtype.beautySalon:
-        return 'Beauty Salon';
-      case EntitySubtype.dentist:
-        return 'Dentist';
-      case EntitySubtype.doctor:
-        return 'Doctor';
-      case EntitySubtype.stylist:
-        return 'Stylist';
-      case EntitySubtype.therapist:
-        return 'Therapist';
-      case EntitySubtype.physiotherapist:
-        return 'Physiotherapist';
-      case EntitySubtype.specialist:
-        return 'Medical Specialist';
-      case EntitySubtype.surgeon:
-        return 'Surgeon';
+      EntitySubtype.beautySalon => 'Beauty Salon',
+      EntitySubtype.dentist => 'Dentist',
+      EntitySubtype.doctor => 'Doctor',
+      EntitySubtype.stylist => 'Stylist',
+      EntitySubtype.therapist => 'Therapist',
+      EntitySubtype.physiotherapist => 'Physiotherapist',
+      EntitySubtype.specialist => 'Medical Specialist',
+      EntitySubtype.surgeon => 'Surgeon',
 
       // Home category (7)
-      case EntitySubtype.appliance:
-        return 'Appliance';
-      case EntitySubtype.contractor:
-        return 'Contractor';
-      case EntitySubtype.furniture:
-        return 'Furniture';
-      case EntitySubtype.home:
-        return 'Home';
-      case EntitySubtype.room:
-        return 'Room';
+      EntitySubtype.appliance => 'Appliance',
+      EntitySubtype.contractor => 'Contractor',
+      EntitySubtype.furniture => 'Furniture',
+      EntitySubtype.home => 'Home',
+      EntitySubtype.room => 'Room',
 
       // Garden category (8)
-      case EntitySubtype.gardenTool:
-        return 'Garden Tool';
-      case EntitySubtype.plant:
-        return 'Plant';
+      EntitySubtype.gardenTool => 'Garden Tool',
+      EntitySubtype.plant => 'Plant',
 
       // Food category (9)
-      case EntitySubtype.foodPlan:
-        return 'Food Plan';
-      case EntitySubtype.recipe:
-        return 'Recipe';
-      case EntitySubtype.restaurant:
-        return 'Restaurant';
+      EntitySubtype.foodPlan => 'Food Plan',
+      EntitySubtype.recipe => 'Recipe',
+      EntitySubtype.restaurant => 'Restaurant',
 
       // Laundry category (10)
-      case EntitySubtype.dryCleaners:
-        return 'Dry Cleaners';
-      case EntitySubtype.laundryItem:
-        return 'Laundry Item';
+      EntitySubtype.dryCleaners => 'Dry Cleaners',
+      EntitySubtype.laundryItem => 'Laundry Item',
 
       // Finance category (11)
-      case EntitySubtype.bank:
-        return 'Bank';
-      case EntitySubtype.bankAccount:
-        return 'Bank Account';
-      case EntitySubtype.creditCard:
-        return 'Credit Card';
+      EntitySubtype.bank => 'Bank',
+      EntitySubtype.bankAccount => 'Bank Account',
+      EntitySubtype.creditCard => 'Credit Card',
 
       // Transport category (12)
-      case EntitySubtype.boat:
-        return 'Boat';
-      case EntitySubtype.car:
-        return 'Car';
-      case EntitySubtype.publicTransport:
-        return 'Public Transport';
-      case EntitySubtype.motorcycle:
-        return 'Motorcycle';
-      case EntitySubtype.bicycle:
-        return 'Bicycle';
-      case EntitySubtype.truck:
-        return 'Truck';
-      case EntitySubtype.van:
-        return 'Van';
-      case EntitySubtype.rv:
-        return 'RV';
-      case EntitySubtype.atv:
-        return 'ATV';
-      case EntitySubtype.jetSki:
-        return 'Jet Ski';
+      EntitySubtype.boat => 'Boat',
+      EntitySubtype.car => 'Car',
+      EntitySubtype.publicTransport => 'Public Transport',
+      EntitySubtype.motorcycle => 'Motorcycle',
+      EntitySubtype.bicycle => 'Bicycle',
+      EntitySubtype.truck => 'Truck',
+      EntitySubtype.van => 'Van',
+      EntitySubtype.rv => 'RV',
+      EntitySubtype.atv => 'ATV',
+      EntitySubtype.jetSki => 'Jet Ski',
         
       // Document entities (Category 14)
-      case EntitySubtype.document:
-        return 'Document';
-      case EntitySubtype.passport:
-        return 'Passport';
-      case EntitySubtype.license:
-        return 'License';
-      case EntitySubtype.bankStatement:
-        return 'Bank Statement';
-      case EntitySubtype.taxDocument:
-        return 'Tax Document';
-      case EntitySubtype.contract:
-        return 'Contract';
-      case EntitySubtype.will:
-        return 'Will';
-      case EntitySubtype.medicalRecord:
-        return 'Medical Record';
-      case EntitySubtype.prescription:
-        return 'Prescription';
-      case EntitySubtype.resume:
-        return 'Resume';
-      case EntitySubtype.certificate:
-        return 'Certificate';
-        
-      default:
-        return entity.subtype.toString().split('.').last;
-    }
+      EntitySubtype.document => 'Document',
+      EntitySubtype.passport => 'Passport',
+      EntitySubtype.license => 'License',
+      EntitySubtype.bankStatement => 'Bank Statement',
+      EntitySubtype.taxDocument => 'Tax Document',
+      EntitySubtype.contract => 'Contract',
+      EntitySubtype.will => 'Will',
+      EntitySubtype.medicalRecord => 'Medical Record',
+      EntitySubtype.prescription => 'Prescription',
+      EntitySubtype.resume => 'Resume',
+      EntitySubtype.certificate => 'Certificate',
+      
+      // Handle any future enum extensions
+      // ignore: unreachable_switch_case
+      var subtype => subtype.toString().split('.').last,
+    };
   }
 
   String _formatDueDate(DateTime dueDate) {

@@ -5,11 +5,13 @@ import 'package:vuet_app/constants/setup_content.dart';
 import 'package:vuet_app/ui/screens/onboarding/category_introduction_screen.dart';
 import 'package:vuet_app/ui/screens/onboarding/entity_type_introduction_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:logger/logger.dart';
 
 /// Comprehensive onboarding manager that handles all instructional flows
 class OnboardingManager {
   final SetupService _setupService = SetupService();
   final SupabaseClient _supabase = Supabase.instance.client;
+  final Logger _logger = Logger();
 
   /// Check if category introduction is needed
   Future<bool> shouldShowCategoryIntroduction(String categoryId) async {
@@ -260,7 +262,7 @@ class OnboardingManager {
   // Private helper methods
   void _trackIntroductionCompletion(String type, String id) {
     // TODO: Add analytics tracking here
-    print('Introduction completed: $type - $id');
+    _logger.i('Introduction completed: $type - $id');
   }
 
   String _getCategoryDisplayName(String categoryId) {

@@ -6,23 +6,27 @@ part 'timeblock_model.g.dart';
 /// TimeBlocks feature - Premium feature for time management
 /// Based on the React app's TimeBlock system
 @freezed
-class TimeBlockModel with _$TimeBlockModel {
-  const factory TimeBlockModel({
+class TimeblockModel with _$TimeblockModel {
+  const factory TimeblockModel({
     required String id,
     required String userId,
-    required String day, // MONDAY, TUESDAY, etc.
-    required String startTime, // Format: "HH:mm"
-    required String endTime, // Format: "HH:mm"
-    required String title,
+    String? title,
+    required int dayOfWeek, // 1 for Monday, 7 for Sunday
+    required String startTime, // Format: "HH:mm:ss"
+    required String endTime, // Format: "HH:mm:ss"
+    String? color, // Hex color code e.g., #RRGGBB
     String? description,
-    String? color,
-    @Default(true) bool isActive,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) = _TimeBlockModel;
+    String? activityType,
+    String? linkedRoutineId,
+    String? linkedTaskId,
+    @Default(false) bool syncWithCalendar,
+    String? externalCalendarEventId,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) = _TimeblockModel;
 
-  factory TimeBlockModel.fromJson(Map<String, dynamic> json) =>
-      _$TimeBlockModelFromJson(json);
+  factory TimeblockModel.fromJson(Map<String, dynamic> json) =>
+      _$TimeblockModelFromJson(json);
 }
 
 /// Days of the week enum (matching React app)

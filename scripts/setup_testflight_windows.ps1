@@ -13,7 +13,7 @@ param(
     [switch]$SetupSecrets,
     [switch]$CheckStatus,
     [switch]$TriggerDeploy,
-    [string]$AppSpecificPassword = "",
+    [SecureString]$AppSpecificPassword,
     [string]$CertificatePath = "",
     [string]$ProvisioningProfilePath = ""
 )
@@ -209,7 +209,7 @@ function Set-GitHubSecret {
     
     try {
         # Try using GitHub CLI first
-        $result = gh secret set $Name --body $Value 2>$null
+        gh secret set $Name --body $Value 2>$null
         if ($LASTEXITCODE -eq 0) {
             Write-Success "Secret '$Name' set successfully"
             return $true
@@ -305,7 +305,7 @@ function Invoke-TriggerDeploy {
     
     try {
         # Try using GitHub CLI to trigger workflow
-        $result = gh workflow run "iOS TestFlight Deployment" --field deploy_to_testflight=true 2>$null
+        gh workflow run "iOS TestFlight Deployment" --field deploy_to_testflight=true 2>$null
         if ($LASTEXITCODE -eq 0) {
             Write-Success "Deployment triggered successfully!"
             Write-Info "Check the Actions tab in your GitHub repository for progress."
