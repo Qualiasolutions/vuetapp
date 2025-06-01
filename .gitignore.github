@@ -1,0 +1,91 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code related
+.classpath
+.project
+.vscode/
+.settings/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Web related
+lib/generated_plugin_registrant.dart
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Environment variables - NEVER commit these files
+.env
+.env.*
+!.env.example
+
+# Local configuration
+config.local.json
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+/lib/generated/
+
+# Bundle files
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+
+# Temporary files
+/tmp/
+
+# Test artifacts
+/screenshots/
+/failures/
+/artifacts/
+
+# Firebase related
+google-services.json
+GoogleService-Info.plist
+
+# Fastlane related
+/fastlane/report.xml
+/fastlane/Preview.html
+/fastlane/screenshots/
+/fastlane/test_output/
+
+# Cordova related
+/plugins/
+/platforms/

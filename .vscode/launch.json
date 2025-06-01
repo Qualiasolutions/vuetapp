@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    
+    
+    {
+      "name": "VuetApp (Web Development)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_development.dart",
+      "args": ["-d", "chrome", "--web-renderer", "html"]
+    },
+    {
+      "name": "VuetApp (Web Production)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_production.dart",
+      "args": ["-d", "chrome", "--web-renderer", "html"]
+    }
+  ]
+}

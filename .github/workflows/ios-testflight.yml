@@ -1,0 +1,312 @@
+name: 🚀 iOS TestFlight Deployment
+
+on:
+  push:
+    branches: [ main, master ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'scripts/**'
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Type'
+        required: true
+        default: 'testflight'
+        type: choice
+        options:
+          - testflight
+          - release
+      skip_tests:
+        description: 'Skip tests'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  FLUTTER_VERSION: '3.24.5'
+  XCODE_VERSION: '15.0'
+  IOS_VERSION: '17.0'
+
+jobs:
+  # ============================================================================
+  # iOS Build and TestFlight Deployment
+  # ============================================================================
+  ios-deploy:
+    name: 🍎 iOS Build & TestFlight Upload
+    runs-on: macos-14
+    timeout-minutes: 90
+    
+    steps:
+      # ------------------------------------------------------------------------
+      # Setup and Checkout
+      # ------------------------------------------------------------------------
+      - name: 📦 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      # ------------------------------------------------------------------------
+      # Environment Information
+      # ------------------------------------------------------------------------
+      - name: 📋 Environment Info
+        run: |
+          echo "🏗️  Build Information"
+          echo "===================="
+          echo "Flutter Version: $(flutter --version | head -1)"
+          echo "Xcode Version: $(xcodebuild -version | head -1)"
+          echo "macOS Version: $(sw_vers -productVersion)"
+          echo "Runner: $(uname -a)"
+          echo "Workflow: ${{ github.workflow }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "SHA: ${{ github.sha }}"
+          echo "===================="
+
+      # ------------------------------------------------------------------------
+      # Flutter Setup
+      # ------------------------------------------------------------------------
+      - name: 🔧 Flutter Doctor
+        run: flutter doctor -v
+
+      - name: 📱 Flutter Precache
+        run: flutter precache --ios
+
+      - name: 📦 Get Dependencies
+        run: flutter pub get
+
+      - name: 🏗️  Run Build Runner
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      # ------------------------------------------------------------------------
+      # Testing (Optional)
+      # ------------------------------------------------------------------------
+      - name: 🧪 Run Tests
+        if: ${{ !inputs.skip_tests }}
+        run: |
+          echo "Running Flutter tests..."
+          flutter test --coverage --reporter=github
+        continue-on-error: true
+
+      - name: 📊 Upload Coverage
+        if: ${{ !inputs.skip_tests }}
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage/lcov.info
+          fail_ci_if_error: false
+        continue-on-error: true
+
+      # ------------------------------------------------------------------------
+      # iOS Certificate and Provisioning Setup
+      # ------------------------------------------------------------------------
+      - name: 🔐 Setup iOS Certificates
+        env:
+          P12_PASSWORD: ${{ secrets.IOS_P12_PASSWORD }}
+          CERTIFICATE_P12: ${{ secrets.IOS_CERTIFICATE_P12 }}
+          PROVISIONING_PROFILE: ${{ secrets.IOS_PROVISIONING_PROFILE }}
+        run: |
+          # Create temporary keychain
+          security create-keychain -p "" build.keychain
+          security list-keychains -s build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security set-keychain-settings -t 3600 -l build.keychain
+          
+          # Import certificate
+          echo "$CERTIFICATE_P12" | base64 --decode > certificate.p12
+          security import certificate.p12 -k build.keychain -P "$P12_PASSWORD" -A
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+          
+          # Install provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+          
+          # Verify setup
+          security find-identity -v -p codesigning build.keychain
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      # ------------------------------------------------------------------------
+      # iOS Build Configuration
+      # ------------------------------------------------------------------------
+      - name: 🔧 Configure iOS Build
+        run: |
+          # Update iOS deployment target
+          sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = .*/IPHONEOS_DEPLOYMENT_TARGET = 12.0;/' ios/Flutter/AppFrameworkInfo.plist
+          
+          # Update Team ID in project
+          sed -i '' "s/DEVELOPMENT_TEAM = .*/DEVELOPMENT_TEAM = ${{ secrets.APPLE_TEAM_ID }};/" ios/Runner.xcodeproj/project.pbxproj
+          
+          # Verify configuration
+          echo "iOS Configuration:"
+          grep -A 5 -B 5 "DEVELOPMENT_TEAM" ios/Runner.xcodeproj/project.pbxproj || echo "Team ID not found in project file"
+
+      # ------------------------------------------------------------------------
+      # Flutter iOS Build
+      # ------------------------------------------------------------------------
+      - name: 🏗️  Build Flutter iOS (Release)
+        run: |
+          echo "🚀 Building Flutter for iOS..."
+          flutter build ios \
+            --release \
+            --no-codesign \
+            --verbose \
+            --dart-define=ENVIRONMENT=production
+
+      # ------------------------------------------------------------------------
+      # Xcode Archive and Export
+      # ------------------------------------------------------------------------
+      - name: 📦 Create iOS Archive
+        run: |
+          echo "📦 Creating Xcode archive..."
+          xcodebuild archive \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath build/ios/Runner.xcarchive \
+            -allowProvisioningUpdates \
+            -authenticationKeyIssuerID ${{ secrets.APPLE_KEY_ISSUER_ID }} \
+            -authenticationKeyID ${{ secrets.APPLE_KEY_ID }} \
+            -authenticationKeyPath AuthKey.p8
+
+      - name: 📤 Export IPA
+        run: |
+          echo "📤 Exporting IPA for App Store..."
+          
+          # Create ExportOptions.plist
+          cat > ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>${{ secrets.APPLE_TEAM_ID }}</string>
+              <key>signingStyle</key>
+              <string>automatic</string>
+              <key>uploadBitcode</key>
+              <false/>
+              <key>uploadSymbols</key>
+              <true/>
+              <key>compileBitcode</key>
+              <false/>
+              <key>stripSwiftSymbols</key>
+              <true/>
+          </dict>
+          </plist>
+          EOF
+          
+          # Export archive to IPA
+          xcodebuild -exportArchive \
+            -archivePath build/ios/Runner.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/ios/ipa \
+            -allowProvisioningUpdates \
+            -authenticationKeyIssuerID ${{ secrets.APPLE_KEY_ISSUER_ID }} \
+            -authenticationKeyID ${{ secrets.APPLE_KEY_ID }} \
+            -authenticationKeyPath AuthKey.p8
+
+      # ------------------------------------------------------------------------
+      # App Store Connect API Key Setup
+      # ------------------------------------------------------------------------
+      - name: 🔑 Setup App Store Connect API Key
+        env:
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_KEY_ISSUER_ID: ${{ secrets.APPLE_KEY_ISSUER_ID }}
+        run: |
+          echo "$APPLE_API_KEY" | base64 --decode > AuthKey.p8
+          chmod 600 AuthKey.p8
+
+      # ------------------------------------------------------------------------
+      # TestFlight Upload
+      # ------------------------------------------------------------------------
+      - name: 🚀 Upload to TestFlight
+        env:
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_KEY_ISSUER_ID: ${{ secrets.APPLE_KEY_ISSUER_ID }}
+        run: |
+          echo "🚀 Uploading to TestFlight..."
+          
+          # Find the IPA file
+          IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -1)
+          
+          if [ -z "$IPA_PATH" ]; then
+            echo "❌ IPA file not found!"
+            exit 1
+          fi
+          
+          echo "📱 Found IPA: $IPA_PATH"
+          
+          # Upload to TestFlight using App Store Connect API
+          xcrun altool \
+            --upload-app \
+            --type ios \
+            --file "$IPA_PATH" \
+            --apiKey $APPLE_KEY_ID \
+            --apiIssuer $APPLE_KEY_ISSUER_ID \
+            --verbose
+
+      # ------------------------------------------------------------------------
+      # Cleanup and Artifacts
+      # ------------------------------------------------------------------------
+      - name: 📊 Upload Build Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-artifacts
+          path: |
+            build/ios/ipa/*.ipa
+            build/ios/Runner.xcarchive
+            ExportOptions.plist
+          retention-days: 30
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          # Clean up sensitive files
+          rm -f AuthKey.p8
+          rm -f certificate.p12
+          rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+          
+          # Delete temporary keychain
+          security delete-keychain build.keychain || true
+
+      # ------------------------------------------------------------------------
+      # Notification and Summary
+      # ------------------------------------------------------------------------
+      - name: 📋 Build Summary
+        if: always()
+        run: |
+          echo "## 🚀 iOS Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **App Name**: Vuet" >> $GITHUB_STEP_SUMMARY
+          echo "- **Bundle ID**: ai.vuet.vuet" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Flutter Version**: ${{ env.FLUTTER_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Xcode Version**: ${{ env.XCODE_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ **TestFlight Upload Successful!**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Your app should appear in App Store Connect within 30 minutes." >> $GITHUB_STEP_SUMMARY
+            echo "[Visit App Store Connect](https://appstoreconnect.apple.com)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Build Failed**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check the logs above for error details." >> $GITHUB_STEP_SUMMARY
+          fi 

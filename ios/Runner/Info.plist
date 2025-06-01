@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Vuet</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>ai.vuet.vuet</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Vuet</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<!-- Permission descriptions -->
+	<key>NSCalendarsUsageDescription</key>
+	<string>Vuet needs access to your calendar to display and manage your events, and to sync tasks with your calendar.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Vuet needs access to your contacts to help you share tasks and lists with your family and friends.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Vuet needs camera access to allow you to take photos for tasks, lists, and your profile.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Vuet needs microphone access to enable voice notes and voice commands for task creation.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Vuet needs access to your photo library to allow you to select images for tasks, lists, and your profile.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Vuet needs your location to suggest nearby places for tasks and to set location-based reminders.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Vuet needs access to your reminders to sync tasks with your device's reminder system.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Vuet uses Face ID to securely access your account.</string>
+	<!-- Push notifications permission -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<!-- URL schemes for deep linking -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>ai.vuet.vuet</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>vuet</string>
+			</array>
+		</dict>
+	</array>
+	<!-- Associated Domains for Universal Links -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:vuet.ai</string>
+		<string>applinks:www.vuet.ai</string>
+	</array>
+	<!-- App Transport Security -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<!-- Localization -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>es</string>
+		<string>fr</string>
+	</array>
+	<!-- Prevent app from appearing in Spotlight search results -->
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>ai.vuet.vuet.task</string>
+		<string>ai.vuet.vuet.list</string>
+		<string>ai.vuet.vuet.event</string>
+	</array>
+</dict>
+</plist>

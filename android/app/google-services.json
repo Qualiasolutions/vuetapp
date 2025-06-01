@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "518781259229",
+    "project_id": "qaaaa-448c6",
+    "storage_bucket": "qaaaa-448c6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:518781259229:android:3aa5d415774eace6b73a34",
+        "android_client_info": {
+          "package_name": "com.vuetapp.vuet_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "518781259229-k97n0bsbnojdpdvpcsto59lp2nu19ukk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGdbpz5znq9lsVptLNUb5zBwNTsn0aGz0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "518781259229-k97n0bsbnojdpdvpcsto59lp2nu19ukk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

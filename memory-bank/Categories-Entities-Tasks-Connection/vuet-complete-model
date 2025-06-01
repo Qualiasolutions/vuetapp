@@ -1,0 +1,162 @@
+This structured hierarchy represents the comprehensive model of the Vuet application, encompassing all categories, entities, and special features that facilitate its task and entity management functionality.
+
+Vuet Categories and Entity Structure
+1. PETS (Category ID: 1)
+Entity Types:
+Pet
+Fields: type, breed, dob, microchip_number, image
+Relations: microchip_company, pet_vet, pet_walker, pet_groomer, pet_sitter, insurance_policy
+Vet
+Fields: phone_number, email
+Walker
+Fields: phone_number, email
+Groomer
+Fields: phone_number, email
+Sitter
+Fields: phone_number, email
+MicrochipCompany
+Fields: account_number, phone_number, email
+InsuranceCompany
+Fields: phone_number, email
+InsurancePolicy
+Fields: account_number
+Relations: company (InsuranceCompany)
+2. SOCIAL_INTERESTS (Category ID: 2)
+Entity Types:
+Event (AutoSubentity - creates sub-entities automatically)
+Fields: start_datetime, end_datetime
+Auto-creates: Food/Cake, Activities/Venue, Party Favours, Gifts, Music, Decorations
+Hobby
+Holiday
+Fields: string_id, country_code, start_date, end_date, custom
+HolidayPlan (AutoSubentity)
+SocialPlan
+SocialMedia
+AnniversaryPlan (AutoSubentity)
+Birthday (from anniversaries.py)
+Anniversary (from anniversaries.py)
+EventSubentity (for auto-created sub-entities)
+GuestListInvite (for event guest management)
+Fields: name, phone_number, email, accepted, rejected, maybe, sent
+3. EDUCATION (Category ID: 3)
+Entity Types:
+School
+Fields: address, phone_number, email, website
+Subject
+CourseWork
+Fields: subject, due_date
+Teacher
+Fields: subject, phone_number, email
+Tutor
+Fields: subject, phone_number, email
+AcademicPlan
+ExtracurricularPlan
+Student
+Relations: school_attended
+SchoolYear (not an Entity, but related)
+Fields: start_date, end_date, year, show_on_calendars
+Relations: school
+SchoolTerm (not an Entity, but related)
+Fields: name, start_date, end_date, show_on_calendars, show_only_start_and_end
+Relations: school_year
+SchoolBreak (not an Entity, but related)
+Fields: name, start_date, end_date, show_on_calendars
+Relations: school_year
+4. CAREER (Category ID: 4)
+Entity Types:
+Work
+Colleague
+Fields: phone_number, email
+5. TRAVEL (Category ID: 5)
+Entity Types:
+Trip
+Fields: start_date, end_date
+6. HEALTH_BEAUTY (Category ID: 6, Premium)
+Entity Types:
+Doctor
+Fields: phone_number, email
+Dentist
+Fields: phone_number, email
+BeautySalon
+Fields: phone_number, email
+Stylist
+Fields: phone_number, email
+7. HOME (Category ID: 7)
+Entity Types:
+Home
+Fields: address, residence_type, house_type, has_outside_area
+Room
+Furniture
+Appliance
+Contractor
+Fields: phone_number, email, website
+8. GARDEN (Category ID: 8)
+Entity Types:
+Plant
+Tool
+9. FOOD (Category ID: 9)
+Entity Types:
+FoodPlan
+Recipe (likely)
+Restaurant (likely)
+10. LAUNDRY (Category ID: 10)
+Entity Types:
+Item
+DryCleaners
+Fields: phone_number, email
+11. FINANCE (Category ID: 11)
+Entity Types:
+Bank
+CreditCard
+BankAccount
+12. TRANSPORT (Category ID: 12)
+Entity Types:
+Vehicle (abstract)
+Fields: make, model, registration, date_registered, service_due_date, insurance_due_date
+Car
+Fields: vehicle_type (Car/Motorbike)
+Boat
+Fields: vehicle_type (Boat/Other)
+PublicTransport
+Special Features (Not Categories but Important Components)
+References (Premium Feature)
+ReferenceGroup
+Fields: name, tags
+Relations: entities, created_by
+Reference types:
+Fields: name, value, type, created_at
+Types: NAME, ACCOUNT_NUMBER, USERNAME, PASSWORD, WEBSITE, NOTE, ADDRESS, PHONE_NUMBER, DATE, OTHER
+Lists (Can be associated with any category)
+List (entity)
+ListEntry
+Fields: title, selected, image, notes, phone_number
+PlanningList
+Fields: name, category, is_template
+PlanningSublist
+Fields: title
+PlanningListItem
+Fields: title, checked
+ShoppingList
+Fields: name
+ShoppingListStore
+Fields: name
+ShoppingListItem
+Fields: title, checked
+TimeBlocks (Premium Feature)
+TimeBlock
+Fields: day, start_time, end_time
+Days: MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+Routines (Premium Feature)
+Routine
+Fields: name, monday, tuesday, wednesday, thursday, friday, saturday, sunday, start_time, end_time
+Related to tasks for recurring scheduling
+Tasks
+Task (base polymorphic class)
+FixedTask - scheduled at specific times
+FlexibleTask - with due dates and durations
+With various types: TASK, APPOINTMENT, DUE_DATE, FLIGHT, TRAIN, etc.
+Can be associated with:
+Entities
+Recurrence patterns
+Reminders
+Task actions

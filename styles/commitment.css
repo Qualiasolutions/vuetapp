@@ -1,0 +1,874 @@
+/* Variables */
+.tamoil-commitment-page-wrapper {
+  --tamoil-brand-blue: #083051;
+  --tamoil-brand-red: #E01A2E;
+  --tamoil-brand-light: #F5F8FA;
+  --tamoil-text-muted: #A0B0C0;
+  --tamoil-overlay-color: rgba(6, 20, 30, 0.82);
+  --tamoil-transition-fast: all 0.25s ease-in-out;
+  --tamoil-transition-medium: all 0.35s ease-in-out;
+  --tamoil-gradient-primary: linear-gradient(135deg, #083051 0%, #0a3d5f 100%);
+  --tamoil-gradient-secondary: linear-gradient(135deg, #E01A2E 0%, #c01223 100%);
+}
+
+/* Base Styles */
+.tamoil-commitment-page-wrapper [class^="tamoil-"] {
+  font-family: 'Inter', sans-serif;
+  color: #333;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.tamoil-commitment-page-wrapper [class^="tamoil-"] *, 
+.tamoil-commitment-page-wrapper [class^="tamoil-"] *:before, 
+.tamoil-commitment-page-wrapper [class^="tamoil-"] *:after {
+  box-sizing: border-box;
+}
+
+/* Section Titles */
+.tamoil-commitment-page-wrapper .section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--tamoil-brand-blue);
+  text-align: center;
+}
+
+.tamoil-commitment-page-wrapper .section-title.light {
+  color: var(--tamoil-brand-light);
+}
+
+/* Section Icon Badges */
+.tamoil-commitment-page-wrapper .section-icon-badge {
+  width: 80px;
+  height: 80px;
+  background: var(--tamoil-gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2rem auto;
+  font-size: 2rem;
+  color: white;
+  box-shadow: 0 10px 30px rgba(8, 48, 81, 0.3);
+}
+
+.tamoil-commitment-page-wrapper .section-icon-badge.light {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Hero Section */
+.tamoil-commitment-page-wrapper .tamoil-commitment-hero-section {
+  height: 50vh;
+  min-height: 400px;
+  background-image: url('/api/placeholder/1200/600'); 
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+}
+
+.tamoil-commitment-page-wrapper .commitment-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--tamoil-gradient-primary);
+  opacity: 0.9;
+}
+
+.tamoil-commitment-page-wrapper .commitment-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  padding: 0 2rem;
+}
+
+.tamoil-commitment-page-wrapper .hero-icon-wrapper {
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2rem auto;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.tamoil-commitment-page-wrapper .hero-icon {
+  font-size: 3rem;
+  color: white;
+}
+
+.tamoil-commitment-page-wrapper .commitment-hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.tamoil-commitment-page-wrapper .commitment-hero-subtitle {
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
+
+.tamoil-commitment-page-wrapper .hero-accent-line {
+  width: 100px;
+  height: 4px;
+  background: var(--tamoil-gradient-secondary);
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+/* Intro Section */
+.tamoil-commitment-page-wrapper .tamoil-commitment-intro-section {
+  padding: 5rem 2rem;
+  background-color: white;
+}
+
+.tamoil-commitment-page-wrapper .commitment-intro-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.tamoil-commitment-page-wrapper .intro-icon-badge {
+  width: 100px;
+  height: 100px;
+  background: var(--tamoil-gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2rem auto;
+  font-size: 2.5rem;
+  color: white;
+  box-shadow: 0 15px 40px rgba(8, 48, 81, 0.3);
+  position: relative;
+}
+
+.tamoil-commitment-page-wrapper .intro-icon-badge::before {
+  content: '';
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 2px solid var(--tamoil-brand-blue);
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.1); opacity: 0.1; }
+  100% { transform: scale(1); opacity: 0.3; }
+}
+
+.tamoil-commitment-page-wrapper .commitment-intro-text {
+  font-size: 1.1rem;
+  color: #4a5568;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+
+.tamoil-commitment-page-wrapper .intro-decorative-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.tamoil-commitment-page-wrapper .line-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--tamoil-brand-red);
+  border-radius: 50%;
+}
+
+/* Values Section */
+.tamoil-commitment-page-wrapper .tamoil-values-section {
+  padding: 5rem 2rem;
+  background-color: #f7fafc;
+}
+
+.tamoil-commitment-page-wrapper .values-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.tamoil-commitment-page-wrapper .values-card {
+  display: flex;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: var(--tamoil-transition-medium);
+  border: 1px solid rgba(8, 48, 81, 0.1);
+}
+
+.tamoil-commitment-page-wrapper .values-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+.tamoil-commitment-page-wrapper .values-icon {
+  flex: 0 0 150px;
+  background: var(--tamoil-gradient-primary);
+  color: white;
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.tamoil-commitment-page-wrapper .icon-background-circle {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.tamoil-commitment-page-wrapper .values-icon i {
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+.tamoil-commitment-page-wrapper .values-content {
+  flex: 1;
+  padding: 2.5rem;
+}
+
+.tamoil-commitment-page-wrapper .values-header {
+  margin-bottom: 2rem;
+}
+
+.tamoil-commitment-page-wrapper .values-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--tamoil-brand-blue);
+}
+
+.tamoil-commitment-page-wrapper .title-underline {
+  width: 60px;
+  height: 3px;
+  background: var(--tamoil-gradient-secondary);
+  border-radius: 2px;
+}
+
+.tamoil-commitment-page-wrapper .values-text {
+  font-size: 1.05rem;
+  color: #4a5568;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+
+.tamoil-commitment-page-wrapper .values-highlight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: rgba(8, 48, 81, 0.05);
+  border-radius: 6px;
+  border-left: 4px solid var(--tamoil-brand-red);
+}
+
+.tamoil-commitment-page-wrapper .highlight-icon {
+  color: var(--tamoil-brand-red);
+  font-size: 1.1rem;
+}
+
+.tamoil-commitment-page-wrapper .highlight-text {
+  font-weight: 600;
+  color: var(--tamoil-brand-blue);
+  font-size: 0.95rem;
+}
+
+/* Excellence Section */
+.tamoil-commitment-page-wrapper .tamoil-excellence-section {
+  padding: 5rem 2rem;
+  background-image: url('/api/placeholder/1200/600');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+  color: white;
+}
+
+.tamoil-commitment-page-wrapper .excellence-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--tamoil-gradient-primary);
+  opacity: 0.95;
+}
+
+.tamoil-commitment-page-wrapper .excellence-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tamoil-commitment-page-wrapper .excellence-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.tamoil-commitment-page-wrapper .excellence-text {
+  font-size: 1.1rem;
+  color: var(--tamoil-text-muted);
+  margin-bottom: 3rem;
+  text-align: center;
+  line-height: 1.7;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tamoil-commitment-page-wrapper .excellence-pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.tamoil-commitment-page-wrapper .excellence-pillar {
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tamoil-commitment-page-wrapper .excellence-pillar:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.tamoil-commitment-page-wrapper .pillar-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.tamoil-commitment-page-wrapper .pillar-icon-bg {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: var(--tamoil-gradient-secondary);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.tamoil-commitment-page-wrapper .pillar-icon {
+  font-size: 2.5rem;
+  color: white;
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+}
+
+.tamoil-commitment-page-wrapper .pillar-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.tamoil-commitment-page-wrapper .pillar-divider {
+  width: 40px;
+  height: 2px;
+  background: var(--tamoil-brand-red);
+  margin: 0 auto 1rem auto;
+  border-radius: 1px;
+}
+
+.tamoil-commitment-page-wrapper .pillar-text {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+}
+
+/* Sustainability Section */
+.tamoil-commitment-page-wrapper .tamoil-sustainability-section {
+  padding: 5rem 2rem;
+  background-color: white;
+}
+
+.tamoil-commitment-page-wrapper .sustainability-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tamoil-commitment-page-wrapper .sustainability-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  align-items: center;
+}
+
+.tamoil-commitment-page-wrapper .sustainability-image {
+  flex: 1 1 400px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.tamoil-commitment-page-wrapper .image-overlay-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: var(--tamoil-gradient-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  z-index: 2;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.tamoil-commitment-page-wrapper .sustainability-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.tamoil-commitment-page-wrapper .sustainability-text-content {
+  flex: 1 1 500px;
+}
+
+.tamoil-commitment-page-wrapper .sustainability-intro {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.tamoil-commitment-page-wrapper .quote-icon {
+  font-size: 2rem;
+  color: var(--tamoil-brand-red);
+  margin-bottom: 1rem;
+}
+
+.tamoil-commitment-page-wrapper .sustainability-text {
+  font-size: 1.05rem;
+  color: #4a5568;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+
+.tamoil-commitment-page-wrapper .sustainability-text.featured {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--tamoil-brand-blue);
+  border-left: 4px solid var(--tamoil-brand-red);
+  padding-left: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.tamoil-commitment-page-wrapper .sustainability-list {
+  margin-bottom: 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.tamoil-commitment-page-wrapper .sustainability-list li {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  color: #4a5568;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.tamoil-commitment-page-wrapper .list-icon {
+  color: var(--tamoil-brand-red);
+  font-size: 1.1rem;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+.tamoil-commitment-page-wrapper .sustainability-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(8, 48, 81, 0.05);
+  border-radius: 8px;
+  border-left: 4px solid var(--tamoil-brand-blue);
+}
+
+.tamoil-commitment-page-wrapper .footer-icon {
+  color: var(--tamoil-brand-blue);
+  font-size: 1.5rem;
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+/* Safety Section */
+.tamoil-commitment-page-wrapper .tamoil-safety-section {
+  padding: 5rem 2rem;
+  background-image: url('/api/placeholder/1200/600');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+  color: white;
+}
+
+.tamoil-commitment-page-wrapper .safety-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--tamoil-gradient-secondary);
+  opacity: 0.95;
+}
+
+.tamoil-commitment-page-wrapper .safety-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tamoil-commitment-page-wrapper .safety-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.tamoil-commitment-page-wrapper .safety-intro {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 3rem;
+  text-align: center;
+  line-height: 1.7;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tamoil-commitment-page-wrapper .safety-commitments {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.tamoil-commitment-page-wrapper .safety-commitment {
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tamoil-commitment-page-wrapper .safety-commitment:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.tamoil-commitment-page-wrapper .commitment-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+.tamoil-commitment-page-wrapper .commitment-icon-bg {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.tamoil-commitment-page-wrapper .commitment-icon {
+  font-size: 2.5rem;
+  color: white;
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+}
+
+.tamoil-commitment-page-wrapper .commitment-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.tamoil-commitment-page-wrapper .commitment-divider {
+  width: 40px;
+  height: 2px;
+  background: white;
+  margin: 0 auto 1rem auto;
+  border-radius: 1px;
+  opacity: 0.7;
+}
+
+.tamoil-commitment-page-wrapper .commitment-text {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.tamoil-commitment-page-wrapper .commitment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Community Section */
+.tamoil-commitment-page-wrapper .tamoil-community-section {
+  padding: 5rem 2rem;
+  background-color: #f7fafc;
+}
+
+.tamoil-commitment-page-wrapper .community-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tamoil-commitment-page-wrapper .community-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.tamoil-commitment-page-wrapper .community-text {
+  font-size: 1.1rem;
+  color: #4a5568;
+  margin-bottom: 3rem;
+  text-align: center;
+  line-height: 1.7;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tamoil-commitment-page-wrapper .community-initiatives {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+}
+
+.tamoil-commitment-page-wrapper .initiative-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border: 1px solid rgba(8, 48, 81, 0.1);
+}
+
+.tamoil-commitment-page-wrapper .initiative-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.tamoil-commitment-page-wrapper .initiative-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  padding-top: 2rem;
+}
+
+.tamoil-commitment-page-wrapper .initiative-icon-bg {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: var(--tamoil-gradient-primary);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.tamoil-commitment-page-wrapper .initiative-icon {
+  font-size: 2.5rem;
+  color: white;
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+}
+
+.tamoil-commitment-page-wrapper .initiative-content {
+  padding: 0 2rem 2rem 2rem;
+}
+
+.tamoil-commitment-page-wrapper .initiative-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--tamoil-brand-blue);
+}
+
+.tamoil-commitment-page-wrapper .initiative-divider {
+  width: 40px;
+  height: 2px;
+  background: var(--tamoil-gradient-secondary);
+  margin: 0 auto 1rem auto;
+  border-radius: 1px;
+}
+
+.tamoil-commitment-page-wrapper .initiative-text {
+  font-size: 1rem;
+  color: #4a5568;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.tamoil-commitment-page-wrapper .initiative-stats {
+  display: flex;
+  justify-content: center;
+}
+
+.tamoil-commitment-page-wrapper .stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(8, 48, 81, 0.05);
+  padding: 0.75rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(8, 48, 81, 0.1);
+}
+
+.tamoil-commitment-page-wrapper .stat-icon {
+  color: var(--tamoil-brand-red);
+  font-size: 1rem;
+}
+
+.tamoil-commitment-page-wrapper .stat-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--tamoil-brand-blue);
+}
+
+/* CTA Section */
+.tamoil-commitment-page-wrapper .tamoil-commitment-cta-section {
+  padding: 5rem 2rem;
+  background: var(--tamoil-gradient-primary);
+  color: white;
+  text-align: center;
+}
+
+.tamoil-commitment-page-wrapper .commitment-cta-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.tamoil-commitment-page-wrapper .cta-icon-wrapper {
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 2rem auto;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.tamoil-commitment-page-wrapper .cta-icon {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.tamoil-commitment-page-wrapper .cta-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.tamoil-commitment-page-wrapper .cta-accent-line {
+  width: 80px;
+  height: 4px;
+  background: var(--tamoil-gradient-secondary);
+  margin: 0 auto 2rem auto;
+  border-radius: 2px;
+}
+
+.tamoil-commitment-page-wrapper .cta-text {
+  font-size: 1.1rem;
+  margin-bottom: 2.5rem;
+  color: var(--tamoil-text-muted);
+  line-height: 1.7;
+}
+
+.tamoil-commitment-page-wrapper .cta-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 2.5rem;
+  background: var(--tamoil-gradient-secondary);
+  color: white !important;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(224, 26, 46, 0.3);
+  margin-bottom: 3rem;
+}
+
+.tamoil-commitment-page-wrapper .cta-button:hover {
+  background: linear-gradient(135deg, #c01223 0%, #a00f1e 100%);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(224, 26, 46, 0.4);
+}
+

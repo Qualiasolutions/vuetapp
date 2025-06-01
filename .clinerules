@@ -1,0 +1,191 @@
+# Cline Project Rules for Vuet App (Flutter/Supabase Migration)
+# Version: 1.1
+# Last Updated: [Current Date]
+
+# -----------------------------------------------------------------------------
+# 🚀 PROJECT OBJECTIVE & OPERATING CONTEXT 🚀
+# -----------------------------------------------------------------------------
+# Core Objective: This project's primary goal is to migrate/rebuild an existing React/Django application into a new Flutter frontend and Supabase backend.
+# Operating System: Windows
+# Shell: PowerShell (C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe)
+# Key Tools: You ALWAYS have access to Supabase MCP tools for database operations and migrations. You also have access to your full context capabilities (referred to by user as "context7").
+# "Memory Bank" Initialization: The "Memory Bank" is our term for the structured context passed between sessions using the `new_task` tool. We are "initializing" it now by establishing these rules. Every task handoff will contribute to and draw from this evolving memory bank.
+
+# -----------------------------------------------------------------------------
+# ⚠️ CRITICAL: SECURITY & SENSITIVE DATA HANDLING ⚠️
+# -----------------------------------------------------------------------------
+# Handle with care and according to security best practices.
+
+-
+# -----------------------------------------------------------------------------
+# ⚠️ CRITICAL: TASK HANDOFF & CONTEXT MANAGEMENT ("Memory Bank") ⚠️
+# -----------------------------------------------------------------------------
+# MANDATORY instructions for breaking down complex tasks and using the `new_task` tool.
+# This section ensures continuity and effective context preservation, forming our "Memory Bank".
+
+## Context Window Monitoring
+# You MUST monitor the context window usage displayed in the environment details.
+# When usage exceeds 60% (adjusted threshold) of the available context window, you MUST initiate a task handoff.
+# Example: If context is "125,000 / 200,000 tokens (63%)", a handoff is required.
+
+# IMPORTANT: When context window usage is at or above 60%, you MUST:
+# 1. Complete your current logical step or find a safe breakpoint.
+# 2. Use the `ask_followup_question` tool to offer creating a new task, clearly stating the reason (context usage).
+# 3. If approved by the user, use the `new_task` tool with a comprehensive handoff context as defined below.
+
+## Task Implementation and Handoff Process - MANDATORY PROCEDURES
+
+### 1. Focused Implementation
+# - Focus on completing the current subtask fully.
+# - Document progress clearly through comments and, if applicable, prepare for commit messages.
+
+### 2. Recognizing Completion/Handoff Points
+# You MUST identify natural handoff points when:
+# - The current subtask is fully completed.
+# - You've reached a logical stopping point in a larger subtask.
+# - The context window usage exceeds 60%.
+# - The task scope has expanded significantly, requiring re-planning.
+
+### 3. Initiating the Handoff Process
+# When a handoff point is reached, you MUST:
+# 1. Summarize what has been accomplished in the current session.
+# 2. Clearly state what remains to be done for the immediate next steps.
+# 3. Use the `ask_followup_question` tool:
+#    <ask_followup_question>
+#    <question>I've completed [specific accomplishment summary] and context usage is at [XX%]. To maintain our 'Memory Bank' and ensure optimal performance, would you like me to create a new task to continue with [summary of remaining work], preloading the necessary context?</question>
+#    <options>["Yes, create new task & preload context (Update Memory Bank)", "Modify context first", "No, continue this session (if context safely allows)"]</options>
+#    </ask_followup_question>
+
+### 4. Creating a New Task with Comprehensive Context (`new_task`) - Our "Memory Bank" Update
+# If the user agrees, you MUST use the `new_task` tool with the following MANDATORY structure for the <context> block:
+
+# <new_task>
+# <context>
+# # Memory Bank Update & Task Continuation: [Brief, descriptive title for the next phase of work]
+# ## Project: React/Django to Flutter/Supabase Migration
+
+#
+# ## ✅ Completed Work in Previous Session (Memory Update)
+# - [Detailed bullet points of tasks/subtasks completed.]
+# - [List of specific files created or modified, including full paths, e.g., `lib/src/features/auth/presentation/screens/login_screen.dart`.]
+# - [Key decisions made and their rationale, e.g., "Decided to use a freezed model for X due to Y."].
+# - [Relevant Supabase MCP migrations applied: name and summary of changes.]
+#
+# ## ⚙️ Current Project State (Snapshot for Memory Bank)
+# - [Current Git branch, if known.]
+# - [State of relevant configurations: Firebase initialized, Supabase client setup for X, relevant .env variable *names* being utilized.]
+# - [Any emulators/simulators running or specific device states, if relevant.]
+# - [Status of `tasks.json` regarding this feature.]
+#
+# ## 🚀 Next Steps & Focus for This New Session (Drawing from Memory Bank)
+# - [Clear, prioritized list of 1-3 IMMEDIATE next subtasks or actions.]
+# - [Specific implementation details for the VERY NEXT action item. Be precise.]
+# - [Any known challenges, questions to address, or dependencies for these next steps.]
+#
+# ## 📝 Key Code Snippets or File References (Critical for continuity)
+# - [Include relevant snippets of code modified or new code that the next session will build upon.]
+# - [Paths to key files that will be worked on next.]
+#
+# Please begin this new session by focusing on: [Clearly state the specific, actionable first step based on this 'Memory Bank' update].
+# </context>
+# </new_task>
+
+### 5. Best Practices for Effective Handoffs
+# - **Continuity**: Use consistent terminology. Reference previous decisions.
+# - **Preserve Context**: Include relevant code snippets, file paths, and summaries.
+# - **Clear Next Actions**: Make the starting point for the new session obvious.
+# - **Resumability**: Structure the handoff so work can resume immediately.
+
+### 6. When to Use Task Handoffs - MANDATORY TRIGGERS
+# 1. **CRITICAL**: When context window usage exceeds 60%.
+# 2. For long-running projects that span multiple sessions.
+# 3. When switching focus between distinct components of a large feature.
+# 4. After completing a major sub-task in a larger plan.
+
+# **⚠️ FINAL REMINDER - CRITICAL INSTRUCTION ⚠️**
+# You MUST monitor context window usage. When it exceeds 60%, PROACTIVELY initiate the task handoff using `ask_followup_question` followed by `new_task` to update our "Memory Bank".
+
+# -----------------------------------------------------------------------------
+# 🎯 FLUTTER & SUPABASE DEVELOPMENT GUIDELINES (React/Django Migration Focus) 🎯
+# -----------------------------------------------------------------------------
+
+## Project Structure & Conventions
+# - Adhere to standard Flutter project structure.
+# - Employ a feature-first organization for UI and logic.
+# - Maintain clear separation of concerns, drawing parallels or improvements from the old React/Django structure where sensible.
+# - Follow Effective Dart styling (`dart format`).
+
+## State Management (Riverpod)
+# - Utilize Riverpod as the primary state management solution.
+# - Define providers clearly, preferably in dedicated `*_providers.dart` files.
+
+## Supabase Integration (MCP & Flutter Client)
+# - **CRITICAL**: All Supabase database schema changes (DDL: CREATE, ALTER, etc.) **MUST** be formulated as SQL queries and applied as migrations using the `mcp_supabase_apply_migration` tool. Provide a descriptive `name` (snake_case) and detail the changes in the handoff context.
+# - For data interaction (CRUD), auth, and Edge Functions, use the `supabase-flutter` package.
+# - Ensure Row Level Security (RLS) is robustly implemented. Model policies considering the original Django app's permission model, adapting for Supabase.
+# - When creating/migrating tables, think about how Django models and relationships translate to Supabase tables and foreign keys.
+
+## Firebase Integration
+# - Firebase configuration files are critical. Handle them with care. Modifications should be deliberate and confirmed.
+# - Ensure Firebase services are correctly initialized.
+
+## LANA AI Assistant Integration
+# - Maintain consistency with LANA's existing architecture.
+
+## Task Management (`tasks.json`)
+# - `tasks/tasks.json` is our migration roadmap.
+# - Before starting work, align with `tasks.json`.
+# - Provide updates for `tasks.json` post-session (status, details, new sub-tasks).
+
+## Code Quality & Testing
+# - Write clear, readable, well-documented Dart code.
+# - Aim for unit tests (business logic) and widget tests (UI components).
+# - Regularly run `flutter analyze`; resolve issues.
+
+# -----------------------------------------------------------------------------
+# 💻 UI SCREEN MODERNIZATION & REPLICATION WORKFLOW (React -> Flutter) 💻
+# -----------------------------------------------------------------------------
+# MANDATORY workflow when modernizing or implementing Flutter UI screens that have a counterpart in the legacy React application.
+
+## Screen Replication & Modernization Process
+# When tasked with developing or modernizing a Flutter UI screen that mirrors functionality from the old React application:
+
+# 1. **Analyze Legacy React Screen:**
+#    - MUST thoroughly analyze the corresponding screen(s) and components within the `react-old-vuet/old-frontend/screens/` and `react-old-vuet/old-frontend/components/` directories.
+#    - Identify core functionality, data displayed, user interactions, and structural layout of the React screen.
+
+# 2. **Plan Modernized Flutter Screen:**
+#    - Based on the React screen analysis AND the principles outlined in `UI_MODERNIZATION_PLAN.md` (or the most relevant UI planning document), MUST formulate a plan for the new Flutter screen.
+#    - The plan should detail how the React screen's functionality will be replicated in Flutter with a modernized UI/UX.
+#    - Consider reusable components from your modern component library (e.g., `lib/ui/widgets/modern_components.dart` or similar).
+
+# 3. **Replace and Recreate Flutter Screen:**
+#    - The existing Flutter file for the screen being modernized (e.g., `lib/ui/screens/feature_name/feature_screen.dart`) should be considered a candidate for complete replacement if its current state does not align with the new modernized vision or is substantially different from the React counterpart.
+#    - MUST focus on writing new, clean Flutter code for the screen, implementing the planned modernized replica.
+#    - Do not simply make minor incremental edits to outdated Flutter code if a full modernization based on the React version is intended; aim for a fresh implementation.
+#    - Apply UI/UX modernization principles consistently, aspiring to the quality and approach of previously successful modernizations (e.g., the homepage modernization).
+
+# 4. **Widget Naming and Structure:**
+#    - Follow Flutter best practices for widget composition, state management (Riverpod), and naming conventions.
+#    - Ensure the new screen integrates correctly with existing navigation, providers, and overall app architecture. Address any linter errors that arise from missing imports or incorrect provider usage as part of the screen recreation.
+
+# Example Scenario: If tasked with modernizing `lib/ui/screens/lists/lists_screen.dart` based on `react-old-vuet/old-frontend/screens/LinkListScreen/index.tsx` (or similar relevant React screen):
+#   - You would analyze the React `index.tsx` and related components.
+#   - Plan a new `lists_screen.dart` incorporating modern UI principles and the core functionality from React.
+#   - Then, you would rewrite/replace the content of `lib/ui/screens/lists/lists_screen.dart` with the new, modernized Flutter code, ensuring all necessary providers are correctly imported and used.
+
+# -----------------------------------------------------------------------------
+# 💡 GENERAL BEST PRACTICES & INTERACTION STYLE 💡
+# -----------------------------------------------------------------------------
+# - **Understand First**: Analyze requests, existing code (especially @mentioned files), and these rules. For migration tasks, try to understand the corresponding React/Django component/logic.
+# - **Plan Complex Changes**: Outline plans for multi-file or complex logic changes, potentially in an .md file.
+# - **Full Code**: Provide complete definitions for functions, classes, or widgets being changed/added.
+# - **Ask Questions**: Clarify ambiguities, especially when translating Django/React concepts.
+# - **Commit Messages**: Offer to generate descriptive commit messages.
+# - **Adherence**: Follow these rules. If a rule conflicts with a request, seek clarification.
+
+# End of .clinerules
+
+Note: When triggered by **update memory bank**, I MUST review every memory bank file, even if some don't require updates. Focus particularly on activeContext.md and progress.md as they track current state.
+
+REMEMBER: After every memory reset, I begin completely fresh. The Memory Bank is my only link to previous work. It must be maintained with precision and clarity, as my effectiveness depends entirely on its accuracy.

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect complimented with the base href tag below.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <!-- Enhanced Meta Tags -->
+  <meta name="description" content="Vuet - Your intelligent personal and family organization app with AI assistant">
+  <meta name="keywords" content="organization, family, tasks, AI assistant, productivity, planning">
+  <meta name="author" content="Vuet Team">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Vuet - Intelligent Organization App">
+  <meta property="og:description" content="Organize your life with AI-powered assistance">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://qaaaa-448c6.web.app">
+  <meta property="og:image" content="https://qaaaa-448c6.web.app/icons/Icon-512.png">
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Vuet - Intelligent Organization App">
+  <meta name="twitter:description" content="Organize your life with AI-powered assistance">
+  <meta name="twitter:image" content="https://qaaaa-448c6.web.app/icons/Icon-512.png">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Vuet">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/Icon-152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/Icon-180.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="icons/Icon-167.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/Icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/Icon-16.png">
+
+  <title>Vuet - Intelligent Organization App</title>
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#2196F3">
+  <meta name="msapplication-TileColor" content="#2196F3">
+  
+  <!-- Preconnect to external domains for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://xrloafqzfdzewdoawysh.supabase.co">
+  <link rel="preconnect" href="https://api.openai.com">
+  
+  <!-- DNS Prefetch for better performance -->
+  <link rel="dns-prefetch" href="https://www.google.com">
+  <link rel="dns-prefetch" href="https://www.gstatic.com">
+  <link rel="dns-prefetch" href="https://apis.google.com">
+
+  <!-- This script loads the environment variables -->
+  <!-- Placed in head to ensure variables are available early -->
+  <script src="env.js"></script>
+  
+  <!-- Performance monitoring script -->
+  <script>
+    // Performance monitoring
+    window.vuetPerformance = {
+      startTime: performance.now(),
+      marks: {},
+      measures: {}
+    };
+    
+    // Mark performance milestones
+    function markPerformance(name) {
+      window.vuetPerformance.marks[name] = performance.now();
+      if (typeof performance.mark === 'function') {
+        performance.mark('vuet_' + name);
+      }
+    }
+    
+    // Measure performance between marks
+    function measurePerformance(name, startMark, endMark) {
+      const start = window.vuetPerformance.marks[startMark] || window.vuetPerformance.startTime;
+      const end = window.vuetPerformance.marks[endMark] || performance.now();
+      const duration = end - start;
+      window.vuetPerformance.measures[name] = duration;
+      
+      if (typeof performance.measure === 'function') {
+        try {
+          performance.measure('vuet_' + name, 'vuet_' + startMark, 'vuet_' + endMark);
+        } catch (e) {
+          // Fallback for browsers that don't support performance.measure
+          console.log('Performance measure:', name, duration + 'ms');
+        }
+      }
+      
+      return duration;
+    }
+    
+    // Mark initial load
+    markPerformance('html_loaded');
+    
+    // Monitor page load events
+    document.addEventListener('DOMContentLoaded', function() {
+      markPerformance('dom_ready');
+    });
+    
+    window.addEventListener('load', function() {
+      markPerformance('page_loaded');
+      measurePerformance('initial_load', 'html_loaded', 'page_loaded');
+    });
+  </script>
+  
+  <!-- reCAPTCHA script for Firebase Auth -->
+  <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
+  
+  <!-- Loading styles for better UX -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow: hidden;
+    }
+    
+    .loading-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+    
+    .loading-logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+    
+    .loading-text {
+      color: white;
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-container" class="loading-container">
+    <img src="icons/Icon-192.png" alt="Vuet Logo" class="loading-logo" onerror="this.style.display='none'">
+    <div class="loading-text">Loading Vuet...</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Load the Flutter bootstrap script as recommended by Flutter documentation -->
+  <!-- This script handles loading flutter.js, the build configuration, and starting the app. -->
+  <script src="flutter_bootstrap.js" async></script>
+  
+  <!-- Enhanced loading and error handling -->
+  <script>
+    // Mark Flutter bootstrap start
+    markPerformance('flutter_bootstrap_start');
+    
+    // Enhanced error handling
+    window.addEventListener('error', function(e) {
+      console.error('Global error:', e.error);
+      // Log error to analytics if available
+      if (window.vuetAnalytics && window.vuetAnalytics.logError) {
+        window.vuetAnalytics.logError('javascript_error', e.message, e.error?.stack);
+      }
+    });
+    
+    // Handle unhandled promise rejections
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('Unhandled promise rejection:', e.reason);
+      if (window.vuetAnalytics && window.vuetAnalytics.logError) {
+        window.vuetAnalytics.logError('promise_rejection', e.reason?.message || 'Unknown promise rejection');
+      }
+    });
+    
+    // Hide loading screen when Flutter is ready
+    function hideLoadingScreen() {
+      const loadingContainer = document.getElementById('loading-container');
+      if (loadingContainer) {
+        loadingContainer.classList.add('fade-out');
+        setTimeout(() => {
+          loadingContainer.style.display = 'none';
+        }, 500);
+      }
+      markPerformance('app_ready');
+      measurePerformance('total_startup', 'html_loaded', 'app_ready');
+    }
+    
+    // Listen for Flutter ready event
+    window.addEventListener('flutter-first-frame', hideLoadingScreen);
+    
+    // Fallback: hide loading screen after 10 seconds
+    setTimeout(hideLoadingScreen, 10000);
+    
+    // Service Worker registration for caching (if available)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/flutter_service_worker.js')
+          .then(function(registration) {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(function(error) {
+            console.log('ServiceWorker registration failed: ', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>

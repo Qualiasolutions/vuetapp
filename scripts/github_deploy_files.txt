@@ -1,0 +1,34 @@
+# Essential files for GitHub deployment
+
+# Core Flutter App Files
+lib/                       # All Dart source code
+web/                       # Web-specific files (essential for Vercel deployment)
+pubspec.yaml               # Flutter dependencies
+pubspec.lock               # Lock file for dependencies
+analysis_options.yaml      # Dart analysis configuration
+
+# GitHub and CI Files
+.github/workflows/ci.yml   # CI/CD configuration
+README.md                  # Project documentation
+
+# Deployment Configuration
+vercel.json                # Vercel deployment configuration
+scripts/deploy.sh          # Deployment script
+
+# Web Configuration
+web/index.html             # Web entry point
+web/manifest.json          # Web app manifest
+web/env-config.js          # Environment configuration for web
+web/favicon.png            # Favicon
+web/icons/                 # App icons
+
+# Environment Examples (not the actual .env files)
+.env.example               # Example environment file
+
+# Asset Files
+assets/                    # Images and other assets
+
+# DO NOT INCLUDE:
+# .env.development         # Development environment variables (sensitive)
+# .env.production          # Production environment variables (sensitive)
+# build/                   # Build outputs
