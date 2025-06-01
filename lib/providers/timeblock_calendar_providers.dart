@@ -66,7 +66,8 @@ final timeblockEventsForDayProvider = FutureProvider.family<List<CalendarEventMo
   // TableCalendar uses ISO 8601 (1 = Monday, 7 = Sunday)
   
   // Get all timeblocks for the user for this day of the week
-  final timeblocks = await ref.watch(
+  // Fixed: Use ref.read instead of ref.watch inside async function to prevent dependency change errors
+  final timeblocks = await ref.read(
     userTimeblocksForDayProvider(
       UserTimeblocksForDayParams(userId: userId, dayOfWeek: dayOfWeek)
     ).future
@@ -82,7 +83,8 @@ final combinedTimeblockEventsForDayProvider = StreamProvider.family<List<Calenda
   
   Future<void> fetchAndCombine() async {
     try {
-      final timeblockEvents = await ref.watch(timeblockEventsForDayProvider(date).future);
+      // Fixed: Use ref.read instead of ref.watch inside async function to prevent dependency change errors
+      final timeblockEvents = await ref.read(timeblockEventsForDayProvider(date).future);
       
       if (!controller.isClosed) {
         controller.add(timeblockEvents);

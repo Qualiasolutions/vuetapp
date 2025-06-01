@@ -15,7 +15,7 @@ class AppTheme {
   });
 
   /// Primary brand color (Dark Jungle Green)
-  static const Color primary = Color(0xFF202827);
+  static const Color primary = Color(0xFF32403F);
 
   /// Secondary brand color (Medium Turquoise)
   static const Color secondary = Color(0xFF55C6D4);
@@ -44,15 +44,14 @@ class AppTheme {
   /// Comment color for notifications
   static const Color commentColor = Color(0xFF00BCD4);
 
-  /// Color for low priority tasks
-  static const Color lowPriorityColor = Color(0xFF8BC34A);
+  /// Color for low priority tasks (using secondary/turquoise)
+  static const Color lowPriorityColor = secondary;
 
   /// Color for medium priority tasks (Orange)
-  static const Color mediumPriorityColor = Color(0xFFE39F2F);
+  static const Color mediumPriorityColor = accent;
 
-  /// Color for high priority tasks
-  static const Color highPriorityColor =
-      Color(0xFFF44336); // Keep original for now
+  /// Color for high priority tasks (using primary for importance)
+  static const Color highPriorityColor = primary;
 
   /// Color for completed tasks
   static const Color completedColor =
@@ -72,7 +71,7 @@ class AppTheme {
   static const Color successColor = success; // Keep original for now
 
   /// Primary text color (Dark Jungle Green)
-  static const Color textPrimary = Color(0xFF202827);
+  static const Color textPrimary = Color(0xFF32403F);
 
   /// Secondary text color (Steel)
   static const Color textSecondary = Color(0xFF79858D);
@@ -143,6 +142,15 @@ class AppTheme {
       foregroundColor: textLight,
       elevation: 0, // Flat design
       centerTitle: false,
+      titleTextStyle: const TextStyle(
+        color: textLight,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+      iconTheme: const IconThemeData(
+        color: textLight,
+        size: 24,
+      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           bottom: Radius.circular(16),
@@ -192,7 +200,7 @@ class AppTheme {
       fillColor: Colors.grey.shade50,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderSide: BorderSide(color: textSecondary.withValues(alpha: 0.3)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -200,7 +208,7 @@ class AppTheme {
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
+        borderSide: BorderSide(color: textSecondary.withValues(alpha: 0.2)),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -210,7 +218,8 @@ class AppTheme {
         horizontal: 20,
         vertical: 16,
       ),
-      hintStyle: TextStyle(color: Colors.grey.shade400),
+      hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.7)),
+      labelStyle: const TextStyle(color: textPrimary),
     ),
     cardTheme: const CardThemeData(
       color: cardBackground,
@@ -259,7 +268,23 @@ class AppTheme {
       thickness: 1,
     ),
     fontFamily: 'Roboto',
-    textTheme: GoogleFonts.robotoTextTheme(ThemeData.light().textTheme),
+    textTheme: GoogleFonts.robotoTextTheme(ThemeData.light().textTheme).copyWith(
+      displayLarge: const TextStyle(color: textPrimary, fontSize: 32, fontWeight: FontWeight.bold),
+      displayMedium: const TextStyle(color: textPrimary, fontSize: 28, fontWeight: FontWeight.bold),
+      displaySmall: const TextStyle(color: textPrimary, fontSize: 24, fontWeight: FontWeight.bold),
+      headlineLarge: const TextStyle(color: textPrimary, fontSize: 22, fontWeight: FontWeight.w600),
+      headlineMedium: const TextStyle(color: textPrimary, fontSize: 20, fontWeight: FontWeight.w600),
+      headlineSmall: const TextStyle(color: textPrimary, fontSize: 18, fontWeight: FontWeight.w600),
+      titleLarge: const TextStyle(color: textPrimary, fontSize: 16, fontWeight: FontWeight.w600),
+      titleMedium: const TextStyle(color: textPrimary, fontSize: 14, fontWeight: FontWeight.w500),
+      titleSmall: const TextStyle(color: textPrimary, fontSize: 12, fontWeight: FontWeight.w500),
+      bodyLarge: const TextStyle(color: textPrimary, fontSize: 16),
+      bodyMedium: const TextStyle(color: textPrimary, fontSize: 14),
+      bodySmall: TextStyle(color: textSecondary, fontSize: 12),
+      labelLarge: const TextStyle(color: textPrimary, fontSize: 14, fontWeight: FontWeight.w500),
+      labelMedium: TextStyle(color: textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
+      labelSmall: TextStyle(color: textSecondary, fontSize: 10, fontWeight: FontWeight.w500),
+    ),
     iconTheme: const IconThemeData(
       color: textPrimary,
       size: 24,
@@ -269,7 +294,14 @@ class AppTheme {
       unselectedItemColor: textSecondary,
       backgroundColor: background,
       elevation: 8,
-      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      selectedLabelStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        color: primary,
+      ),
+      unselectedLabelStyle: TextStyle(
+        fontWeight: FontWeight.normal,
+        color: textSecondary,
+      ),
       showSelectedLabels: true,
       showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
@@ -290,14 +322,18 @@ class AppTheme {
 
   /// Get the dark theme data
   static final ThemeData darkTheme = ThemeData(
+    useMaterial3: true,
     primaryColor: primary,
-    textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
     colorScheme: ColorScheme.dark(
       primary: primary,
       secondary: secondary,
       tertiary: accent,
       surface: Color(0xFF1E1E1E),
       error: error,
+      onPrimary: textLight,
+      onSecondary: textPrimary,
+      onSurface: textLight,
+      onError: textLight,
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: Color(0xFF1E1E1E),
@@ -442,5 +478,22 @@ class AppTheme {
       ),
     ),
     fontFamily: 'Roboto',
+    textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme).copyWith(
+      displayLarge: const TextStyle(color: textLight, fontSize: 32, fontWeight: FontWeight.bold),
+      displayMedium: const TextStyle(color: textLight, fontSize: 28, fontWeight: FontWeight.bold),
+      displaySmall: const TextStyle(color: textLight, fontSize: 24, fontWeight: FontWeight.bold),
+      headlineLarge: const TextStyle(color: textLight, fontSize: 22, fontWeight: FontWeight.w600),
+      headlineMedium: const TextStyle(color: textLight, fontSize: 20, fontWeight: FontWeight.w600),
+      headlineSmall: const TextStyle(color: textLight, fontSize: 18, fontWeight: FontWeight.w600),
+      titleLarge: const TextStyle(color: textLight, fontSize: 16, fontWeight: FontWeight.w600),
+      titleMedium: const TextStyle(color: textLight, fontSize: 14, fontWeight: FontWeight.w500),
+      titleSmall: const TextStyle(color: textLight, fontSize: 12, fontWeight: FontWeight.w500),
+      bodyLarge: const TextStyle(color: textLight, fontSize: 16),
+      bodyMedium: const TextStyle(color: textLight, fontSize: 14),
+      bodySmall: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+      labelLarge: const TextStyle(color: textLight, fontSize: 14, fontWeight: FontWeight.w500),
+      labelMedium: TextStyle(color: Colors.grey.shade400, fontSize: 12, fontWeight: FontWeight.w500),
+      labelSmall: TextStyle(color: Colors.grey.shade400, fontSize: 10, fontWeight: FontWeight.w500),
+    ),
   );
 }

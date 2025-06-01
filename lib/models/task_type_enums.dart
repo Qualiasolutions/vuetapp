@@ -1,52 +1,30 @@
-// Enums for task types and subtypes
-// These enums are used to categorize tasks in the application
 
-/// Main task type enum
+
+// Enums for task types and subtypes
+// These enums match exactly the 7 types from the old React app
+
+/// Main task type enum - matches exactly the 7 types from the old React app
 enum TaskType {
-  /// Regular task
+  /// Regular task (can be fixed or flexible, dynamic when flexible)
   task,
   
-  /// Appointment (meeting, doctor, etc.)
+  /// Appointment (meeting, doctor, etc.) - static/fixed
   appointment,
   
-  /// Activity (sports, entertainment, etc.)
+  /// Due date (deadline, submission, etc.) - static/fixed
+  dueDate,
+  
+  /// Activity (going out, entertainment, etc.) - static/fixed
   activity,
   
-  /// Transport (flight, train, etc.)
+  /// Transport (getting there - flight, train, etc.) - static/fixed
   transport,
   
-  /// Accommodation (hotel, airbnb, etc.)
+  /// Accommodation (staying overnight - hotel, etc.) - static/fixed
   accommodation,
   
-  /// Anniversary (birthday, wedding, etc.)
+  /// Anniversary (birthday, anniversary, etc.) - static/fixed
   anniversary,
-  
-  /// Deadline (project, submission, etc.)
-  deadline,
-  
-  /// Payment (bill, subscription, etc.)
-  payment,
-  
-  /// Shopping (groceries, clothes, etc.)
-  shopping,
-  
-  /// Health (medication, checkup, etc.)
-  health,
-  
-  /// Education (class, homework, etc.)
-  education,
-  
-  /// Work (meeting, project, etc.)
-  work,
-  
-  /// Family (pickup, dropoff, etc.)
-  family,
-  
-  /// Personal (hobby, self-care, etc.)
-  personal,
-  
-  /// Other (miscellaneous tasks)
-  other,
 }
 
 /// Extension on TaskType to provide a displayName getter
@@ -58,151 +36,66 @@ extension TaskTypeExtension on TaskType {
         return 'Task';
       case TaskType.appointment:
         return 'Appointment';
+      case TaskType.dueDate:
+        return 'Due Date';
       case TaskType.activity:
-        return 'Activity';
+        return 'Going Out';
       case TaskType.transport:
-        return 'Transport';
+        return 'Getting There';
       case TaskType.accommodation:
-        return 'Accommodation';
+        return 'Staying Overnight';
       case TaskType.anniversary:
-        return 'Anniversary';
-      case TaskType.deadline:
-        return 'Deadline';
-      case TaskType.payment:
-        return 'Payment';
-      case TaskType.shopping:
-        return 'Shopping';
-      case TaskType.health:
-        return 'Health';
-      case TaskType.education:
-        return 'Education';
-      case TaskType.work:
-        return 'Work';
-      case TaskType.family:
-        return 'Family';
-      case TaskType.personal:
-        return 'Personal';
-      case TaskType.other:
-        return 'Other';
+        return 'Birthday / Anniversary';
     }
   }
 }
 
-/// Transport subtypes for transport tasks
+/// Transport subtypes for transport tasks (from old React app)
 enum TransportSubtype {
-  /// Driving (car, motorcycle, etc.)
-  driving,
+  /// Flight
+  flight,
   
-  /// Public transport (bus, train, subway, etc.)
-  publicTransport,
+  /// Train or public transport
+  train,
   
-  /// Walking
-  walking,
-  
-  /// Cycling
-  cycling,
-  
-  /// Flying (airplane, helicopter, etc.)
-  flying,
-  
-  /// Boating (ferry, cruise, etc.)
-  boating,
-  
-  /// Rideshare (Uber, Lyft, etc.)
-  rideshare,
+  /// Rental car
+  rentalCar,
   
   /// Taxi
   taxi,
   
-  /// Other transport
-  other,
+  /// Drive time
+  driveTime,
 }
 
-/// Activity subtypes for activity tasks
+/// Activity subtypes for activity tasks (from old React app)
 enum ActivitySubtype {
-  /// Sports (playing, watching, etc.)
-  sports,
+  /// General activity
+  activity,
   
-  /// Entertainment (movie, concert, etc.)
-  entertainment,
-  
-  /// Social (party, gathering, etc.)
-  social,
-  
-  /// Dining (restaurant, cafe, etc.)
-  dining,
-  
-  /// Shopping (mall, store, etc.)
-  shopping,
-  
-  /// Outdoor (hiking, picnic, etc.)
-  outdoor,
-  
-  /// Cultural (museum, theater, etc.)
-  cultural,
-  
-  /// Relaxation (spa, massage, etc.)
-  relaxation,
+  /// Food activity
+  foodActivity,
   
   /// Other activity
-  other,
+  otherActivity,
 }
 
-/// Accommodation subtypes for accommodation tasks
+/// Accommodation subtypes for accommodation tasks (from old React app)
 enum AccommodationSubtype {
   /// Hotel
   hotel,
   
-  /// Airbnb or similar rental
-  airbnb,
-  
-  /// Hostel
-  hostel,
-  
-  /// Resort
-  resort,
-  
-  /// Camping
-  camping,
-  
-  /// Friend/Family home
-  friendFamily,
-  
-  /// Vacation rental
-  vacationRental,
-  
-  /// Business lodging
-  business,
-  
-  /// Other accommodation
-  other,
+  /// Stay with friend
+  stayWithFriend,
 }
 
-/// Anniversary subtypes for anniversary tasks
+/// Anniversary subtypes for anniversary tasks (from old React app)
 enum AnniversarySubtype {
   /// Birthday
   birthday,
   
-  /// Wedding anniversary
-  wedding,
-  
-  /// Relationship anniversary
-  relationship,
-  
-  /// Work anniversary
-  work,
-  
-  /// Graduation anniversary
-  graduation,
-  
-  /// Memorial
-  memorial,
-  
-  /// Holiday
-  holiday,
-  
-  /// Other anniversary
-  other,
+  /// Anniversary
+  anniversary,
 }
 
 /// Priority levels for tasks
@@ -240,24 +133,16 @@ extension TransportSubtypeExtension on TransportSubtype {
   /// Get a user-friendly display name for the transport subtype
   String get displayName {
     switch (this) {
-      case TransportSubtype.driving:
-        return 'Driving';
-      case TransportSubtype.publicTransport:
-        return 'Public Transport';
-      case TransportSubtype.walking:
-        return 'Walking';
-      case TransportSubtype.cycling:
-        return 'Cycling';
-      case TransportSubtype.flying:
-        return 'Flying';
-      case TransportSubtype.boating:
-        return 'Boating';
-      case TransportSubtype.rideshare:
-        return 'Rideshare';
+      case TransportSubtype.flight:
+        return 'Flight';
+      case TransportSubtype.train:
+        return 'Train / Public Transport';
+      case TransportSubtype.rentalCar:
+        return 'Rental Car';
       case TransportSubtype.taxi:
         return 'Taxi';
-      case TransportSubtype.other:
-        return 'Other Transport';
+      case TransportSubtype.driveTime:
+        return 'Drive Time';
     }
   }
 }
@@ -267,24 +152,12 @@ extension ActivitySubtypeExtension on ActivitySubtype {
   /// Get a user-friendly display name for the activity subtype
   String get displayName {
     switch (this) {
-      case ActivitySubtype.sports:
-        return 'Sports';
-      case ActivitySubtype.entertainment:
-        return 'Entertainment';
-      case ActivitySubtype.social:
-        return 'Social';
-      case ActivitySubtype.dining:
-        return 'Dining';
-      case ActivitySubtype.shopping:
-        return 'Shopping';
-      case ActivitySubtype.outdoor:
-        return 'Outdoor';
-      case ActivitySubtype.cultural:
-        return 'Cultural';
-      case ActivitySubtype.relaxation:
-        return 'Relaxation';
-      case ActivitySubtype.other:
-        return 'Other Activity';
+      case ActivitySubtype.activity:
+        return 'Activity';
+      case ActivitySubtype.foodActivity:
+        return 'Food';
+      case ActivitySubtype.otherActivity:
+        return 'Other';
     }
   }
 }
@@ -296,22 +169,8 @@ extension AccommodationSubtypeExtension on AccommodationSubtype {
     switch (this) {
       case AccommodationSubtype.hotel:
         return 'Hotel';
-      case AccommodationSubtype.airbnb:
-        return 'Airbnb';
-      case AccommodationSubtype.hostel:
-        return 'Hostel';
-      case AccommodationSubtype.resort:
-        return 'Resort';
-      case AccommodationSubtype.camping:
-        return 'Camping';
-      case AccommodationSubtype.friendFamily:
-        return 'Friend/Family Home';
-      case AccommodationSubtype.vacationRental:
-        return 'Vacation Rental';
-      case AccommodationSubtype.business:
-        return 'Business Lodging';
-      case AccommodationSubtype.other:
-        return 'Other Accommodation';
+      case AccommodationSubtype.stayWithFriend:
+        return 'Stay With Friend';
     }
   }
 }
@@ -323,20 +182,8 @@ extension AnniversarySubtypeExtension on AnniversarySubtype {
     switch (this) {
       case AnniversarySubtype.birthday:
         return 'Birthday';
-      case AnniversarySubtype.wedding:
-        return 'Wedding Anniversary';
-      case AnniversarySubtype.relationship:
-        return 'Relationship Anniversary';
-      case AnniversarySubtype.work:
-        return 'Work Anniversary';
-      case AnniversarySubtype.graduation:
-        return 'Graduation Anniversary';
-      case AnniversarySubtype.memorial:
-        return 'Memorial';
-      case AnniversarySubtype.holiday:
-        return 'Holiday';
-      case AnniversarySubtype.other:
-        return 'Other Anniversary';
+      case AnniversarySubtype.anniversary:
+        return 'Anniversary';
     }
   }
 }

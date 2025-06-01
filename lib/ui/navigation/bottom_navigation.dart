@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vuet_app/ui/lists/lists_screen.dart';
+import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart';
 import 'package:vuet_app/ui/screens/categories/categories_screen.dart';
 import 'package:vuet_app/ui/screens/calendar/calendar_screen.dart';
+import 'package:vuet_app/providers/category_screen_providers.dart';
 // import 'package:vuet_app/ui/navigation/timeblock_navigator.dart'; // Removed TimeblockNavigator
 
 /// Provider for the current bottom navigation index
@@ -19,6 +20,18 @@ class BottomNavigation extends ConsumerWidget {
     // Ensure currentIndex is within the new valid range
     final adjustedCurrentIndex = currentIndex >= 3 ? 3 : currentIndex; // Adjusted for 4 items
 
+    // Listen for tab changes and refresh categories data when categories tab is selected
+    ref.listen(bottomNavIndexProvider, (previous, next) {
+      if (next == 1) { // Categories tab index
+        // Refresh categories data when tab becomes active
+        Future.microtask(() {
+          ref.invalidate(personalCategoriesProvider);
+          ref.invalidate(professionalCategoriesProvider);
+          ref.invalidate(uncategorisedEntitiesCountProvider);
+        });
+      }
+    });
+
     return Scaffold(
       body: IndexedStack(
         index: adjustedCurrentIndex, // Use adjusted index
@@ -27,7 +40,7 @@ class BottomNavigation extends ConsumerWidget {
             child: Center(child: Text('Dashboard - Coming Soon!')),
           ),
           CategoriesScreen(),
-          ListsScreen(),
+          RedesignedListsScreen(),
           // TimeblockNavigator removed
           CalendarScreen(),
         ],

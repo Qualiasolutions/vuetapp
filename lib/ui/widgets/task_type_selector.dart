@@ -198,14 +198,14 @@ class _TaskTypeSelectorState extends State<TaskTypeSelector> {
       case TaskType.activity:
         final activitySubtype = ActivitySubtype.values.firstWhere(
           (e) => e.toString() == subtype,
-          orElse: () => ActivitySubtype.other,
+          orElse: () => ActivitySubtype.activity,
         );
         return activitySubtype.displayName;
         
       case TaskType.transport:
         final transportSubtype = TransportSubtype.values.firstWhere(
           (e) => e.toString() == subtype,
-          orElse: () => TransportSubtype.flying,
+          orElse: () => TransportSubtype.flight,
         );
         return transportSubtype.displayName;
         

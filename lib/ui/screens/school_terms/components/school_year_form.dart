@@ -162,18 +162,82 @@ class _SchoolYearFormState extends ConsumerState<SchoolYearForm> {
         const SizedBox(height: 8),
         entitiesAsync.when(
           loading: () => const CircularProgressIndicator(),
-          error: (error, stack) => Text(
-            'Error loading schools: $error',
-            style: TextStyle(color: Colors.red.shade600),
+          error: (error, stack) => Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.red.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.red.shade200),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.red.shade600),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Error loading entities',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Error: $error',
+                  style: TextStyle(color: Colors.red.shade600, fontSize: 12),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Navigate to create school entity
+                    Navigator.pushNamed(context, '/entities/create', arguments: {
+                      'category': 'Education',
+                      'subtype': 'school',
+                    });
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('Create School Entity'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
           data: (entities) {
-            // Filter for school entities
-            // Assuming 'Education' category has appCategoryId = 3 based on previous mapping
-            const int educationAppCategoryId = 3; 
-            final schools = entities.where((entity) => 
-              entity.subtype == EntitySubtype.school || // More specific check for school subtype
-              entity.appCategoryId == educationAppCategoryId
-            ).toList();
+            // More robust filtering for school entities
+            // Try multiple approaches to find school-related entities
+            List<BaseEntityModel> schools = [];
+            
+            // First, try to find entities with school subtype
+            try {
+              schools.addAll(entities.where((entity) => 
+                entity.subtype == EntitySubtype.school
+              ));
+            } catch (e) {
+              // If there's an enum parsing error, continue
+              debugPrint('Error filtering by school subtype: $e');
+            }
+            
+            // If no schools found by subtype, try by category ID (Education = 3)
+            if (schools.isEmpty) {
+              const int educationAppCategoryId = 3;
+              schools.addAll(entities.where((entity) => 
+                entity.appCategoryId == educationAppCategoryId
+              ));
+            }
+            
+            // If still no schools, try by name pattern
+            if (schools.isEmpty) {
+              schools.addAll(entities.where((entity) => 
+                entity.name.toLowerCase().contains('school') ||
+                entity.name.toLowerCase().contains('university') ||
+                entity.name.toLowerCase().contains('college') ||
+                entity.name.toLowerCase().contains('academy')
+              ));
+            }
             
             if (schools.isEmpty) {
               return Container(
@@ -183,13 +247,34 @@ class _SchoolYearFormState extends ConsumerState<SchoolYearForm> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.orange.shade200),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.warning_outlined, color: Colors.orange.shade600),
-                    const SizedBox(width: 8),
-                    const Expanded(
-                      child: Text(
-                        'No school entities found. Please create a school entity first.',
+                    Row(
+                      children: [
+                        Icon(Icons.warning_outlined, color: Colors.orange.shade600),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'No School Entities Found',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'You need to create a school entity before adding school years. School entities help organize your academic information.',
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        // Navigate to create school entity
+                        _showCreateSchoolDialog();
+                      },
+                      icon: const Icon(Icons.add),
+                      label: const Text('Create School Entity'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
                       ),
                     ),
                   ],
@@ -212,7 +297,22 @@ class _SchoolYearFormState extends ConsumerState<SchoolYearForm> {
               items: schools.map((school) {
                 return DropdownMenuItem<String>(
                   value: school.id,
-                  child: Text(school.name),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.school,
+                        size: 20,
+                        color: Colors.blue.shade600,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          school.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
@@ -224,6 +324,48 @@ class _SchoolYearFormState extends ConsumerState<SchoolYearForm> {
           },
         ),
       ],
+    );
+  }
+
+  void _showCreateSchoolDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Create School Entity'),
+        content: const Text(
+          'You\'ll be taken to the entity creation screen to create a school. After creating the school, come back to add your school year.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Try to navigate to entity creation
+              // This might need to be adjusted based on your actual routing
+              try {
+                Navigator.pushNamed(context, '/entities/create', arguments: {
+                  'category': 'Education',
+                  'subtype': 'school',
+                });
+              } catch (e) {
+                // If routing fails, show a snackbar with instructions
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Please go to Entities > Education > Schools to create a school entity first.',
+                    ),
+                    duration: Duration(seconds: 5),
+                  ),
+                );
+              }
+            },
+            child: const Text('Create School'),
+          ),
+        ],
+      ),
     );
   }
 

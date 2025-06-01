@@ -187,12 +187,27 @@ class _CreateEditTimeblockScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.timeblockId == null ? 'Create Timeblock' : 'Edit Timeblock'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _isLoading ? null : _submitForm,
+        title: Text(
+          widget.timeblockId == null ? 'Create Timeblock' : 'Edit Timeblock',
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF374151), // Explicit dark color
           ),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF374151), // Explicit foreground color
+        elevation: 0,
+        scrolledUnderElevation: 1,
+        actions: [
+          if (!_isLoading)
+            IconButton(
+              onPressed: _submitForm,
+              icon: const Icon(
+                Icons.check,
+                color: Color(0xFF374151),
+              ),
+              tooltip: 'Save',
+            ),
         ],
       ),
       body: _isLoading && widget.timeblockId != null && _editingTimeblock == null

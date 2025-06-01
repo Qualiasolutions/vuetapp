@@ -76,16 +76,21 @@ class _CreateEditRoutineScreenState extends ConsumerState<CreateEditRoutineScree
           widget.routine == null ? 'Create Routine' : 'Edit Routine',
           style: const TextStyle(
             fontWeight: FontWeight.w600,
+            color: Color(0xFF374151),
           ),
         ),
         backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF374151),
         elevation: 0,
         scrolledUnderElevation: 1,
         actions: [
           if (!_isLoading)
             IconButton(
               onPressed: _saveRoutine,
-              icon: const Icon(Icons.check),
+              icon: const Icon(
+                Icons.check,
+                color: Color(0xFF374151),
+              ),
               tooltip: 'Save',
             ),
         ],

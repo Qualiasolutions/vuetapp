@@ -29,7 +29,7 @@ CalendarEventModel _taskToCalendarEvent(TaskModel task) {
     case TaskType.anniversary:
       displayPrefix = 'Anniversary';
       break;
-    case TaskType.deadline:
+    case TaskType.dueDate:
       displayPrefix = 'Due Date';
       break;
     default:

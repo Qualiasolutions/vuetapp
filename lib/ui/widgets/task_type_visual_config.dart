@@ -36,7 +36,7 @@ class TaskTypeVisualConfig {
           displayName: 'Appointment',
           shortName: 'A',
         );
-      case TaskType.deadline:
+      case TaskType.dueDate:
         return const TaskTypeVisualConfig(
           primaryColor: Color(0xFFFF9800), // Orange
           backgroundColor: Color(0xFFFFF3E0), // Light orange
@@ -76,70 +76,6 @@ class TaskTypeVisualConfig {
           displayName: 'Birthday / Anniversary',
           shortName: 'B',
         );
-      case TaskType.payment:
-        return const TaskTypeVisualConfig(
-          primaryColor: Color(0xFF607D8B), // Blue Grey
-          backgroundColor: Color(0xFFECEFF1), // Light Blue Grey
-          icon: Icons.payment,
-          displayName: 'Payment',
-          shortName: 'P',
-        );
-      case TaskType.shopping:
-        return const TaskTypeVisualConfig(
-          primaryColor: Color(0xFFFFC107), // Amber
-          backgroundColor: Color(0xFFFFECB3), // Light Amber
-          icon: Icons.shopping_cart,
-          displayName: 'Shopping',
-          shortName: 'Sh',
-        );
-      case TaskType.health:
-        return const TaskTypeVisualConfig(
-          primaryColor: Color(0xFFF44336), // Red
-          backgroundColor: Color(0xFFFFEBEE), // Light Red
-          icon: Icons.health_and_safety,
-          displayName: 'Health',
-          shortName: 'H',
-        );
-      case TaskType.education:
-        return const TaskTypeVisualConfig(
-          primaryColor: Color(0xFF795548), // Brown
-          backgroundColor: Color(0xFFEFEBE9), // Light Brown
-          icon: Icons.school,
-          displayName: 'Education',
-          shortName: 'Ed',
-        );
-      case TaskType.work:
-        return const TaskTypeVisualConfig(
-          primaryColor: Color(0xFF673AB7), // Deep Purple
-          backgroundColor: Color(0xFFEDE7F6), // Light Deep Purple
-          icon: Icons.work,
-          displayName: 'Work',
-          shortName: 'Wk',
-        );
-      case TaskType.family:
-        return const TaskTypeVisualConfig(
-          primaryColor: Color(0xFFCDDC39), // Lime
-          backgroundColor: Color(0xFFF9FBE7), // Light Lime
-          icon: Icons.family_restroom,
-          displayName: 'Family',
-          shortName: 'F',
-        );
-      case TaskType.personal:
-        return const TaskTypeVisualConfig(
-          primaryColor: Color(0xFF00BCD4), // Cyan
-          backgroundColor: Color(0xFFE0F7FA), // Light Cyan
-          icon: Icons.person,
-          displayName: 'Personal',
-          shortName: 'P',
-        );
-      case TaskType.other:
-        return const TaskTypeVisualConfig(
-          primaryColor: Color(0xFF757575), // Grey
-          backgroundColor: Color(0xFFF5F5F5), // Light grey
-          icon: Icons.category,
-          displayName: 'Other',
-          shortName: 'O',
-        );
     }
   }
 
@@ -160,48 +96,28 @@ class TaskTypeVisualConfig {
   /// Get icon for transport subtype
   static IconData getTransportIcon(TransportSubtype subtype) {
     switch (subtype) {
-      case TransportSubtype.flying:
+      case TransportSubtype.flight:
         return Icons.flight;
-      case TransportSubtype.publicTransport:
+      case TransportSubtype.train:
         return Icons.train;
-      case TransportSubtype.rideshare:
+      case TransportSubtype.rentalCar:
         return Icons.car_rental;
       case TransportSubtype.taxi:
         return Icons.local_taxi;
-      case TransportSubtype.driving:
+      case TransportSubtype.driveTime:
         return Icons.directions_car;
-      case TransportSubtype.walking:
-        return Icons.directions_walk;
-      case TransportSubtype.cycling:
-        return Icons.directions_bike;
-      case TransportSubtype.boating:
-        return Icons.directions_boat;
-      case TransportSubtype.other:
-        return Icons.alt_route;
     }
   }
 
   /// Get icon for activity subtype
   static IconData getActivityIcon(ActivitySubtype subtype) {
     switch (subtype) {
-      case ActivitySubtype.sports:
-        return Icons.sports_basketball;
-      case ActivitySubtype.entertainment:
-        return Icons.movie;
-      case ActivitySubtype.social:
-        return Icons.people;
-      case ActivitySubtype.dining:
-        return Icons.restaurant;
-      case ActivitySubtype.shopping:
-        return Icons.shopping_bag;
-      case ActivitySubtype.outdoor:
-        return Icons.landscape;
-      case ActivitySubtype.cultural:
-        return Icons.museum;
-      case ActivitySubtype.relaxation:
-        return Icons.spa;
-      case ActivitySubtype.other:
+      case ActivitySubtype.activity:
         return Icons.local_activity;
+      case ActivitySubtype.foodActivity:
+        return Icons.restaurant;
+      case ActivitySubtype.otherActivity:
+        return Icons.category;
     }
   }
 
@@ -210,22 +126,8 @@ class TaskTypeVisualConfig {
     switch (subtype) {
       case AccommodationSubtype.hotel:
         return Icons.hotel;
-      case AccommodationSubtype.friendFamily:
+      case AccommodationSubtype.stayWithFriend:
         return Icons.home;
-      case AccommodationSubtype.airbnb:
-        return Icons.house;
-      case AccommodationSubtype.hostel:
-        return Icons.bed;
-      case AccommodationSubtype.resort:
-        return Icons.beach_access;
-      case AccommodationSubtype.camping:
-        return Icons.cabin;
-      case AccommodationSubtype.vacationRental:
-        return Icons.holiday_village;
-      case AccommodationSubtype.business:
-        return Icons.business_center;
-      case AccommodationSubtype.other:
-        return Icons.apartment;
     }
   }
 
@@ -234,20 +136,8 @@ class TaskTypeVisualConfig {
     switch (subtype) {
       case AnniversarySubtype.birthday:
         return Icons.cake;
-      case AnniversarySubtype.wedding:
+      case AnniversarySubtype.anniversary:
         return Icons.favorite;
-      case AnniversarySubtype.relationship:
-        return Icons.volunteer_activism;
-      case AnniversarySubtype.work:
-        return Icons.work;
-      case AnniversarySubtype.graduation:
-        return Icons.school;
-      case AnniversarySubtype.memorial:
-        return Icons.sentiment_very_satisfied;
-      case AnniversarySubtype.holiday:
-        return Icons.celebration;
-      case AnniversarySubtype.other:
-        return Icons.event_note;
     }
   }
 

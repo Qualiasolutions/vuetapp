@@ -48,20 +48,28 @@ class RoutineDetailScreen extends ConsumerWidget {
           'Routine Details',
           style: TextStyle(
             fontWeight: FontWeight.w600,
+            color: Color(0xFF374151),
           ),
         ),
         backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF374151),
         elevation: 0,
         scrolledUnderElevation: 1,
         actions: [
           IconButton(
             onPressed: () => _editRoutine(context, routineAsync.value),
-            icon: const Icon(Icons.edit_outlined),
+            icon: const Icon(
+              Icons.edit_outlined,
+              color: Color(0xFF374151),
+            ),
             tooltip: 'Edit Routine',
           ),
           IconButton(
             onPressed: () => _showDeleteConfirmation(context, ref),
-            icon: const Icon(Icons.delete_outline),
+            icon: const Icon(
+              Icons.delete_outline,
+              color: Colors.red,
+            ),
             tooltip: 'Delete Routine',
           ),
         ],

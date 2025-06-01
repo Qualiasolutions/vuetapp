@@ -59,40 +59,85 @@ class _RedesignedListsScreenState extends ConsumerState<RedesignedListsScreen>
       appBar: AppBar(
         title: const Text(
           'My Lists',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF374151), // Explicit dark color
+          ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF374151), // Explicit foreground color
         elevation: 0,
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
+          preferredSize: const Size.fromHeight(60),
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha((0.05 * 255).round()),
-                  blurRadius: 10,
+                  color: Colors.black.withAlpha((0.08 * 255).round()),
+                  blurRadius: 12,
                   offset: const Offset(0, 2),
                 ),
               ],
+              border: Border.all(color: Colors.grey.shade200),
             ),
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(14),
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF0D9488), Color(0xFF14B8A6)],
+                  colors: [Color(0xFF0F766E), Color(0xFF0D9488)], // Teal gradient
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF0D9488).withAlpha((0.3 * 255).round()),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
+              indicatorPadding: const EdgeInsets.all(4),
               labelColor: Colors.white,
-              unselectedLabelColor: Colors.grey.shade600,
-              labelStyle: const TextStyle(fontWeight: FontWeight.w600),
-              tabs: const [
-                Tab(text: 'Planning'),
-                Tab(text: 'Shopping'),
+              unselectedLabelColor: const Color(0xFF6B7280),
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+              dividerColor: Colors.transparent,
+              tabs: [
+                Tab(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.checklist, size: 18),
+                        const SizedBox(width: 6),
+                        Text('Planning'),
+                      ],
+                    ),
+                  ),
+                ),
+                Tab(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.shopping_cart, size: 18),
+                        const SizedBox(width: 6),
+                        Text('Shopping'),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

@@ -2,10 +2,11 @@
 // TODO: Convert to Freezed models after build_runner is working properly
 
 class CategorySetupCompletion {
-  final int id;
+  final String id;
   final String userId;
   final String categoryId;
-  final DateTime completedAt;
+  final bool isCompleted;
+  final DateTime? completedAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -13,17 +14,21 @@ class CategorySetupCompletion {
     required this.id,
     required this.userId,
     required this.categoryId,
-    required this.completedAt,
+    required this.isCompleted,
+    this.completedAt,
     this.createdAt,
     this.updatedAt,
   });
 
   factory CategorySetupCompletion.fromJson(Map<String, dynamic> json) {
     return CategorySetupCompletion(
-      id: json['id'] as int,
+      id: json['id'] as String,
       userId: json['user_id'] as String,
       categoryId: json['category_id'] as String,
-      completedAt: DateTime.parse(json['completed_at'] as String),
+      isCompleted: json['is_completed'] as bool? ?? true,
+      completedAt: json['completed_at'] != null 
+          ? DateTime.parse(json['completed_at'] as String) 
+          : null,
       createdAt: json['created_at'] != null 
           ? DateTime.parse(json['created_at'] as String) 
           : null,
@@ -38,7 +43,8 @@ class CategorySetupCompletion {
       'id': id,
       'user_id': userId,
       'category_id': categoryId,
-      'completed_at': completedAt.toIso8601String(),
+      'is_completed': isCompleted,
+      'completed_at': completedAt?.toIso8601String(),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -46,28 +52,33 @@ class CategorySetupCompletion {
 }
 
 class EntityTypeSetupCompletion {
-  final int id;
+  final String id;
   final String userId;
-  final String entityTypeName;
-  final DateTime completedAt;
+  final String entityType;
+  final bool isCompleted;
+  final DateTime? completedAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
   const EntityTypeSetupCompletion({
     required this.id,
     required this.userId,
-    required this.entityTypeName,
-    required this.completedAt,
+    required this.entityType,
+    required this.isCompleted,
+    this.completedAt,
     this.createdAt,
     this.updatedAt,
   });
 
   factory EntityTypeSetupCompletion.fromJson(Map<String, dynamic> json) {
     return EntityTypeSetupCompletion(
-      id: json['id'] as int,
+      id: json['id'] as String,
       userId: json['user_id'] as String,
-      entityTypeName: json['entity_type_name'] as String,
-      completedAt: DateTime.parse(json['completed_at'] as String),
+      entityType: json['entity_type'] as String,
+      isCompleted: json['is_completed'] as bool,
+      completedAt: json['completed_at'] != null 
+          ? DateTime.parse(json['completed_at'] as String) 
+          : null,
       createdAt: json['created_at'] != null 
           ? DateTime.parse(json['created_at'] as String) 
           : null,
@@ -81,8 +92,9 @@ class EntityTypeSetupCompletion {
     return {
       'id': id,
       'user_id': userId,
-      'entity_type_name': entityTypeName,
-      'completed_at': completedAt.toIso8601String(),
+      'entity_type': entityType,
+      'is_completed': isCompleted,
+      'completed_at': completedAt?.toIso8601String(),
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };

@@ -649,6 +649,10 @@ class EntityDetailScreen extends ConsumerWidget {
       case EntitySubtype.dentist:
       case EntitySubtype.doctor:
       case EntitySubtype.stylist:
+      case EntitySubtype.therapist:
+      case EntitySubtype.physiotherapist:
+      case EntitySubtype.specialist:
+      case EntitySubtype.surgeon:
         return const Color(0xFF4CAF50);
       case EntitySubtype.home:
       case EntitySubtype.room:
@@ -670,7 +674,27 @@ class EntityDetailScreen extends ConsumerWidget {
       case EntitySubtype.car:
       case EntitySubtype.boat:
       case EntitySubtype.publicTransport:
+      case EntitySubtype.motorcycle:
+      case EntitySubtype.bicycle:
+      case EntitySubtype.truck:
+      case EntitySubtype.van:
+      case EntitySubtype.rv:
+      case EntitySubtype.atv:
+      case EntitySubtype.jetSki:
         return const Color(0xFF607D8B);
+      // Document entities
+      case EntitySubtype.document:
+      case EntitySubtype.passport:
+      case EntitySubtype.license:
+      case EntitySubtype.bankStatement:
+      case EntitySubtype.taxDocument:
+      case EntitySubtype.contract:
+      case EntitySubtype.will:
+      case EntitySubtype.medicalRecord:
+      case EntitySubtype.prescription:
+      case EntitySubtype.resume:
+      case EntitySubtype.certificate:
+        return const Color(0xFF3F51B5);
     }
   }
 
@@ -680,15 +704,121 @@ class EntityDetailScreen extends ConsumerWidget {
       case EntitySubtype.pet:
         return Icons.pets;
       case EntitySubtype.vet:
+      case EntitySubtype.doctor:
+      case EntitySubtype.dentist:
+      case EntitySubtype.specialist:
+      case EntitySubtype.surgeon:
         return Icons.medical_services;
+      case EntitySubtype.therapist:
+      case EntitySubtype.physiotherapist:
+        return Icons.psychology;
+      case EntitySubtype.petWalker:
+        return Icons.directions_walk;
+      case EntitySubtype.petGroomer:
+      case EntitySubtype.stylist:
+      case EntitySubtype.beautySalon:
+        return Icons.content_cut;
       case EntitySubtype.car:
         return Icons.directions_car;
+      case EntitySubtype.motorcycle:
+        return Icons.two_wheeler;
+      case EntitySubtype.bicycle:
+        return Icons.pedal_bike;
+      case EntitySubtype.truck:
+      case EntitySubtype.van:
+        return Icons.local_shipping;
+      case EntitySubtype.boat:
+      case EntitySubtype.jetSki:
+        return Icons.directions_boat;
+      case EntitySubtype.rv:
+      case EntitySubtype.atv:
+        return Icons.rv_hookup;
+      case EntitySubtype.publicTransport:
+        return Icons.directions_bus;
       case EntitySubtype.home:
         return Icons.home;
+      case EntitySubtype.room:
+        return Icons.meeting_room;
+      case EntitySubtype.appliance:
+        return Icons.kitchen;
+      case EntitySubtype.contractor:
+        return Icons.engineering;
+      case EntitySubtype.furniture:
+        return Icons.chair;
       case EntitySubtype.event:
+      case EntitySubtype.anniversary:
+      case EntitySubtype.birthday:
         return Icons.event;
+      case EntitySubtype.holiday:
+      case EntitySubtype.holidayPlan:
+        return Icons.celebration;
       case EntitySubtype.hobby:
         return Icons.sports_esports;
+      case EntitySubtype.socialMedia:
+        return Icons.share;
+      case EntitySubtype.socialPlan:
+        return Icons.people;
+      case EntitySubtype.guestListInvite:
+        return Icons.person_add;
+      case EntitySubtype.trip:
+        return Icons.flight;
+      case EntitySubtype.gardenTool:
+        return Icons.agriculture;
+      case EntitySubtype.plant:
+        return Icons.local_florist;
+      case EntitySubtype.foodPlan:
+      case EntitySubtype.recipe:
+        return Icons.restaurant_menu;
+      case EntitySubtype.restaurant:
+        return Icons.restaurant;
+      case EntitySubtype.laundryItem:
+      case EntitySubtype.dryCleaners:
+        return Icons.local_laundry_service;
+      case EntitySubtype.bank:
+      case EntitySubtype.bankAccount:
+      case EntitySubtype.bankStatement:
+        return Icons.account_balance;
+      case EntitySubtype.creditCard:
+        return Icons.credit_card;
+      case EntitySubtype.document:
+        return Icons.description;
+      case EntitySubtype.passport:
+        return Icons.badge;
+      case EntitySubtype.license:
+        return Icons.card_membership;
+      case EntitySubtype.taxDocument:
+        return Icons.receipt;
+      case EntitySubtype.contract:
+        return Icons.gavel;
+      case EntitySubtype.will:
+        return Icons.library_books;
+      case EntitySubtype.medicalRecord:
+      case EntitySubtype.prescription:
+        return Icons.healing;
+      case EntitySubtype.resume:
+      case EntitySubtype.certificate:
+        return Icons.work;
+      case EntitySubtype.academicPlan:
+        return Icons.assignment;
+      case EntitySubtype.extracurricularPlan:
+        return Icons.sports;
+      case EntitySubtype.school:
+        return Icons.account_balance;
+      case EntitySubtype.student:
+        return Icons.school;
+      case EntitySubtype.teacher:
+      case EntitySubtype.tutor:
+        return Icons.person;
+      case EntitySubtype.courseWork:
+      case EntitySubtype.subject:
+        return Icons.book;
+      case EntitySubtype.colleague:
+      case EntitySubtype.work:
+        return Icons.business_center;
+      case EntitySubtype.microchipCompany:
+      case EntitySubtype.petInsuranceCompany:
+      case EntitySubtype.petInsurancePolicy:
+        return Icons.security;
       default:
         return Icons.folder;
     }

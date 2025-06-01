@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:vuet_app/ui/lists/lists_screen_modernized.dart';
+
+enum ShoppingGroupMode { none, store, category }
 
 class ShoppingGroupControls extends StatelessWidget {
   final ShoppingGroupMode currentMode;

@@ -21,18 +21,23 @@ class RoutinesScreen extends ConsumerWidget {
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 24,
+            color: Color(0xFF374151),
           ),
         ),
         backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF374151),
         elevation: 0,
         scrolledUnderElevation: 1,
         actions: [
           IconButton(
             onPressed: () => _navigateToCreateRoutine(context),
-            icon: const Icon(Icons.add_rounded),
+            icon: const Icon(
+              Icons.add_rounded,
+              color: Colors.white,
+            ),
             style: IconButton.styleFrom(
-              backgroundColor: Colors.blue.shade50,
-              foregroundColor: Colors.blue.shade700,
+              backgroundColor: Colors.blue.shade600,
+              foregroundColor: Colors.white,
             ),
           ),
           const SizedBox(width: 16),

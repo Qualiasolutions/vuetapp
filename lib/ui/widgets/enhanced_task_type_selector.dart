@@ -82,7 +82,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
           value: _selectedTaskSubtype != null
               ? TransportSubtype.values.firstWhere(
                   (e) => e.toString() == 'TransportSubtype.$_selectedTaskSubtype',
-                  orElse: () => TransportSubtype.other,
+                  orElse: () => TransportSubtype.flight,
                 )
               : null,
           items: TransportSubtype.values.map((subtype) {
@@ -104,7 +104,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
           value: _selectedTaskSubtype != null
               ? ActivitySubtype.values.firstWhere(
                   (e) => e.toString() == 'ActivitySubtype.$_selectedTaskSubtype',
-                  orElse: () => ActivitySubtype.other,
+                  orElse: () => ActivitySubtype.activity,
                 )
               : null,
           items: ActivitySubtype.values.map((subtype) {
@@ -126,7 +126,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
           value: _selectedTaskSubtype != null
               ? AccommodationSubtype.values.firstWhere(
                   (e) => e.toString() == 'AccommodationSubtype.$_selectedTaskSubtype',
-                  orElse: () => AccommodationSubtype.other,
+                  orElse: () => AccommodationSubtype.hotel,
                 )
               : null,
           items: AccommodationSubtype.values.map((subtype) {
@@ -148,7 +148,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
           value: _selectedTaskSubtype != null
               ? AnniversarySubtype.values.firstWhere(
                   (e) => e.toString() == 'AnniversarySubtype.$_selectedTaskSubtype',
-                  orElse: () => AnniversarySubtype.other,
+                  orElse: () => AnniversarySubtype.birthday,
                 )
               : null,
           items: AnniversarySubtype.values.map((subtype) {
@@ -164,7 +164,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
             widget.onTypeChanged(_selectedTaskType, _selectedTaskSubtype, _selectedEntityId);
           },
         );
-      case TaskType.deadline: // Changed from TaskType.dueDate
+      case TaskType.dueDate:
         return const SizedBox.shrink(); // No specific subtype for deadline
       default:
         return const SizedBox.shrink();

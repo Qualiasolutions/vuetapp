@@ -78,6 +78,14 @@ enum EntitySubtype {
   doctor,
   @JsonValue('Stylist')
   stylist,
+  @JsonValue('Therapist')
+  therapist,
+  @JsonValue('Physiotherapist')
+  physiotherapist,
+  @JsonValue('Medical Specialist')
+  specialist,
+  @JsonValue('Surgeon')
+  surgeon,
   
   // Home entities (Category 7)
   @JsonValue('Appliance')
@@ -126,10 +134,48 @@ enum EntitySubtype {
   car,
   @JsonValue('Public Transport')
   publicTransport,
+  @JsonValue('Motorcycle')
+  motorcycle,
+  @JsonValue('Bicycle')
+  bicycle,
+  @JsonValue('Truck')
+  truck,
+  @JsonValue('Van')
+  van,
+  @JsonValue('RV')
+  rv,
+  @JsonValue('ATV')
+  atv,
+  @JsonValue('Jet Ski')
+  jetSki,
   
   // Travel entities (Category 5)
   @JsonValue('Trip')
   trip,
+  
+  // Document entities (Category 14)
+  @JsonValue('Document')
+  document,
+  @JsonValue('Passport')
+  passport,
+  @JsonValue('License')
+  license,
+  @JsonValue('Bank Statement')
+  bankStatement,
+  @JsonValue('Tax Document')
+  taxDocument,
+  @JsonValue('Contract')
+  contract,
+  @JsonValue('Will')
+  will,
+  @JsonValue('Medical Record')
+  medicalRecord,
+  @JsonValue('Prescription')
+  prescription,
+  @JsonValue('Resume')
+  resume,
+  @JsonValue('Certificate')
+  certificate,
 }
 
 @freezed
@@ -203,6 +249,10 @@ class EntityTypeHelper {
     EntitySubtype.dentist: 6,
     EntitySubtype.doctor: 6,
     EntitySubtype.stylist: 6,
+    EntitySubtype.therapist: 6,
+    EntitySubtype.physiotherapist: 6,
+    EntitySubtype.specialist: 6,
+    EntitySubtype.surgeon: 6,
     
     // Home (Category 7)
     EntitySubtype.appliance: 7,
@@ -233,6 +283,26 @@ class EntityTypeHelper {
     EntitySubtype.boat: 12,
     EntitySubtype.car: 12,
     EntitySubtype.publicTransport: 12,
+    EntitySubtype.motorcycle: 12,
+    EntitySubtype.bicycle: 12,
+    EntitySubtype.truck: 12,
+    EntitySubtype.van: 12,
+    EntitySubtype.rv: 12,
+    EntitySubtype.atv: 12,
+    EntitySubtype.jetSki: 12,
+    
+    // Documents (Category 14)
+    EntitySubtype.document: 14,
+    EntitySubtype.passport: 14,
+    EntitySubtype.license: 14,
+    EntitySubtype.bankStatement: 14,
+    EntitySubtype.taxDocument: 14,
+    EntitySubtype.contract: 14,
+    EntitySubtype.will: 14,
+    EntitySubtype.medicalRecord: 14,
+    EntitySubtype.prescription: 14,
+    EntitySubtype.resume: 14,
+    EntitySubtype.certificate: 14,
   };
   
   static int getCategoryId(EntitySubtype subtype) {

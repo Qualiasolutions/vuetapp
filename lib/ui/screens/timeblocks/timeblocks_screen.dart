@@ -46,14 +46,21 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
       appBar: AppBar(
         title: const Text(
           'Weekly Schedule',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF374151),
+          ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF374151),
         elevation: 0,
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(
+              Icons.refresh,
+              color: Color(0xFF374151),
+            ),
             onPressed: () => ref.refresh(userTimeblocksProvider),
             tooltip: 'Refresh',
           ),

@@ -17,12 +17,13 @@ import 'package:vuet_app/ui/screens/auth/auth_wrapper.dart';
 import 'package:vuet_app/ui/screens/auth/update_password_screen.dart';
 import 'package:vuet_app/ui/screens/notifications/notifications_screen.dart';
 import 'package:vuet_app/ui/screens/home/modernized_home_screen.dart'; // Updated for modernized version
-import 'package:vuet_app/ui/screens/categories/modernized_categories_screen.dart'; // Updated for modernized version
+import 'package:vuet_app/ui/screens/categories/categories_screen.dart'; // Updated to use categories screen with toggle
 import 'package:vuet_app/widgets/notification_badge.dart';
 import 'package:vuet_app/utils/deep_link_handler.dart';
 import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart'; // Updated with new redesigned version
 import 'package:vuet_app/ui/screens/lana_chat_screen.dart'; // Updated to new LANA chat screen
 import 'package:vuet_app/ui/screens/account_settings/account_settings_screen.dart'; // New account settings
+import 'package:vuet_app/ui/screens/account/my_account_screen.dart'; // My Account screen
 import 'package:vuet_app/ui/screens/settings/settings_screen.dart'; // Added SettingsScreen
 import 'package:vuet_app/ui/screens/routines/routines_screen.dart'; // Added RoutinesScreen
 import 'package:vuet_app/ui/navigation/timeblock_navigator.dart'; // Added TimeblockNavigator
@@ -245,7 +246,7 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
     super.initState();
     _widgetOptions = <Widget>[
       const ModernizedHomeScreen(), // HOME (first)
-      const ModernizedCategoriesScreen(), // CATEGORIES (second)
+      const CategoriesScreen(), // CATEGORIES (second)
       const RedesignedListsScreen(), // LISTS (third)
       const LanaChatScreen(), // LANA (fourth)
     ];
@@ -341,6 +342,17 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
             ),
             ListTile(
               leading: const Icon(Icons.account_circle),
+              title: const Text('My Account'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => const MyAccountScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings_applications),
               title: const Text('Account Settings'),
               onTap: () {
                 Navigator.pop(context); // Close the drawer

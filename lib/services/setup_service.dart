@@ -40,6 +40,7 @@ class SetupService {
     await _supabase.from('category_setup_completions').insert({
       'user_id': userId,
       'category_id': categoryId,
+      'is_completed': true,
       'completed_at': DateTime.now().toIso8601String(),
     });
   }
@@ -67,7 +68,7 @@ class SetupService {
         .from('entity_type_setup_completions')
         .select('id')
         .eq('user_id', userId)
-        .eq('entity_type_name', entityTypeName)
+        .eq('entity_type', entityTypeName)
         .maybeSingle();
 
     return response != null;
@@ -79,7 +80,8 @@ class SetupService {
 
     await _supabase.from('entity_type_setup_completions').insert({
       'user_id': userId,
-      'entity_type_name': entityTypeName,
+      'entity_type': entityTypeName,
+      'is_completed': true,
       'completed_at': DateTime.now().toIso8601String(),
     });
   }
@@ -110,12 +112,12 @@ class SetupService {
 
     final response = await _supabase
         .from('entity_type_setup_completions')
-        .select('entity_type_name')
+        .select('entity_type')
         .eq('user_id', userId)
-        .inFilter('entity_type_name', entityTypeNames);
+        .inFilter('entity_type', entityTypeNames);
 
     final completedEntityTypes = (response as List)
-        .map((row) => row['entity_type_name'] as String)
+        .map((row) => row['entity_type'] as String)
         .toSet();
 
     return Map.fromEntries(

@@ -2,20 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/entity_category_model.dart';
 import 'package:vuet_app/repositories/supabase_category_repository.dart'; // Import the repository
+import 'package:vuet_app/providers/category_screen_providers.dart'; // Import centralized providers
 // Assuming PremiumTag widget exists
 // For generating dummy IDs
-
-// Provider for professional categories, fetching data from the repository
-final professionalCategoriesProvider = FutureProvider<List<EntityCategoryModel>>((ref) async {
-  final repository = ref.read(supabaseCategoryRepositoryProvider);
-  return repository.fetchProfessionalCategories();
-});
-
-// Provider for uncategorised entities count
-final uncategorisedEntitiesCountProvider = FutureProvider<int>((ref) async {
-  final repository = ref.read(supabaseCategoryRepositoryProvider);
-  return repository.fetchUncategorisedEntitiesCount();
-});
 
 
 class ProfessionalCategoriesList extends ConsumerStatefulWidget {
@@ -39,18 +28,27 @@ class _ProfessionalCategoriesListState extends ConsumerState<ProfessionalCategor
     final uncategorisedCountAsyncValue = ref.watch(uncategorisedEntitiesCountProvider);
     final repository = ref.read(supabaseCategoryRepositoryProvider);
 
-    return categoriesAsyncValue.when(
-      data: (categories) {
-        final uncategorisedCount = uncategorisedCountAsyncValue.when(
-          data: (count) => count,
-          loading: () => 0, // Default to 0 while loading
-          error: (error, stack) => 0, // Default to 0 on error
-        );
+    return RefreshIndicator(
+      onRefresh: () async {
+        // Refresh both providers by invalidating them
+        ref.invalidate(professionalCategoriesProvider);
+        ref.invalidate(uncategorisedEntitiesCountProvider);
+        // Wait a moment for the providers to refresh
+        await Future.delayed(const Duration(milliseconds: 500));
+      },
+      child: categoriesAsyncValue.when(
+        data: (categories) {
+          final uncategorisedCount = uncategorisedCountAsyncValue.when(
+            data: (count) => count,
+            loading: () => 0, // Default to 0 while loading
+            error: (error, stack) => 0, // Default to 0 on error
+          );
 
-        return Column(
+          return Column(
           children: [
             Expanded(
               child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(), // Enable scrolling even with few items for pull-to-refresh
                 padding: const EdgeInsets.all(10.0),
                 itemCount: categories.length + (uncategorisedCount > 0 ? 1 : 0), // Add 1 for uncategorised if needed
                 itemBuilder: (context, index) {
@@ -241,9 +239,23 @@ class _ProfessionalCategoriesListState extends ConsumerState<ProfessionalCategor
               ),
           ],
         );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(child: Text('Error: $error')),
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(professionalCategoriesProvider);
+            ref.invalidate(uncategorisedEntitiesCountProvider);
+            await Future.delayed(const Duration(milliseconds: 500));
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: Center(child: Text('Error: $error\n\nPull to refresh')),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

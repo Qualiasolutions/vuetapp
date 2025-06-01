@@ -91,25 +91,43 @@ class TimeblockDetailScreen extends ConsumerWidget {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Timeblock Details'),
+        title: const Text(
+          'Timeblock Details',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF374151), // Explicit dark color
+          ),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF374151), // Explicit foreground color
+        elevation: 0,
+        scrolledUnderElevation: 1,
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => CreateEditTimeblockScreen(
-                    timeblockId: timeblockId,
+              if (timeblockAsyncValue.hasValue && timeblockAsyncValue.value != null) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CreateEditTimeblockScreen(
+                      timeblockId: timeblockAsyncValue.value!.id,
+                    ),
                   ),
-                ),
-              );
+                );
+              }
             },
+            icon: const Icon(
+              Icons.edit_outlined,
+              color: Color(0xFF374151),
+            ),
+            tooltip: 'Edit Timeblock',
           ),
           IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              _confirmDelete(context, ref);
-            },
+            onPressed: () => _confirmDelete(context, ref),
+            icon: const Icon(
+              Icons.delete_outline,
+              color: Colors.red,
+            ),
+            tooltip: 'Delete Timeblock',
           ),
         ],
       ),

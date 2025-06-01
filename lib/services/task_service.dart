@@ -10,6 +10,7 @@ import 'package:vuet_app/services/notification_service.dart';
 import 'package:vuet_app/utils/error_handler.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'package:uuid/uuid.dart';
 
 /// Service for managing tasks in the application
 class TaskService extends ChangeNotifier {
@@ -32,6 +33,7 @@ class TaskService extends ChangeNotifier {
   final StreamController<List<TaskModel>> _taskUpdatesController = StreamController<List<TaskModel>>.broadcast();
   
   bool _isDisposed = false; // Add this line
+  final Uuid _uuid = const Uuid();
 
   /// Constructor
   TaskService({
@@ -140,7 +142,7 @@ class TaskService extends ChangeNotifier {
     
     try {
       final task = TaskModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: _uuid.v4(),
         title: title,
         description: description,
         dueDate: dueDate,

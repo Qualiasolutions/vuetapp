@@ -1,4 +1,4 @@
- import 'package:vuet_app/models/entity_model.dart';
+import 'package:vuet_app/models/entity_model.dart';
 import 'package:vuet_app/models/form_field_definition.dart';
 
 final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
@@ -224,6 +224,33 @@ final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
     const FormFieldDefinition(name: 'specialties', label: 'Specialties', type: FormFieldType.multilineText, isRequired: false),
   ],
 
+  EntitySubtype.therapist: [
+    const FormFieldDefinition(name: 'therapist_name', label: 'Therapist Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'specialty', label: 'Specialty', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'practice_name', label: 'Practice Name', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+  ],
+
+  EntitySubtype.physiotherapist: [
+    const FormFieldDefinition(name: 'physio_name', label: 'Physiotherapist Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'clinic_name', label: 'Clinic Name', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+  ],
+
+  EntitySubtype.specialist: [
+    const FormFieldDefinition(name: 'specialist_name', label: 'Specialist Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'specialty', label: 'Specialty', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'hospital', label: 'Hospital/Practice', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+  ],
+
+  EntitySubtype.surgeon: [
+    const FormFieldDefinition(name: 'surgeon_name', label: 'Surgeon Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'specialty', label: 'Specialty', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'hospital', label: 'Hospital', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
+  ],
+
   // ========== HOME CATEGORY (Category 7) - 5 entity types ==========
   EntitySubtype.appliance: [
     const FormFieldDefinition(name: 'appliance_type', label: 'Appliance Type', type: FormFieldType.text, isRequired: true),
@@ -337,24 +364,157 @@ final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
 
   // ========== TRANSPORT CATEGORY (Category 12) - 3 entity types ==========
   EntitySubtype.boat: [
-    const FormFieldDefinition(name: 'boat_name', label: 'Boat Name', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'boat_type', label: 'Boat Type', type: FormFieldType.text, isRequired: false),
-    const FormFieldDefinition(name: 'registration', label: 'Registration Number', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'boat_type', label: 'Boat Type', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'registration_number', label: 'Registration Number', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'length', label: 'Length', type: FormFieldType.text, isRequired: false),
   ],
 
   EntitySubtype.car: [
-    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true, hintText: 'e.g., Toyota, Honda'),
-    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: false, hintText: 'e.g., Camry, Civic'),
-    const FormFieldDefinition(name: 'registration', label: 'Registration/Plate', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
   ],
 
   EntitySubtype.publicTransport: [
-    const FormFieldDefinition(name: 'transport_type', label: 'Transport Type', type: FormFieldType.dropdown, isRequired: false, options: [
+    const FormFieldDefinition(name: 'transport_type', label: 'Transport Type', type: FormFieldType.dropdown, isRequired: true, options: [
       FormFieldOption(value: 'bus', label: 'Bus'),
       FormFieldOption(value: 'train', label: 'Train'),
-      FormFieldOption(value: 'subway', label: 'Subway'),
-      FormFieldOption(value: 'ferry', label: 'Ferry'),
+      FormFieldOption(value: 'subway', label: 'Subway/Metro'),
     ]),
-    const FormFieldDefinition(name: 'route_info', label: 'Route Information', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'route_number', label: 'Route Number/Line', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.motorcycle: [
+    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'registration', label: 'Registration', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.bicycle: [
+    const FormFieldDefinition(name: 'bike_type', label: 'Bicycle Type', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'brand', label: 'Brand', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'frame_size', label: 'Frame Size', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'serial_number', label: 'Serial Number', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.truck: [
+    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'registration', label: 'Registration', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'cargo_capacity', label: 'Cargo Capacity', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.van: [
+    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'registration', label: 'Registration', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'seating_capacity', label: 'Seating Capacity', type: FormFieldType.number, isRequired: false),
+  ],
+
+  EntitySubtype.rv: [
+    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'length', label: 'Length', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'sleeping_capacity', label: 'Sleeping Capacity', type: FormFieldType.number, isRequired: false),
+  ],
+
+  EntitySubtype.atv: [
+    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'engine_size', label: 'Engine Size (cc)', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'vin', label: 'VIN/Serial Number', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.jetSki: [
+    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'engine_size', label: 'Engine Size (cc)', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'hull_id', label: 'Hull ID Number', type: FormFieldType.text, isRequired: false),
+  ],
+
+  // ========== DOCUMENTS CATEGORY (Category 14) - 11 entity types ==========
+  EntitySubtype.document: [
+    const FormFieldDefinition(name: 'doc_type', label: 'Document Type', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'date_issued', label: 'Date Issued', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'expiry_date', label: 'Expiry Date', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'reference_number', label: 'Reference Number', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'location', label: 'Storage Location', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.passport: [
+    const FormFieldDefinition(name: 'passport_number', label: 'Passport Number', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'country', label: 'Country of Issue', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'issue_date', label: 'Issue Date', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'expiry_date', label: 'Expiry Date', type: FormFieldType.date, isRequired: true),
+  ],
+
+  EntitySubtype.license: [
+    const FormFieldDefinition(name: 'license_type', label: 'License Type', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'license_number', label: 'License Number', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'issuing_authority', label: 'Issuing Authority', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'issue_date', label: 'Issue Date', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'expiry_date', label: 'Expiry Date', type: FormFieldType.date, isRequired: true),
+  ],
+
+  EntitySubtype.bankStatement: [
+    const FormFieldDefinition(name: 'bank_name', label: 'Bank Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'account_number', label: 'Account Number', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'statement_date', label: 'Statement Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'statement_period', label: 'Statement Period', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.taxDocument: [
+    const FormFieldDefinition(name: 'tax_year', label: 'Tax Year', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'document_type', label: 'Document Type', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'filing_date', label: 'Filing Date', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'reference_number', label: 'Reference Number', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.contract: [
+    const FormFieldDefinition(name: 'contract_type', label: 'Contract Type', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'parties_involved', label: 'Parties Involved', type: FormFieldType.multilineText, isRequired: true),
+    const FormFieldDefinition(name: 'start_date', label: 'Start Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'end_date', label: 'End Date', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'value', label: 'Contract Value', type: FormFieldType.number, isRequired: false),
+  ],
+
+  EntitySubtype.will: [
+    const FormFieldDefinition(name: 'creation_date', label: 'Creation Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'executor', label: 'Executor', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'attorney', label: 'Attorney', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'storage_location', label: 'Storage Location', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.medicalRecord: [
+    const FormFieldDefinition(name: 'patient_name', label: 'Patient Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'record_type', label: 'Record Type', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'date', label: 'Record Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'provider', label: 'Healthcare Provider', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.prescription: [
+    const FormFieldDefinition(name: 'medication', label: 'Medication', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'doctor', label: 'Prescribing Doctor', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'issue_date', label: 'Issue Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'dosage', label: 'Dosage', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'refills', label: 'Refills', type: FormFieldType.number, isRequired: false),
+  ],
+
+  EntitySubtype.resume: [
+    const FormFieldDefinition(name: 'version', label: 'Version/Revision', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'last_updated', label: 'Last Updated', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'target_job', label: 'Target Job/Industry', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.certificate: [
+    const FormFieldDefinition(name: 'certificate_type', label: 'Certificate Type', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'issuing_organization', label: 'Issuing Organization', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'issue_date', label: 'Issue Date', type: FormFieldType.date, isRequired: true),
+    const FormFieldDefinition(name: 'expiry_date', label: 'Expiry Date', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'credential_id', label: 'Credential ID', type: FormFieldType.text, isRequired: false),
   ],
 };

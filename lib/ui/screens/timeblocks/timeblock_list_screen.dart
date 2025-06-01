@@ -55,7 +55,17 @@ class TimeblockListScreen extends ConsumerWidget {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Timeblocks'),
+        title: const Text(
+          'My Timeblocks',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF374151), // Explicit dark color
+          ),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF374151), // Explicit foreground color
+        elevation: 0,
+        scrolledUnderElevation: 1,
       ),
       body: timeblocksFuture.when(
         data: (timeblocks) {

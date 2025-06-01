@@ -19,33 +19,42 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
   final ScrollController _scrollController = ScrollController();
   late AnimationController _welcomeAnimationController;
   late AnimationController _fabController;
+  late AnimationController _typingAnimationController;
   late Animation<double> _welcomeAnimation;
   late Animation<Offset> _fabSlideAnimation;
+  late Animation<double> _typingAnimation;
+  
   bool _showWelcome = true;
   bool _showScrollToBottom = false;
   
-  // Text-to-speech feature
+  // Enhanced TTS features
   final FlutterTts _flutterTts = FlutterTts();
   bool _isSpeaking = false;
   
-  // Speech-to-text feature
+  // Enhanced STT features
   final stt.SpeechToText _speechToText = stt.SpeechToText();
   bool _isListening = false;
   String _recognizedText = '';
+  double _soundLevel = 0.0;
 
   @override
   void initState() {
     super.initState();
     
     _welcomeAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
     
     _fabController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
+    
+    _typingAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    )..repeat();
     
     _welcomeAnimation = CurvedAnimation(
       parent: _welcomeAnimationController,
@@ -57,7 +66,15 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _fabController,
-      curve: Curves.easeOut,
+      curve: Curves.elasticOut,
+    ));
+    
+    _typingAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _typingAnimationController,
+      curve: Curves.easeInOut,
     ));
     
     _scrollController.addListener(_onScroll);
@@ -65,96 +82,55 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
     // Start welcome animation
     _welcomeAnimationController.forward();
     
-    // Hide welcome screen after first interaction
+    // Auto-hide welcome after timeout
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(seconds: 3), () {
+      Future.delayed(const Duration(seconds: 4), () {
         if (mounted && _showWelcome) {
           _hideWelcome();
         }
       });
     });
     
-    // Initialize text-to-speech
     _initTts();
-    
-    // Initialize speech-to-text
     _initSpeech();
   }
 
-  // Initialize text-to-speech
   Future<void> _initTts() async {
     await _flutterTts.setLanguage("en-US");
     await _flutterTts.setPitch(1.0);
     await _flutterTts.setSpeechRate(0.5);
+    await _flutterTts.setVolume(0.8);
     
     _flutterTts.setCompletionHandler(() {
-      setState(() {
-        _isSpeaking = false;
-      });
-    });
-  }
-  
-  // Initialize speech-to-text
-  Future<void> _initSpeech() async {
-    await _speechToText.initialize();
-  }
-  
-  // Speak text
-  Future<void> _speak(String text) async {
-    if (_isSpeaking) {
-      await _flutterTts.stop();
-      setState(() {
-        _isSpeaking = false;
-      });
-      return;
-    }
-    
-    setState(() {
-      _isSpeaking = true;
-    });
-    
-    await _flutterTts.speak(text);
-  }
-  
-  // Listen to user speech
-  void _listen() async {
-    if (!_isListening) {
-      bool available = await _speechToText.initialize();
-      if (available) {
+      if (mounted) {
         setState(() {
-          _isListening = true;
-          _recognizedText = '';
+          _isSpeaking = false;
         });
-        _speechToText.listen(
-          onResult: (result) {
-            setState(() {
-              _recognizedText = result.recognizedWords;
-            });
-          },
-          listenFor: const Duration(seconds: 30),
-          pauseFor: const Duration(seconds: 5),
-          listenOptions: stt.SpeechListenOptions(
-            partialResults: true,
-            cancelOnError: true,
-            listenMode: stt.ListenMode.confirmation,
-          ),
-          onSoundLevelChange: (level) {
-            // Could be used for visual feedback
-          },
-        );
       }
-    } else {
-      setState(() {
-        _isListening = false;
-      });
-      _speechToText.stop();
-      
-      // If we have recognized text, send it
-      if (_recognizedText.isNotEmpty) {
-        _handleSendMessage(_recognizedText);
-        _recognizedText = '';
-      }
-    }
+    });
+  }
+  
+  Future<void> _initSpeech() async {
+    await _speechToText.initialize(
+      onError: (error) {
+        if (mounted) {
+          setState(() {
+            _isListening = false;
+          });
+        }
+      },
+      onStatus: (status) {
+        if (status == 'done' && mounted) {
+          setState(() {
+            _isListening = false;
+          });
+          if (_recognizedText.isNotEmpty) {
+            _handleSendMessage(_recognizedText);
+            _recognizedText = '';
+          }
+        }
+      },
+    );
   }
 
   @override
@@ -162,6 +138,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
     _scrollController.dispose();
     _welcomeAnimationController.dispose();
     _fabController.dispose();
+    _typingAnimationController.dispose();
     _flutterTts.stop();
     _speechToText.cancel();
     super.dispose();
@@ -201,10 +178,53 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
     _hideWelcome();
     ref.read(chatProvider.notifier).sendMessage(message);
     
-    // Auto-scroll to bottom when sending message
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
+  }
+
+  Future<void> _speak(String text) async {
+    if (_isSpeaking) {
+      await _flutterTts.stop();
+      return;
+    }
+    
+    setState(() {
+      _isSpeaking = true;
+    });
+    
+    await _flutterTts.speak(text);
+  }
+  
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speechToText.initialize();
+      if (available) {
+        setState(() {
+          _isListening = true;
+          _recognizedText = '';
+        });
+        _speechToText.listen(
+          onResult: (result) {
+            setState(() {
+              _recognizedText = result.recognizedWords;
+            });
+          },
+          listenFor: const Duration(seconds: 30),
+          pauseFor: const Duration(seconds: 3),
+          onSoundLevelChange: (level) {
+            setState(() {
+              _soundLevel = level;
+            });
+          },
+        );
+      }
+    } else {
+      setState(() {
+        _isListening = false;
+      });
+      _speechToText.stop();
+    }
   }
 
   @override
@@ -218,220 +238,124 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            _buildLanaAvatar(theme, size: 36),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'LANA',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: Text(
-                    isTyping ? 'Thinking...' : (_isSpeaking ? 'Speaking...' : 'Your AI Assistant'),
-                    key: ValueKey(isTyping ? 'typing' : (_isSpeaking ? 'speaking' : 'idle')),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.colorScheme.onSurface.withAlpha((255 * 0.6).round()),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          // Voice input button
-          IconButton(
-            icon: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: Icon(
-                _isListening ? Icons.mic : Icons.mic_none,
-                key: ValueKey(_isListening),
-                color: _isListening ? theme.colorScheme.primary : null,
-              ),
-            ),
-            onPressed: _listen,
-            tooltip: _isListening ? 'Stop listening' : 'Voice input',
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              ref.read(chatProvider.notifier).startNewChat();
-              setState(() => _showWelcome = true);
-              _welcomeAnimationController.reset();
-              _welcomeAnimationController.forward();
-            },
-            tooltip: 'New Chat',
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              switch (value) {
-                case 'clear':
-                  _showClearDialog();
-                  break;
-                case 'help':
-                  _showHelpDialog();
-                  break;
-                case 'settings':
-                  _showSettingsDialog();
-                  break;
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'clear',
-                child: Row(
-                  children: [
-                    Icon(Icons.clear_all),
-                    SizedBox(width: 8),
-                    Text('Clear Chat'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'settings',
-                child: Row(
-                  children: [
-                    Icon(Icons.settings),
-                    SizedBox(width: 8),
-                    Text('Settings'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'help',
-                child: Row(
-                  children: [
-                    Icon(Icons.help_outline),
-                    SizedBox(width: 8),
-                    Text('Help'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-        elevation: 0,
-        backgroundColor: theme.colorScheme.surface,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: Stack(
-        children: [
-          // Main chat area
-          Column(
-            children: [
-              // Messages list
-              Expanded(
-                child: Stack(
-                  children: [
-                    // Welcome screen
-                    if (_showWelcome)
-                      AnimatedBuilder(
-                        animation: _welcomeAnimation,
-                        builder: (context, child) {
-                          return Transform.scale(
-                            scale: _welcomeAnimation.value,
-                            child: _buildWelcomeScreen(),
-                          );
-                        },
-                      ),
-                    
-                    // Chat messages
-                    if (!_showWelcome)
-                      _buildChatList(messages, isTyping),
-                      
-                    // Voice input indicator
-                    if (_isListening)
-                      Positioned(
-                        bottom: 20,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withAlpha((255 * 0.1).round()),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _buildPulsingMic(),
-                                const SizedBox(width: 8),
-                                Text(
-                                  _recognizedText.isEmpty ? 'Listening...' : _recognizedText,
-                                  style: TextStyle(
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              
-              // Error display
-              if (error != null)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16.0),
-                  color: theme.colorScheme.errorContainer,
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        color: theme.colorScheme.onErrorContainer,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          error,
-                          style: TextStyle(
-                            color: theme.colorScheme.onErrorContainer,
-                          ),
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => ref.read(chatProvider.notifier).clearError(),
-                        child: const Text('Dismiss'),
-                      ),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 120,
+            floating: false,
+            pinned: true,
+            snap: false,
+            backgroundColor: Colors.transparent,
+            flexibleSpace: FlexibleSpaceBar(
+              title: null,
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      theme.colorScheme.primary.withValues(alpha: 0.1),
+                      Colors.transparent,
                     ],
                   ),
                 ),
-              
-              // Input area
-              ChatInputWidget(
-                onSendMessage: _handleSendMessage,
-                isLoading: isLoading,
-                quickSuggestions: _showWelcome ? quickSuggestions : [],
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        _buildEnhancedLanaAvatar(theme, size: 48),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'LANA AI',
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 500),
+                                child: Text(
+                                  isTyping ? 'Thinking...' : 
+                                  (_isSpeaking ? 'Speaking...' : 
+                                  (_isListening ? 'Listening...' : 'Your AI Assistant')),
+                                  key: ValueKey(isTyping ? 'typing' : 
+                                      (_isSpeaking ? 'speaking' : 
+                                      (_isListening ? 'listening' : 'idle'))),
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        _buildActionButtons(theme),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ],
+            ),
           ),
-          
-          // Scroll to bottom FAB
-          Positioned(
-            right: 16,
-            bottom: 100,
-            child: SlideTransition(
-              position: _fabSlideAnimation,
-              child: FloatingActionButton(
-                onPressed: _scrollToBottom,
-                mini: true,
-                backgroundColor: theme.colorScheme.primary,
-                child: const Icon(Icons.keyboard_arrow_down),
-              ),
+          SliverFillRemaining(
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          if (_showWelcome)
+                            AnimatedBuilder(
+                              animation: _welcomeAnimation,
+                              builder: (context, child) {
+                                return Transform.scale(
+                                  scale: _welcomeAnimation.value,
+                                  child: Opacity(
+                                    opacity: _welcomeAnimation.value,
+                                    child: _buildEnhancedWelcomeScreen(theme),
+                                  ),
+                                );
+                              },
+                            ),
+                          
+                          if (!_showWelcome)
+                            _buildEnhancedChatList(messages, isTyping, theme),
+                            
+                          if (_isListening)
+                            _buildListeningIndicator(theme),
+                        ],
+                      ),
+                    ),
+                    
+                    if (error != null)
+                      _buildErrorBanner(error, theme),
+                    
+                    _buildEnhancedInputArea(isLoading, quickSuggestions, theme),
+                  ],
+                ),
+                
+                if (_showScrollToBottom)
+                  Positioned(
+                    right: 16,
+                    bottom: 100,
+                    child: SlideTransition(
+                      position: _fabSlideAnimation,
+                      child: FloatingActionButton(
+                        onPressed: _scrollToBottom,
+                        mini: true,
+                        backgroundColor: theme.colorScheme.primary,
+                        child: const Icon(Icons.keyboard_arrow_down),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],
@@ -439,29 +363,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
     );
   }
 
-  Widget _buildPulsingMic() {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.8, end: 1.2),
-      duration: const Duration(milliseconds: 1000),
-      curve: Curves.easeInOut,
-      builder: (context, value, child) {
-        return Transform.scale(
-          scale: value,
-          child: Icon(
-            Icons.mic,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        );
-      },
-      onEnd: () {
-        setState(() {
-          // Rebuild to restart animation
-        });
-      },
-    );
-  }
-
-  Widget _buildLanaAvatar(ThemeData theme, {double size = 32}) {
+  Widget _buildEnhancedLanaAvatar(ThemeData theme, {double size = 32}) {
     return Container(
       width: size,
       height: size,
@@ -470,6 +372,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
           colors: [
             theme.colorScheme.primary,
             theme.colorScheme.secondary,
+            theme.colorScheme.tertiary,
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -477,33 +380,136 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.primary.withAlpha((255 * 0.3).round()),
-            blurRadius: 10,
-            spreadRadius: 1,
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+            blurRadius: 12,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Icon(
-        Icons.assistant,
-        color: Colors.white,
-        size: size * 0.6,
+      child: Stack(
+        children: [
+          Center(
+            child: Icon(
+              Icons.psychology,
+              color: Colors.white,
+              size: size * 0.6,
+            ),
+          ),
+          if (_isSpeaking)
+            Positioned.fill(
+              child: AnimatedBuilder(
+                animation: _typingAnimation,
+                builder: (context, child) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: _typingAnimation.value * 0.5),
+                        width: 2,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
       ),
     );
   }
 
-  Widget _buildWelcomeScreen() {
-    final theme = Theme.of(context);
-    
+  Widget _buildActionButtons(ThemeData theme) {
+    return Row(
+      children: [
+        IconButton(
+          icon: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: Icon(
+              _isListening ? Icons.mic : Icons.mic_none,
+              key: ValueKey(_isListening),
+              color: _isListening ? theme.colorScheme.primary : null,
+            ),
+          ),
+          onPressed: _listen,
+          tooltip: _isListening ? 'Stop listening' : 'Voice input',
+          style: IconButton.styleFrom(
+            backgroundColor: _isListening 
+                ? theme.colorScheme.primary.withOpacity(0.1)
+                : null,
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: () {
+            ref.read(chatProvider.notifier).startNewChat();
+            setState(() => _showWelcome = true);
+            _welcomeAnimationController.reset();
+            _welcomeAnimationController.forward();
+          },
+          tooltip: 'New Chat',
+        ),
+        PopupMenuButton<String>(
+          onSelected: (value) {
+            switch (value) {
+              case 'clear':
+                _showClearDialog();
+                break;
+              case 'help':
+                _showHelpDialog();
+                break;
+              case 'settings':
+                _showSettingsDialog();
+                break;
+            }
+          },
+          itemBuilder: (context) => [
+            const PopupMenuItem(
+              value: 'clear',
+              child: Row(
+                children: [
+                  Icon(Icons.clear_all),
+                  SizedBox(width: 8),
+                  Text('Clear Chat'),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'settings',
+              child: Row(
+                children: [
+                  Icon(Icons.settings),
+                  SizedBox(width: 8),
+                  Text('Settings'),
+                ],
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'help',
+              child: Row(
+                children: [
+                  Icon(Icons.help_outline),
+                  SizedBox(width: 8),
+                  Text('Help'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEnhancedWelcomeScreen(ThemeData theme) {
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildLanaAvatar(theme, size: 80),
-            const SizedBox(height: 24),
+            _buildEnhancedLanaAvatar(theme, size: 120),
+            const SizedBox(height: 32),
             Text(
-              'Welcome to LANA!',
+              'Hello! I\'m LANA',
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.primary,
@@ -511,104 +517,338 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'Your intelligent productivity assistant is here to help you organize your tasks, schedule events, and manage your workflow.',
+              'Your intelligent AI assistant for task management and productivity',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurface.withAlpha((255 * 0.7).round()),
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _listen,
-              icon: const Icon(Icons.mic),
-              label: const Text('Speak to LANA'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 32),
-            QuickActionButtons(
-              onActionSelected: _handleSendMessage,
-            ),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha((255 * 0.05).round()),
-                    blurRadius: 10,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.lightbulb_outline,
-                    color: theme.colorScheme.primary,
-                    size: 24,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Try saying:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '"Create a task to review the quarterly report tomorrow"\n"What do I have scheduled for today?"\n"Add milk and bread to my shopping list"',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontStyle: FontStyle.italic,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildWelcomeFeatures(theme),
+            const SizedBox(height: 32),
+            _buildQuickActions(theme),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildChatList(List<ChatMessage> messages, bool isTyping) {
+  Widget _buildWelcomeFeatures(ThemeData theme) {
+    final features = [
+      {
+        'icon': Icons.task_alt,
+        'title': 'Smart Task Creation',
+        'subtitle': 'Create tasks with natural language',
+      },
+      {
+        'icon': Icons.chat_bubble_outline,
+        'title': 'Intelligent Chat',
+        'subtitle': 'Get help with your productivity',
+      },
+      {
+        'icon': Icons.mic,
+        'title': 'Voice Commands',
+        'subtitle': 'Speak naturally to interact',
+      },
+    ];
+
+    return Column(
+      children: features.map((feature) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  feature['icon'] as IconData,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      feature['title'] as String,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      feature['subtitle'] as String,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildQuickActions(ThemeData theme) {
+    final actions = [
+      'Create a shopping list',
+      'Set up a morning routine',
+      'Plan my week',
+      'Show my tasks',
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Try saying:',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: actions.map((action) {
+            return InkWell(
+              onTap: () => _handleSendMessage(action),
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Text(
+                  action,
+                  style: TextStyle(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEnhancedChatList(List<ChatMessage> messages, bool isTyping, ThemeData theme) {
     return ListView.builder(
       controller: _scrollController,
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.all(16),
       itemCount: messages.length + (isTyping ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index == messages.length && isTyping) {
-          return const TypingIndicator();
+                 if (index < messages.length) {
+           final message = messages[index];
+           final isUser = message.sender == MessageSender.user;
+           return Padding(
+             padding: const EdgeInsets.only(bottom: 16),
+             child: Row(
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
+                 if (!isUser) ...[
+                   _buildEnhancedLanaAvatar(theme, size: 32),
+                   const SizedBox(width: 12),
+                 ],
+                 Expanded(
+                   child: ChatMessageBubble(
+                     message: message,
+                     onSpeakPressed: isUser ? null : () => _speak(message.content),
+                     isSpeaking: _isSpeaking,
+                   ),
+                 ),
+                 if (isUser) ...[
+                   const SizedBox(width: 12),
+                   CircleAvatar(
+                     radius: 16,
+                     backgroundColor: theme.colorScheme.primary,
+                     child: const Icon(
+                       Icons.person,
+                       color: Colors.white,
+                       size: 18,
+                     ),
+                   ),
+                 ],
+               ],
+             ),
+           );
+        } else {
+          return _buildTypingIndicator(theme);
         }
-        
-        final message = messages[index];
-        final isFirstInGroup = index == 0 || 
-            messages[index - 1].sender != message.sender;
-        final isLastInGroup = index == messages.length - 1 || 
-            messages[index + 1].sender != message.sender;
-        
-        return ChatMessageBubble(
-          message: message,
-          showAvatar: isFirstInGroup,
-          showTime: isLastInGroup,
-          onSpeakPressed: message.sender == MessageSender.assistant 
-              ? () => _speak(message.content) 
-              : null,
-          isSpeaking: _isSpeaking && message.sender == MessageSender.assistant,
-        );
       },
+    );
+  }
+
+  Widget _buildTypingIndicator(ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildEnhancedLanaAvatar(theme, size: 32),
+          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceVariant,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedBuilder(
+                  animation: _typingAnimation,
+                  builder: (context, child) {
+                    return Row(
+                      children: List.generate(3, (index) {
+                        return AnimatedContainer(
+                          duration: Duration(milliseconds: 300 + (index * 100)),
+                          margin: const EdgeInsets.only(right: 4),
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withOpacity(
+                              0.3 + ((_typingAnimation.value + index * 0.3) % 1.0) * 0.7,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                        );
+                      }),
+                    );
+                  },
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Thinking...',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListeningIndicator(ThemeData theme) {
+    return Positioned(
+      bottom: 20,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(
+              color: theme.colorScheme.primary.withOpacity(0.3),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedBuilder(
+                animation: _typingAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: 1.0 + (_typingAnimation.value * 0.3),
+                    child: Icon(
+                      Icons.mic,
+                      color: theme.colorScheme.primary,
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 12),
+              Flexible(
+                child: Text(
+                  _recognizedText.isEmpty ? 'Listening...' : _recognizedText,
+                  style: TextStyle(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorBanner(String error, ThemeData theme) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.0),
+      color: theme.colorScheme.errorContainer,
+      child: Row(
+        children: [
+          Icon(
+            Icons.error_outline,
+            color: theme.colorScheme.onErrorContainer,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              error,
+              style: TextStyle(
+                color: theme.colorScheme.onErrorContainer,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => ref.read(chatProvider.notifier).clearError(),
+            child: const Text('Dismiss'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEnhancedInputArea(bool isLoading, List<String> quickSuggestions, ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: ChatInputWidget(
+        onSendMessage: _handleSendMessage,
+        isLoading: isLoading,
+        quickSuggestions: _showWelcome ? quickSuggestions : [],
+      ),
     );
   }
 
@@ -617,7 +857,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear Chat'),
-        content: const Text('Are you sure you want to clear the entire conversation?'),
+        content: const Text('Are you sure you want to clear this conversation?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -627,9 +867,6 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
             onPressed: () {
               Navigator.pop(context);
               ref.read(chatProvider.notifier).startNewChat();
-              setState(() => _showWelcome = true);
-              _welcomeAnimationController.reset();
-              _welcomeAnimationController.forward();
             },
             child: const Text('Clear'),
           ),
@@ -638,127 +875,28 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
     );
   }
 
-  void _showSettingsDialog() {
-    double speechRate = 0.5;
-    double pitch = 1.0;
-    
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: const Text('LANA Settings'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Text-to-Speech Settings', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                const Text('Speech Rate'),
-                Slider(
-                  value: speechRate,
-                  min: 0.1,
-                  max: 1.0,
-                  divisions: 9,
-                  label: speechRate.toString(),
-                  onChanged: (value) {
-                    setState(() {
-                      speechRate = value;
-                    });
-                  },
-                ),
-                const Text('Pitch'),
-                Slider(
-                  value: pitch,
-                  min: 0.5,
-                  max: 2.0,
-                  divisions: 15,
-                  label: pitch.toString(),
-                  onChanged: (value) {
-                    setState(() {
-                      pitch = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 8),
-                Center(
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      await _flutterTts.setPitch(pitch);
-                      await _flutterTts.setSpeechRate(speechRate);
-                      await _flutterTts.speak('Hello, I am LANA, your AI assistant');
-                    },
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text('Test Voice'),
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  await _flutterTts.setPitch(pitch);
-                  await _flutterTts.setSpeechRate(speechRate);
-                  Navigator.pop(context);
-                },
-                child: const Text('Save'),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
   void _showHelpDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            _buildLanaAvatar(Theme.of(context), size: 24),
-            const SizedBox(width: 8),
-            const Text('LANA Help'),
-          ],
-        ),
+        title: const Text('How to use LANA'),
         content: const SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'LANA can help you with:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              Text('LANA can help you with:'),
               SizedBox(height: 8),
               Text('• Creating and managing tasks'),
-              Text('• Scheduling events and appointments'),
-              Text('• Managing lists and reminders'),
-              Text('• Organizing your daily workflow'),
-              Text('• Answering questions about your data'),
+              Text('• Setting up routines and schedules'),
+              Text('• Managing lists and categories'),
+              Text('• Answering questions about productivity'),
               SizedBox(height: 16),
-              Text(
-                'Voice Features:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              Text('Tips:'),
               SizedBox(height: 8),
-              Text('• Tap the microphone icon to speak to LANA'),
-              Text('• Tap the speaker icon on LANA\'s messages to hear them read aloud'),
-              Text('• Adjust voice settings in the menu'),
-              SizedBox(height: 16),
-              Text(
-                'Tips:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text('• Use natural language - speak to LANA like you would a person'),
-              Text('• Be specific with dates, times, and details'),
+              Text('• Use voice input for hands-free interaction'),
+              Text('• Be specific in your requests'),
               Text('• Ask follow-up questions for clarification'),
-              Text('• Use the quick suggestion chips for common actions'),
             ],
           ),
         ),
@@ -771,46 +909,20 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
       ),
     );
   }
-}
 
-class QuickActionButtons extends StatelessWidget {
-  final Function(String) onActionSelected;
-
-  const QuickActionButtons({
-    super.key,
-    required this.onActionSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      alignment: WrapAlignment.center,
-      children: [
-        _buildActionChip(context, 'Create a task', Icons.task_alt),
-        _buildActionChip(context, 'Schedule meeting', Icons.event),
-        _buildActionChip(context, 'Add to shopping list', Icons.shopping_cart),
-        _buildActionChip(context, 'Show my calendar', Icons.calendar_month),
-      ],
-    );
-  }
-
-  Widget _buildActionChip(BuildContext context, String label, IconData icon) {
-    final theme = Theme.of(context);
-    
-    return ActionChip(
-      avatar: Icon(
-        icon,
-        size: 18,
-        color: theme.colorScheme.primary,
+  void _showSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Chat Settings'),
+        content: const Text('Chat settings will be available in a future update.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
       ),
-      label: Text(label),
-      onPressed: () => onActionSelected(label),
-      backgroundColor: theme.colorScheme.surfaceContainerHighest,
-      elevation: 2,
-      shadowColor: theme.colorScheme.shadow.withAlpha((255 * 0.3).round()),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     );
   }
 }

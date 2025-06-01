@@ -20,7 +20,7 @@ import 'package:vuet_app/ui/screens/calendar/calendar_screen.dart'; // Added Cal
 import 'package:vuet_app/widgets/notification_badge.dart';
 import 'package:vuet_app/widgets/tab_notification_badge.dart';
 import 'package:vuet_app/utils/deep_link_handler.dart';
-import 'package:vuet_app/ui/screens/lists/lists_screen.dart'; // Added ListsScreen
+import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart'; // Added RedesignedListsScreen
 import 'package:vuet_app/ui/screens/lana_ai_assistant_screen.dart'; // Added LanaAiAssistantScreen
 import 'package:vuet_app/ui/screens/account/my_account_screen.dart'; // Added MyAccountScreen
 import 'package:vuet_app/ui/screens/settings/settings_screen.dart'; // Added SettingsScreen
@@ -166,7 +166,7 @@ class _HomePageState extends ConsumerState<HomePage> {
      _widgetOptions = <Widget>[
       const CalendarScreen(),
       const HomeScreen(), 
-      const ListsScreen(),
+      const RedesignedListsScreen(),
       const TaskListScreen(),
       const LanaAiAssistantScreen(),
     ];
