@@ -200,4 +200,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ using Flutter and Supabase**
 
+<<<<<<< HEAD
 *Vuet - Because life is made up of entities, not just tasks.* 
+=======
+*Vuet - Because life is made up of entities, not just tasks.*
+
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/Qualiasolutions/vuetapp?utm_source=oss&utm_medium=github&utm_campaign=Qualiasolutions%2Fvuetapp&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
+>>>>>>> 0b209e2b90ff11e1ae706ed99482d1e164f565e5

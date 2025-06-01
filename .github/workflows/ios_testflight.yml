@@ -1,0 +1,254 @@
+name: iOS TestFlight Deployment
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      deploy_to_testflight:
+        description: 'Deploy to TestFlight'
+        required: true
+        default: 'true'
+        type: boolean
+      version_override:
+        description: 'Override version (optional)'
+        required: false
+        type: string
+
+env:
+  FLUTTER_VERSION: '3.16.5'
+  XCODE_VERSION: '15.1'
+
+jobs:
+  build-and-deploy-ios:
+    name: Build and Deploy iOS
+    runs-on: macos-14
+    timeout-minutes: 45
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+        channel: 'stable'
+        cache: true
+
+    - name: Flutter Doctor
+      run: flutter doctor -v
+
+    - name: Cache Flutter Dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ${{ runner.tool_cache }}/flutter
+          ~/.pub-cache
+        key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          flutter-${{ runner.os }}-
+
+    - name: Install Dependencies
+      run: flutter pub get
+
+    - name: Run Code Generation
+      run: flutter pub run build_runner build --delete-conflicting-outputs
+
+    - name: Flutter Analyze
+      run: flutter analyze
+
+    - name: Run Tests
+      run: flutter test
+
+    - name: Create Environment Files
+      run: |
+        echo "Creating environment files..."
+        # Create production environment file if it doesn't exist
+        if [ ! -f .env.production ]; then
+          echo "# Production Environment Variables" > .env.production
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env.production
+          echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env.production
+        fi
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: ${{ env.XCODE_VERSION }}
+
+    - name: Setup iOS Certificates and Provisioning Profiles
+      env:
+        BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+        P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+        BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      run: |
+        # Create variables
+        CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+        PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+        # Import certificate and provisioning profile from secrets
+        echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+        echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+
+        # Create temporary keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+        # Import certificate to keychain
+        security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        security list-keychain -d user -s $KEYCHAIN_PATH
+
+        # Apply provisioning profile
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+    - name: Update Version and Build Number
+      run: |
+        if [ -n "${{ github.event.inputs.version_override }}" ]; then
+          NEW_VERSION="${{ github.event.inputs.version_override }}"
+        else
+          # Extract current version from pubspec.yaml
+          CURRENT_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+          NEW_VERSION=$CURRENT_VERSION
+        fi
+        
+        # Generate build number based on timestamp and commit
+        BUILD_NUMBER=$(date +%Y%m%d%H%M)
+        
+        # Update pubspec.yaml
+        sed -i '' "s/^version:.*/version: ${NEW_VERSION}+${BUILD_NUMBER}/" pubspec.yaml
+        
+        echo "Updated version to: ${NEW_VERSION}+${BUILD_NUMBER}"
+        echo "VERSION=${NEW_VERSION}" >> $GITHUB_ENV
+        echo "BUILD_NUMBER=${BUILD_NUMBER}" >> $GITHUB_ENV
+
+    - name: Build iOS App (Release)
+      run: |
+        flutter build ios \
+          --release \
+          --no-codesign \
+          --build-name=${{ env.VERSION }} \
+          --build-number=${{ env.BUILD_NUMBER }}
+
+    - name: Create ExportOptions.plist
+      run: |
+        cat > ios/ExportOptions.plist << EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>36AP5U42Q4</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>compileBitcode</key>
+            <false/>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>thinning</key>
+            <string>&lt;none&gt;</string>
+        </dict>
+        </plist>
+        EOF
+
+    - name: Build and Archive iOS App
+      run: |
+        # Create output directory
+        mkdir -p build/ios/outputs
+        
+        # Archive the app
+        xcodebuild \
+          -workspace ios/Runner.xcworkspace \
+          -scheme Runner \
+          -configuration Release \
+          -archivePath build/ios/outputs/Runner.xcarchive \
+          -allowProvisioningUpdates \
+          archive
+
+    - name: Export IPA
+      run: |
+        # Export IPA
+        xcodebuild \
+          -exportArchive \
+          -archivePath build/ios/outputs/Runner.xcarchive \
+          -exportOptionsPlist ios/ExportOptions.plist \
+          -exportPath build/ios/outputs \
+          -allowProvisioningUpdates
+
+    - name: Upload to TestFlight
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) || (github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_to_testflight == 'true')
+      env:
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+      run: |
+        # Find the IPA file
+        IPA_PATH=$(find build/ios/outputs -name "*.ipa" | head -1)
+        
+        if [ -z "$IPA_PATH" ]; then
+          echo "Error: IPA file not found"
+          exit 1
+        fi
+        
+        echo "Found IPA at: $IPA_PATH"
+        
+        # Validate the app
+        echo "Validating app..."
+        xcrun altool \
+          --validate-app \
+          -f "$IPA_PATH" \
+          -t ios \
+          -u "$APPLE_ID" \
+          -p "$APPLE_PASSWORD" \
+          --output-format xml
+        
+        # Upload to TestFlight
+        echo "Uploading to TestFlight..."
+        xcrun altool \
+          --upload-app \
+          -f "$IPA_PATH" \
+          -t ios \
+          -u "$APPLE_ID" \
+          -p "$APPLE_PASSWORD" \
+          --output-format xml
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: ios-build-artifacts-${{ env.BUILD_NUMBER }}
+        path: |
+          build/ios/outputs/
+          ios/ExportOptions.plist
+        retention-days: 30
+
+    - name: Cleanup Keychain
+      if: always()
+      run: |
+        if [ -f "$RUNNER_TEMP/app-signing.keychain-db" ]; then
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+        fi
+
+    - name: Notify Deployment Status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ iOS app successfully deployed to TestFlight!"
+          echo "Version: ${{ env.VERSION }}+${{ env.BUILD_NUMBER }}"
+          echo "Check App Store Connect for processing status."
+        else
+          echo "❌ iOS deployment failed. Check the logs above for details."
+        fi
