@@ -141,7 +141,7 @@ class OnboardingManager {
           type: OnboardingSuggestionType.entityType,
           id: entityType,
           title: entityType,
-          description: 'Discover how to use ${entityType} effectively',
+          description: 'Discover how to use $entityType effectively',
           priority: _getEntityTypePriority(entityType),
         ));
       }

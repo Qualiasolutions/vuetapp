@@ -35,7 +35,6 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
   final stt.SpeechToText _speechToText = stt.SpeechToText();
   bool _isListening = false;
   String _recognizedText = '';
-  double _soundLevel = 0.0;
 
   @override
   void initState() {
@@ -212,11 +211,6 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
           },
           listenFor: const Duration(seconds: 30),
           pauseFor: const Duration(seconds: 3),
-          onSoundLevelChange: (level) {
-            setState(() {
-              _soundLevel = level;
-            });
-          },
         );
       }
     } else {
@@ -434,7 +428,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
           tooltip: _isListening ? 'Stop listening' : 'Voice input',
           style: IconButton.styleFrom(
             backgroundColor: _isListening 
-                ? theme.colorScheme.primary.withOpacity(0.1)
+                ? theme.colorScheme.primary.withValues(alpha: 0.1)
                 : null,
           ),
         ),
@@ -558,7 +552,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
           margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: theme.colorScheme.outline.withValues(alpha: 0.2),
@@ -569,7 +563,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -632,7 +626,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: theme.colorScheme.primary.withValues(alpha: 0.3),
@@ -711,7 +705,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceVariant,
+              color: theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -728,8 +722,8 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withOpacity(
-                              0.3 + ((_typingAnimation.value + index * 0.3) % 1.0) * 0.7,
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.3 + ((_typingAnimation.value + index * 0.3) % 1.0) * 0.7,
                             ),
                             shape: BoxShape.circle,
                           ),
@@ -742,7 +736,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
                 Text(
                   'Thinking...',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -762,10 +756,10 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.1),
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(25),
             border: Border.all(
-              color: theme.colorScheme.primary.withOpacity(0.3),
+              color: theme.colorScheme.primary.withValues(alpha: 0.3),
             ),
           ),
           child: Row(
@@ -838,7 +832,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
         color: theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),

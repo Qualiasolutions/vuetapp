@@ -89,7 +89,7 @@ extension ListItemModelX on ListItemModel {
   // Get display quantity
   String get displayQuantity {
     if (quantity == null || quantity! <= 1) return '';
-    return '${quantity}x';
+    return '$quantity' 'x';
   }
 
   // Update price

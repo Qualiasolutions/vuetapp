@@ -563,7 +563,7 @@ class _CategoryIntroductionScreenState extends ConsumerState<CategoryIntroductio
           ),
         ),
         const SizedBox(height: 16),
-        ...features.take(3).map((feature) => _buildFeatureItem(feature)).toList(),
+        ...features.take(3).map((feature) => _buildFeatureItem(feature)),
       ],
     );
   }

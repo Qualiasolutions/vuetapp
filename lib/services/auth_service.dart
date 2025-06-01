@@ -63,6 +63,57 @@ class AuthService {
   // Expose Supabase client if needed
   SupabaseClient get supabase => _supabaseClient;
 
+  // Handle refresh token errors
+  Future<void> handleRefreshTokenError() async {
+    debugPrint('AuthService: Handling refresh token error');
+    try {
+      // Force sign out with both local and server scope
+      await _supabaseClient.auth.signOut(scope: SignOutScope.global);
+      debugPrint('AuthService: User signed out due to refresh token error');
+    } catch (e) {
+      debugPrint('AuthService: Error during forced sign out: $e');
+    }
+  }
+
+  // Helper method to handle auth exceptions
+  Future<AuthResult> handleAuthException(dynamic error, String operation) async {
+    debugPrint('AuthService $operation Error: $error');
+    
+    // Handle specific auth errors
+    if (error is AuthException) {
+      final errorMessage = error.message.toLowerCase();
+      
+      // Handle refresh token errors
+      if (errorMessage.contains('refresh_token_not_found') || 
+          errorMessage.contains('invalid refresh token')) {
+        await handleRefreshTokenError();
+        return AuthResult.failure(
+          error: 'session_expired',
+          message: 'Your session has expired. Please sign in again.',
+        );
+      }
+      
+      // Handle other common auth errors
+      if (errorMessage.contains('invalid credentials')) {
+        return AuthResult.failure(
+          error: 'invalid_credentials',
+          message: 'Invalid email or password.',
+        );
+      } else if (errorMessage.contains('email not confirmed')) {
+        return AuthResult.failure(
+          error: 'email_not_confirmed',
+          message: 'Please confirm your email before signing in.',
+        );
+      }
+    }
+    
+    // Default error handling
+    return AuthResult.failure(
+      error: 'auth_error',
+      message: 'Authentication error: $error',
+    );
+  }
+
   // Enhanced sign up with complete user profile data and retry logic
   Future<AuthResult> signUpWithEmailPassword({
     required String email,
@@ -308,6 +359,44 @@ class AuthService {
     } catch (error) {
       debugPrint('AuthService SignIn Unexpected Error: $error');
       rethrow;
+    }
+  }
+
+  // Enhanced sign in with email and password with error handling
+  Future<AuthResult> enhancedSignInWithEmailPassword({
+    required String email, 
+    required String password
+  }) async {
+    try {
+      final AuthResponse response = await _supabaseClient.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      
+      // Get user profile data if available
+      Map<String, dynamic>? profileData;
+      if (response.user != null) {
+        try {
+          profileData = await getUserProfile();
+        } catch (profileError) {
+          debugPrint('Warning: Failed to fetch profile after login: $profileError');
+          // Continue anyway - this is not critical
+        }
+      }
+      
+      return AuthResult.success(
+        user: response.user,
+        session: response.session,
+        profileData: profileData,
+      );
+    } on AuthException catch (error) {
+      return await handleAuthException(error, 'SignIn');
+    } catch (error) {
+      debugPrint('AuthService SignIn Unexpected Error: $error');
+      return AuthResult.failure(
+        error: 'unexpected_error',
+        message: 'An unexpected error occurred. Please try again.',
+      );
     }
   }
 

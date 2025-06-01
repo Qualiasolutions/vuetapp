@@ -5,22 +5,12 @@ import 'package:vuet_app/models/entity_category_model.dart';
 
 final List<EntityCategoryModel> defaultCategories = [
   EntityCategoryModel(
-    id: 'family',
-    name: 'Family',
-    icon: 'assets/images/categories/family.png',
-    color: '#4CAF50', // Green
-    ownerId: null,
-    priority: 1,
-    description: 'Manage family lists, shared tasks, and family coordination.',
-    isProfessional: false,
-  ),
-  EntityCategoryModel(
     id: 'pets',
     name: 'Pets',
     icon: 'assets/images/categories/pets.png',
     color: '#8D6E63', // Brown Accent
     ownerId: null,
-    priority: 2,
+    priority: 1,
     description: 'Manage pet care, appointments, and all pet-related information.',
     isProfessional: false,
   ),
@@ -30,7 +20,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/social.png',
     color: '#EC407A', // Pink Accent
     ownerId: null,
-    priority: 3,
+    priority: 2,
     description: 'Organize events, hobbies, social plans, anniversaries, and contacts.',
     isProfessional: false,
   ),
@@ -118,7 +108,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/education.png',
     color: '#26A69A', // Teal Accent
     ownerId: null,
-    priority: 4,
+    priority: 3,
     description: 'Organize learning materials, courses, academic plans, and educational goals.',
     isProfessional: false,
   ),
@@ -128,7 +118,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/career.png',
     color: '#42A5F5', // Blue Accent
     ownerId: null,
-    priority: 5,
+    priority: 4,
     description: 'Organize professional tasks, career goals, and job-related information.',
     isProfessional: true,
   ),
@@ -138,7 +128,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/travel.png',
     color: '#7E57C2', // Deep Purple Accent
     ownerId: null,
-    priority: 6,
+    priority: 5,
     description: 'Plan trips, manage bookings, and keep track of travel-related information.',
     isProfessional: false,
   ),
@@ -148,7 +138,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/health.png',
     color: '#66BB6A', // Green Accent
     ownerId: null,
-    priority: 7,
+    priority: 6,
     description: 'Track health, wellness, appointments, and fitness goals.',
     isProfessional: false,
   ),
@@ -192,7 +182,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/home.png',
     color: '#FF7043', // Deep Orange Accent
     ownerId: null, 
-    priority: 8,
+    priority: 7,
     description: 'Manage home-related tasks, items, and projects.',
     isProfessional: false,
   ),
@@ -202,7 +192,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/garden.png',
     color: '#8BC34A', // Light Green
     ownerId: null,
-    priority: 9,
+    priority: 8,
     description: 'Plan garden projects, manage plants, and track gardening activities.',
     isProfessional: false,
   ),
@@ -212,7 +202,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/food.png',
     color: '#FF9800', // Orange
     ownerId: null,
-    priority: 10,
+    priority: 9,
     description: 'Plan meals, manage recipes, and track food-related activities.',
     isProfessional: false,
   ),
@@ -222,7 +212,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/laundry.png',
     color: '#00BCD4', // Cyan
     ownerId: null,
-    priority: 11,
+    priority: 10,
     description: 'Manage laundry schedules, clothing care, and dry cleaning.',
     isProfessional: false,
   ),
@@ -232,7 +222,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/finance.png',
     color: '#FFCA28', // Amber Accent
     ownerId: null,
-    priority: 12,
+    priority: 11,
     description: 'Manage financial accounts, budgets, investments, and expenses.',
     isProfessional: false, 
   ),
@@ -242,7 +232,7 @@ final List<EntityCategoryModel> defaultCategories = [
     icon: 'assets/images/categories/transport.png',
     color: '#607D8B', // Blue Grey
     ownerId: null,
-    priority: 13,
+    priority: 12,
     description: 'Manage vehicles, public transport, and travel arrangements.',
     isProfessional: false,
   ),

@@ -42,11 +42,18 @@ Deno.serve(async (req: Request) => {
       }
     )
 
-    // Step 1: Create auth user
+    // Step 1: Create auth user with email already confirmed 
+    // This bypasses the email confirmation requirement
     const { data: authData, error: authError } = await supabaseClient.auth.admin.createUser({
       email,
       password,
-      email_confirm: true,
+      email_confirm: true, // Skip email confirmation
+      user_metadata: {
+        first_name: firstName,
+        last_name: lastName,
+        account_type: accountType.toLowerCase(),
+        professional_category: professionalCategory || null,
+      }
     })
 
     if (authError) {

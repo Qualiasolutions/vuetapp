@@ -39,7 +39,7 @@ class SettingsScreen extends ConsumerWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      theme.colorScheme.primary.withOpacity(0.1),
+                      theme.colorScheme.primary.withValues(alpha: 0.1),
                       Colors.transparent,
                     ],
                   ),
@@ -315,13 +315,13 @@ class SettingsScreen extends ConsumerWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            theme.colorScheme.primary.withOpacity(0.1),
-            theme.colorScheme.secondary.withOpacity(0.05),
+            theme.colorScheme.primary.withValues(alpha: 0.1),
+            theme.colorScheme.secondary.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -359,7 +359,7 @@ class SettingsScreen extends ConsumerWidget {
                   Text(
                     userModel.email!,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -401,11 +401,11 @@ class SettingsScreen extends ConsumerWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -430,7 +430,7 @@ class SettingsScreen extends ConsumerWidget {
   }) {
     final theme = Theme.of(context);
     final effectiveTextColor = isDisabled 
-        ? theme.colorScheme.onSurface.withOpacity(0.4)
+        ? theme.colorScheme.onSurface.withValues(alpha: 0.4)
         : (textColor ?? theme.colorScheme.onSurface);
 
     return InkWell(
@@ -444,14 +444,14 @@ class SettingsScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isDisabled
-                    ? theme.colorScheme.surfaceVariant.withOpacity(0.3)
-                    : (textColor?.withOpacity(0.1) ?? theme.colorScheme.primary.withOpacity(0.1)),
+                    ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                    : (textColor?.withValues(alpha: 0.1) ?? theme.colorScheme.primary.withValues(alpha: 0.1)),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 icon,
                 color: isDisabled
-                    ? theme.colorScheme.onSurface.withOpacity(0.4)
+                    ? theme.colorScheme.onSurface.withValues(alpha: 0.4)
                     : (textColor ?? theme.colorScheme.primary),
                 size: 24,
               ),
@@ -480,8 +480,8 @@ class SettingsScreen extends ConsumerWidget {
                     subtitle,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isDisabled
-                          ? theme.colorScheme.onSurface.withOpacity(0.3)
-                          : theme.colorScheme.onSurface.withOpacity(0.6),
+                          ? theme.colorScheme.onSurface.withValues(alpha: 0.3)
+                          : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -493,7 +493,7 @@ class SettingsScreen extends ConsumerWidget {
             else if (onTap != null && !isDisabled)
               Icon(
                 Icons.chevron_right,
-                color: theme.colorScheme.onSurface.withOpacity(0.4),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
               ),
           ],
         ),
@@ -505,7 +505,7 @@ class SettingsScreen extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       height: 1,
-      color: Colors.grey.withOpacity(0.2),
+      color: Colors.grey.withValues(alpha: 0.2),
     );
   }
 
@@ -513,10 +513,10 @@ class SettingsScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),

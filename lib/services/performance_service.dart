@@ -34,7 +34,7 @@ class PerformanceService {
         final AuthChangeEvent event = data.event;
         _isUserAuthenticated = event == AuthChangeEvent.signedIn || event == AuthChangeEvent.tokenRefreshed || event == AuthChangeEvent.userUpdated;
         if (_isUserAuthenticated && _supabase?.auth.currentUser != null) {
-          _logger.i('User authenticated: \${_supabase?.auth.currentUser?.id}');
+          _logger.i('User authenticated: ${_supabase!.auth.currentUser!.id}');
           setUserId(_supabase!.auth.currentUser!.id); // Set user ID on auth
         } else if (event == AuthChangeEvent.signedOut) {
           _logger.i('User signed out');

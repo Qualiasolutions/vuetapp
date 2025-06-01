@@ -232,6 +232,14 @@ class EntityCard extends StatelessWidget {
         return Icons.local_hospital;
       case EntitySubtype.stylist:
         return Icons.content_cut;
+      case EntitySubtype.therapist:
+        return Icons.psychology;
+      case EntitySubtype.physiotherapist:
+        return Icons.healing;
+      case EntitySubtype.specialist:
+        return Icons.medical_services;
+      case EntitySubtype.surgeon:
+        return Icons.medical_services;
 
       // Home category (7)
       case EntitySubtype.appliance:
@@ -280,6 +288,47 @@ class EntityCard extends StatelessWidget {
         return Icons.directions_car;
       case EntitySubtype.publicTransport:
         return Icons.directions_bus;
+      case EntitySubtype.motorcycle:
+        return Icons.motorcycle;
+      case EntitySubtype.bicycle:
+        return Icons.pedal_bike;
+      case EntitySubtype.truck:
+        return Icons.local_shipping;
+      case EntitySubtype.van:
+        return Icons.airport_shuttle;
+      case EntitySubtype.rv:
+        return Icons.rv_hookup;
+      case EntitySubtype.atv:
+        return Icons.terrain;
+      case EntitySubtype.jetSki:
+        return Icons.sailing;
+        
+      // Document entities (Category 14)
+      case EntitySubtype.document:
+        return Icons.description;
+      case EntitySubtype.passport:
+        return Icons.badge;
+      case EntitySubtype.license:
+        return Icons.card_membership;
+      case EntitySubtype.bankStatement:
+        return Icons.receipt;
+      case EntitySubtype.taxDocument:
+        return Icons.receipt_long;
+      case EntitySubtype.contract:
+        return Icons.description;
+      case EntitySubtype.will:
+        return Icons.description;
+      case EntitySubtype.medicalRecord:
+        return Icons.healing;
+      case EntitySubtype.prescription:
+        return Icons.local_pharmacy;
+      case EntitySubtype.resume:
+        return Icons.description;
+      case EntitySubtype.certificate:
+        return Icons.card_membership;
+        
+      default:
+        return Icons.folder;
     }
   }
 
@@ -334,6 +383,10 @@ class EntityCard extends StatelessWidget {
       case EntitySubtype.dentist:
       case EntitySubtype.doctor:
       case EntitySubtype.stylist:
+      case EntitySubtype.therapist:
+      case EntitySubtype.physiotherapist:
+      case EntitySubtype.specialist:
+      case EntitySubtype.surgeon:
         return const Color(0xFF4CAF50);
 
       // Home category (7) - Teal
@@ -370,7 +423,31 @@ class EntityCard extends StatelessWidget {
       case EntitySubtype.boat:
       case EntitySubtype.car:
       case EntitySubtype.publicTransport:
+      case EntitySubtype.motorcycle:
+      case EntitySubtype.bicycle:
+      case EntitySubtype.truck:
+      case EntitySubtype.van:
+      case EntitySubtype.rv:
+      case EntitySubtype.atv:
+      case EntitySubtype.jetSki:
         return const Color(0xFF607D8B);
+        
+      // Document entities (Category 14) - Light Blue
+      case EntitySubtype.document:
+      case EntitySubtype.passport:
+      case EntitySubtype.license:
+      case EntitySubtype.bankStatement:
+      case EntitySubtype.taxDocument:
+      case EntitySubtype.contract:
+      case EntitySubtype.will:
+      case EntitySubtype.medicalRecord:
+      case EntitySubtype.prescription:
+      case EntitySubtype.resume:
+      case EntitySubtype.certificate:
+        return const Color(0xFF03A9F4);
+        
+      // Grey color for any unhandled subtypes
+        return const Color(0xFF9E9E9E);
     }
   }
 
@@ -387,7 +464,7 @@ class EntityCard extends StatelessWidget {
         return Colors.red;
       case 'draft':
         return Colors.grey;
-      default:
+      // Default color for other statuses
         return Colors.blue;
     }
   }
@@ -471,6 +548,14 @@ class EntityCard extends StatelessWidget {
         return 'Doctor';
       case EntitySubtype.stylist:
         return 'Stylist';
+      case EntitySubtype.therapist:
+        return 'Therapist';
+      case EntitySubtype.physiotherapist:
+        return 'Physiotherapist';
+      case EntitySubtype.specialist:
+        return 'Medical Specialist';
+      case EntitySubtype.surgeon:
+        return 'Surgeon';
 
       // Home category (7)
       case EntitySubtype.appliance:
@@ -519,6 +604,47 @@ class EntityCard extends StatelessWidget {
         return 'Car';
       case EntitySubtype.publicTransport:
         return 'Public Transport';
+      case EntitySubtype.motorcycle:
+        return 'Motorcycle';
+      case EntitySubtype.bicycle:
+        return 'Bicycle';
+      case EntitySubtype.truck:
+        return 'Truck';
+      case EntitySubtype.van:
+        return 'Van';
+      case EntitySubtype.rv:
+        return 'RV';
+      case EntitySubtype.atv:
+        return 'ATV';
+      case EntitySubtype.jetSki:
+        return 'Jet Ski';
+        
+      // Document entities (Category 14)
+      case EntitySubtype.document:
+        return 'Document';
+      case EntitySubtype.passport:
+        return 'Passport';
+      case EntitySubtype.license:
+        return 'License';
+      case EntitySubtype.bankStatement:
+        return 'Bank Statement';
+      case EntitySubtype.taxDocument:
+        return 'Tax Document';
+      case EntitySubtype.contract:
+        return 'Contract';
+      case EntitySubtype.will:
+        return 'Will';
+      case EntitySubtype.medicalRecord:
+        return 'Medical Record';
+      case EntitySubtype.prescription:
+        return 'Prescription';
+      case EntitySubtype.resume:
+        return 'Resume';
+      case EntitySubtype.certificate:
+        return 'Certificate';
+        
+      default:
+        return entity.subtype.toString().split('.').last;
     }
   }
 

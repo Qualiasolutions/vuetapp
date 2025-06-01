@@ -143,7 +143,7 @@ class _RegisterWithAccountTypeScreenState extends ConsumerState<RegisterWithAcco
                 Text('Your account has been created successfully.'),
                 SizedBox(height: 8),
                 Text(
-                  'Please check your email for verification, then log in to continue.',
+                  'You can now log in with your credentials.',
                 ),
               ],
             ),

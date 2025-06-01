@@ -7,15 +7,6 @@
 // Value: A list of strings, where each string is the name of a default entity.
 
 const Map<String, List<String>> defaultGlobalEntities = {
-  'family': [
-    "List", // Family shared lists
-    "Family Goal",
-    "Family Event",
-    "Family Task",
-    "Family Member",
-    "Other Family Item",
-  ],
-  
   'pets': [
     "Pet", // Main pet entity
     "Dog",
@@ -28,9 +19,9 @@ const Map<String, List<String>> defaultGlobalEntities = {
     "Walker",
     "Groomer",
     "Pet Sitter",
-    "Microchip Company",
-    "Pet Insurance Company",
-    "Pet Insurance Policy",
+    "Microchip Company", // From React app
+    "Insurance Company", // From React app
+    "Insurance Policy", // From React app
     "Pet Birthday", // Special pet dates
     "Other Pet",
   ],
@@ -43,13 +34,13 @@ const Map<String, List<String>> defaultGlobalEntities = {
     
     // Core social event entities (matching React app)
     "Event",
-    "Event Subentity",
+    "Event Subentity", // From React app - for auto-created sub-entities
     "Holiday",
     "Holiday Plan",
     "Social Plan",
     "Social Media",
     "Hobby",
-    "Guest List Invite",
+    "Guest List Invite", // From React app
     
     // Auto-created event subentities (from React app AutoSubentity system)
     "Food / Cake / Candles",
@@ -78,11 +69,11 @@ const Map<String, List<String>> defaultGlobalEntities = {
     "Academic Plan",
     "Extracurricular Plan",
     
-    // School entities
-    "School",
-    "School Year",
-    "School Term",
-    "School Break",
+    // School entities (from React app)
+    "School", // From React app
+    "School Year", // From React app - special calendar entity
+    "School Term", // From React app - special calendar entity
+    "School Break", // From React app - special calendar entity
     
     // Student entities and records
     "Student",
@@ -96,6 +87,15 @@ const Map<String, List<String>> defaultGlobalEntities = {
     "School Project",
     "Assignment",
     "Exam",
+    
+    // Academic staff (from React app)
+    "Teacher", // From React app
+    "Tutor", // From React app
+    
+    // Academic work (from React app)
+    "CourseWork", // From React app
+    "Subject", // From React app
+    
     "Other Educational Item",
   ],
   
@@ -115,12 +115,17 @@ const Map<String, List<String>> defaultGlobalEntities = {
     "Salary Review",
     "Team Meeting",
     "Client Meeting",
+    
+    // Work relationships (from React app)
+    "Colleague", // From React app
+    "Work", // From React app
+    
     "Other Career Item",
   ],
   
   'travel': [
     // Travel planning entities (matching React app)
-    "Trip",
+    "Trip", // From React app
     "Travel Plan",
     "Holiday",
     "Holiday Plan",
@@ -150,6 +155,14 @@ const Map<String, List<String>> defaultGlobalEntities = {
     "Health Goal",
     "Patient", // Patient records
     
+    // Medical professionals (from React app)
+    "Doctor", // From React app
+    "Dentist", // From React app
+    
+    // Beauty professionals (from React app)
+    "Beauty Salon", // From React app
+    "Stylist", // From React app
+    
     // Medical appointments
     "Appointment",
     "Doctor Appointment",
@@ -171,6 +184,7 @@ const Map<String, List<String>> defaultGlobalEntities = {
   
   'home': [
     "Home", // Main home entity (matching React app)
+    "Room", // From React app
     "Home Appliance",
     "Home Renovation Project",
     "Furniture",
@@ -182,17 +196,21 @@ const Map<String, List<String>> defaultGlobalEntities = {
     "Home Maintenance",
     "Security System",
     "Cleaning Service",
+    
+    // Home services (from React app)
+    "Contractor", // From React app
+    
     "Other Home Item",
   ],
   
   'garden': [
     "Garden", // Main garden entity (matching React app)
-    "Plant",
+    "Plant", // From React app
     "Tree",
     "Flower",
     "Vegetable Garden",
     "Herb Garden",
-    "Gardening Tool",
+    "Gardening Tool", // From React app as "Tool"
     "Landscaping Project",
     "Pest Control",
     "Fertilizer/Soil",
@@ -203,10 +221,11 @@ const Map<String, List<String>> defaultGlobalEntities = {
   
   'food': [
     "Food", // Food entities (matching React app)
-    "Food Plan",
+    "Food Plan", // From React app
     "Grocery Shopping List", // Could be an entity that links to a list
     "Meal Plan",
-    "Recipe",
+    "Recipe", // From React app
+    "Restaurant", // From React app
     "Restaurant Reservation",
     "Food Subscription",
     "Cooking Class",
@@ -218,8 +237,10 @@ const Map<String, List<String>> defaultGlobalEntities = {
   
   'laundry': [
     "Clothing", // Main clothing entity (matching React app)
+    "Item", // From React app
     "Laundry Plan",
     "Dry Cleaning",
+    "Dry Cleaners", // From React app
     "Laundry Supplies", // e.g., Detergent, Softener
     "Wash Cycle Reminder",
     "Ironing",
@@ -231,8 +252,9 @@ const Map<String, List<String>> defaultGlobalEntities = {
   
   'finance': [
     "Finance", // Main finance entity (matching React app)
-    "Bank Account",
-    "Credit Card",
+    "Bank", // From React app
+    "Bank Account", // From React app
+    "Credit Card", // From React app
     "Investment",
     "Loan",
     "Budget Plan",
@@ -248,15 +270,15 @@ const Map<String, List<String>> defaultGlobalEntities = {
   
   'transport': [
     // Vehicle entities (matching React app exactly)
-    "Car",
-    "Boat",
+    "Vehicle", // General vehicle entity from React app
+    "Car", // From React app
+    "Boat", // From React app
     "Motorcycle",
     "Bicycle",
     "Electric Scooter",
-    "Vehicle", // General vehicle entity from React app
     
-    // Public transport
-    "Public Transport",
+    // Public transport (from React app)
+    "Public Transport", // From React app
     "Public Transport Pass", // e.g., Bus Pass, Train Card
     "Ride Sharing",          // e.g., Uber, Lyft account
     

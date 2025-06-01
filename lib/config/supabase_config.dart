@@ -67,6 +67,9 @@ class SupabaseConfig {
         postgrestOptions: const PostgrestClientOptions(
           schema: 'public',
         ),
+        storageOptions: const StorageClientOptions(
+          retryAttempts: 3, // Add retry for storage operations
+        ),
       );
       
       debugPrint('✅ Supabase initialized successfully');

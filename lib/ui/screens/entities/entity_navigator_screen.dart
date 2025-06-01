@@ -420,6 +420,10 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
       case EntitySubtype.dentist:
       case EntitySubtype.doctor:
       case EntitySubtype.stylist:
+      case EntitySubtype.therapist:
+      case EntitySubtype.physiotherapist:
+      case EntitySubtype.specialist:
+      case EntitySubtype.surgeon:
         return const Color(0xFF4CAF50);
       
       // Home category (7) - Teal
@@ -456,7 +460,18 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
       case EntitySubtype.boat:
       case EntitySubtype.car:
       case EntitySubtype.publicTransport:
+      case EntitySubtype.motorcycle:
+      case EntitySubtype.bicycle:
+      case EntitySubtype.truck:
+      case EntitySubtype.van:
+      case EntitySubtype.rv:
+      case EntitySubtype.atv:
+      case EntitySubtype.jetSki:
         return const Color(0xFF607D8B);
+        
+      // Document entities and other cases
+      default:
+        return const Color(0xFF9E9E9E); // Grey color for any unhandled subtypes
     }
   }
 
@@ -474,6 +489,24 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
         return Icons.event;
       case EntitySubtype.hobby:
         return Icons.sports_esports;
+      case EntitySubtype.therapist:
+        return Icons.psychology;
+      case EntitySubtype.doctor:
+        return Icons.local_hospital;
+      case EntitySubtype.plant:
+        return Icons.local_florist;
+      case EntitySubtype.restaurant:
+        return Icons.restaurant;
+      case EntitySubtype.bank:
+        return Icons.account_balance;
+      case EntitySubtype.creditCard:
+        return Icons.credit_card;
+      case EntitySubtype.motorcycle:
+        return Icons.motorcycle;
+      case EntitySubtype.document:
+        return Icons.description;
+      case EntitySubtype.passport:
+        return Icons.badge;
       default:
         return Icons.folder;
     }

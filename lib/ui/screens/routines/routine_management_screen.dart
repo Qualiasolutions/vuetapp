@@ -1,4 +1,4 @@
-aiimport 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/services/routine_service.dart';
 

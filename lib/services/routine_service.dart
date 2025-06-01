@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/services/auth_service.dart';
 import 'package:vuet_app/services/task_service.dart';
-import 'package:vuet_app/models/task_model.dart';
 import 'package:vuet_app/models/task_type_enums.dart';
 import 'package:vuet_app/utils/error_handler.dart';
 import 'dart:async';

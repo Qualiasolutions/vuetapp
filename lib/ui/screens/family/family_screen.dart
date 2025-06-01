@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vuet_app/providers/auth_providers.dart';
 import 'package:vuet_app/providers/user_providers.dart';
 // Import family providers with a prefix
 import 'package:vuet_app/providers/family_providers.dart' as family_providers;
@@ -21,7 +20,6 @@ class FamilyScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final supabaseUserAsync = ref.watch(currentUserProvider);
     final currentUserModelAsync = ref.watch(currentUserModelProvider);
     final currentUserFamilyAsync = ref.watch(family_providers.currentUserFamilyProvider);
     final familyMembersAsync = ref.watch(family_providers.familyMembersProvider);
@@ -60,7 +58,7 @@ class FamilyScreen extends ConsumerWidget {
                   child: Column(
                     children: [
                       if (hasFamily) ...[
-                        _buildFamilyHeader(context, family!, userModel),
+                        _buildFamilyHeader(context, family, userModel),
                         _buildFamilyStats(context, familyMembersAsync),
                         _buildQuickActions(context, ref),
                         _buildSharedContent(context),

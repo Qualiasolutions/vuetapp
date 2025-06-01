@@ -16,7 +16,6 @@ class SharedContentScreen extends ConsumerStatefulWidget {
 class _SharedContentScreenState extends ConsumerState<SharedContentScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _searchQuery = '';
 
   @override
   void initState() {
@@ -123,11 +122,6 @@ class _SharedContentScreenState extends ConsumerState<SharedContentScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       child: TextField(
-        onChanged: (query) {
-          setState(() {
-            _searchQuery = query;
-          });
-        },
         decoration: InputDecoration(
           hintText: 'Search shared content...',
           prefixIcon: const Icon(Icons.search),
@@ -411,7 +405,7 @@ class _SharedContentScreenState extends ConsumerState<SharedContentScreen>
                         ),
                       ),
                     ],
-                    onSelected: (value) => _handleListAction(context, list, value as String),
+                    onSelected: (value) => _handleListAction(context, list, value),
                   ),
                 ],
               ),
@@ -604,7 +598,7 @@ class _SharedContentScreenState extends ConsumerState<SharedContentScreen>
               ),
             ),
           ],
-          onSelected: (value) => _handleTaskAction(context, task, value as String),
+          onSelected: (value) => _handleTaskAction(context, task, value),
         ),
       ),
     );

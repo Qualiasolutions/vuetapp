@@ -337,7 +337,7 @@ class OnboardingDashboardScreen extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              ...suggestions.map((suggestion) => _buildSuggestionCard(context, ref, suggestion)).toList(),
+              ...suggestions.map((suggestion) => _buildSuggestionCard(context, ref, suggestion)),
             ],
           ),
         ),
@@ -535,7 +535,7 @@ class OnboardingDashboardScreen extends ConsumerWidget {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

@@ -581,7 +581,7 @@ class _EntityTypeIntroductionScreenState extends ConsumerState<EntityTypeIntrodu
           ),
         ),
         const SizedBox(height: 16),
-        ...features.take(3).map((feature) => _buildFeatureItem(feature)).toList(),
+        ...features.take(3).map((feature) => _buildFeatureItem(feature)),
       ],
     );
   }
