@@ -27,20 +27,25 @@ mixin _$BaseEntityModel {
   String get userId => throw _privateConstructorUsedError;
   @JsonKey(name: 'app_category_id')
   int? get appCategoryId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'category_id')
+  String? get categoryId => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
   String? get parentId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'entity_type_id')
+  @JsonKey(name: 'subtype')
   EntitySubtype get subtype => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_at')
   DateTime? get updatedAt => throw _privateConstructorUsedError;
   bool? get isHidden => throw _privateConstructorUsedError;
-  @JsonKey(name: 'attributes')
+  @JsonKey(name: 'custom_fields')
   Map<String, dynamic>? get customFields => throw _privateConstructorUsedError;
   List<String>? get attachments => throw _privateConstructorUsedError;
+  @JsonKey(name: 'due_date')
   DateTime? get dueDate => throw _privateConstructorUsedError;
   String? get status => throw _privateConstructorUsedError;
+  @JsonKey(name: 'subcategory_id')
+  String? get subcategoryId => throw _privateConstructorUsedError;
 
   /// Serializes this BaseEntityModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -64,16 +69,18 @@ abstract class $BaseEntityModelCopyWith<$Res> {
       String? description,
       @JsonKey(name: 'user_id') String userId,
       @JsonKey(name: 'app_category_id') int? appCategoryId,
+      @JsonKey(name: 'category_id') String? categoryId,
       String? imageUrl,
       String? parentId,
-      @JsonKey(name: 'entity_type_id') EntitySubtype subtype,
+      @JsonKey(name: 'subtype') EntitySubtype subtype,
       @JsonKey(name: 'created_at') DateTime createdAt,
       @JsonKey(name: 'updated_at') DateTime? updatedAt,
       bool? isHidden,
-      @JsonKey(name: 'attributes') Map<String, dynamic>? customFields,
+      @JsonKey(name: 'custom_fields') Map<String, dynamic>? customFields,
       List<String>? attachments,
-      DateTime? dueDate,
-      String? status});
+      @JsonKey(name: 'due_date') DateTime? dueDate,
+      String? status,
+      @JsonKey(name: 'subcategory_id') String? subcategoryId});
 }
 
 /// @nodoc
@@ -96,6 +103,7 @@ class _$BaseEntityModelCopyWithImpl<$Res, $Val extends BaseEntityModel>
     Object? description = freezed,
     Object? userId = null,
     Object? appCategoryId = freezed,
+    Object? categoryId = freezed,
     Object? imageUrl = freezed,
     Object? parentId = freezed,
     Object? subtype = null,
@@ -106,6 +114,7 @@ class _$BaseEntityModelCopyWithImpl<$Res, $Val extends BaseEntityModel>
     Object? attachments = freezed,
     Object? dueDate = freezed,
     Object? status = freezed,
+    Object? subcategoryId = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -128,6 +137,10 @@ class _$BaseEntityModelCopyWithImpl<$Res, $Val extends BaseEntityModel>
           ? _value.appCategoryId
           : appCategoryId // ignore: cast_nullable_to_non_nullable
               as int?,
+      categoryId: freezed == categoryId
+          ? _value.categoryId
+          : categoryId // ignore: cast_nullable_to_non_nullable
+              as String?,
       imageUrl: freezed == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -168,6 +181,10 @@ class _$BaseEntityModelCopyWithImpl<$Res, $Val extends BaseEntityModel>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String?,
+      subcategoryId: freezed == subcategoryId
+          ? _value.subcategoryId
+          : subcategoryId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -186,16 +203,18 @@ abstract class _$$BaseEntityModelImplCopyWith<$Res>
       String? description,
       @JsonKey(name: 'user_id') String userId,
       @JsonKey(name: 'app_category_id') int? appCategoryId,
+      @JsonKey(name: 'category_id') String? categoryId,
       String? imageUrl,
       String? parentId,
-      @JsonKey(name: 'entity_type_id') EntitySubtype subtype,
+      @JsonKey(name: 'subtype') EntitySubtype subtype,
       @JsonKey(name: 'created_at') DateTime createdAt,
       @JsonKey(name: 'updated_at') DateTime? updatedAt,
       bool? isHidden,
-      @JsonKey(name: 'attributes') Map<String, dynamic>? customFields,
+      @JsonKey(name: 'custom_fields') Map<String, dynamic>? customFields,
       List<String>? attachments,
-      DateTime? dueDate,
-      String? status});
+      @JsonKey(name: 'due_date') DateTime? dueDate,
+      String? status,
+      @JsonKey(name: 'subcategory_id') String? subcategoryId});
 }
 
 /// @nodoc
@@ -216,6 +235,7 @@ class __$$BaseEntityModelImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? userId = null,
     Object? appCategoryId = freezed,
+    Object? categoryId = freezed,
     Object? imageUrl = freezed,
     Object? parentId = freezed,
     Object? subtype = null,
@@ -226,6 +246,7 @@ class __$$BaseEntityModelImplCopyWithImpl<$Res>
     Object? attachments = freezed,
     Object? dueDate = freezed,
     Object? status = freezed,
+    Object? subcategoryId = freezed,
   }) {
     return _then(_$BaseEntityModelImpl(
       id: freezed == id
@@ -248,6 +269,10 @@ class __$$BaseEntityModelImplCopyWithImpl<$Res>
           ? _value.appCategoryId
           : appCategoryId // ignore: cast_nullable_to_non_nullable
               as int?,
+      categoryId: freezed == categoryId
+          ? _value.categoryId
+          : categoryId // ignore: cast_nullable_to_non_nullable
+              as String?,
       imageUrl: freezed == imageUrl
           ? _value.imageUrl
           : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -288,6 +313,10 @@ class __$$BaseEntityModelImplCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String?,
+      subcategoryId: freezed == subcategoryId
+          ? _value.subcategoryId
+          : subcategoryId // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -301,16 +330,18 @@ class _$BaseEntityModelImpl implements _BaseEntityModel {
       this.description,
       @JsonKey(name: 'user_id') required this.userId,
       @JsonKey(name: 'app_category_id') this.appCategoryId,
+      @JsonKey(name: 'category_id') this.categoryId,
       this.imageUrl,
       this.parentId,
-      @JsonKey(name: 'entity_type_id') required this.subtype,
+      @JsonKey(name: 'subtype') required this.subtype,
       @JsonKey(name: 'created_at') required this.createdAt,
       @JsonKey(name: 'updated_at') this.updatedAt,
       this.isHidden,
-      @JsonKey(name: 'attributes') final Map<String, dynamic>? customFields,
+      @JsonKey(name: 'custom_fields') final Map<String, dynamic>? customFields,
       final List<String>? attachments,
-      this.dueDate,
-      this.status})
+      @JsonKey(name: 'due_date') this.dueDate,
+      this.status,
+      @JsonKey(name: 'subcategory_id') this.subcategoryId})
       : _customFields = customFields,
         _attachments = attachments;
 
@@ -330,11 +361,14 @@ class _$BaseEntityModelImpl implements _BaseEntityModel {
   @JsonKey(name: 'app_category_id')
   final int? appCategoryId;
   @override
+  @JsonKey(name: 'category_id')
+  final String? categoryId;
+  @override
   final String? imageUrl;
   @override
   final String? parentId;
   @override
-  @JsonKey(name: 'entity_type_id')
+  @JsonKey(name: 'subtype')
   final EntitySubtype subtype;
   @override
   @JsonKey(name: 'created_at')
@@ -346,7 +380,7 @@ class _$BaseEntityModelImpl implements _BaseEntityModel {
   final bool? isHidden;
   final Map<String, dynamic>? _customFields;
   @override
-  @JsonKey(name: 'attributes')
+  @JsonKey(name: 'custom_fields')
   Map<String, dynamic>? get customFields {
     final value = _customFields;
     if (value == null) return null;
@@ -366,13 +400,17 @@ class _$BaseEntityModelImpl implements _BaseEntityModel {
   }
 
   @override
+  @JsonKey(name: 'due_date')
   final DateTime? dueDate;
   @override
   final String? status;
+  @override
+  @JsonKey(name: 'subcategory_id')
+  final String? subcategoryId;
 
   @override
   String toString() {
-    return 'BaseEntityModel(id: $id, name: $name, description: $description, userId: $userId, appCategoryId: $appCategoryId, imageUrl: $imageUrl, parentId: $parentId, subtype: $subtype, createdAt: $createdAt, updatedAt: $updatedAt, isHidden: $isHidden, customFields: $customFields, attachments: $attachments, dueDate: $dueDate, status: $status)';
+    return 'BaseEntityModel(id: $id, name: $name, description: $description, userId: $userId, appCategoryId: $appCategoryId, categoryId: $categoryId, imageUrl: $imageUrl, parentId: $parentId, subtype: $subtype, createdAt: $createdAt, updatedAt: $updatedAt, isHidden: $isHidden, customFields: $customFields, attachments: $attachments, dueDate: $dueDate, status: $status, subcategoryId: $subcategoryId)';
   }
 
   @override
@@ -387,6 +425,8 @@ class _$BaseEntityModelImpl implements _BaseEntityModel {
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.appCategoryId, appCategoryId) ||
                 other.appCategoryId == appCategoryId) &&
+            (identical(other.categoryId, categoryId) ||
+                other.categoryId == categoryId) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
             (identical(other.parentId, parentId) ||
@@ -403,7 +443,9 @@ class _$BaseEntityModelImpl implements _BaseEntityModel {
             const DeepCollectionEquality()
                 .equals(other._attachments, _attachments) &&
             (identical(other.dueDate, dueDate) || other.dueDate == dueDate) &&
-            (identical(other.status, status) || other.status == status));
+            (identical(other.status, status) || other.status == status) &&
+            (identical(other.subcategoryId, subcategoryId) ||
+                other.subcategoryId == subcategoryId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -415,6 +457,7 @@ class _$BaseEntityModelImpl implements _BaseEntityModel {
       description,
       userId,
       appCategoryId,
+      categoryId,
       imageUrl,
       parentId,
       subtype,
@@ -424,7 +467,8 @@ class _$BaseEntityModelImpl implements _BaseEntityModel {
       const DeepCollectionEquality().hash(_customFields),
       const DeepCollectionEquality().hash(_attachments),
       dueDate,
-      status);
+      status,
+      subcategoryId);
 
   /// Create a copy of BaseEntityModel
   /// with the given fields replaced by the non-null parameter values.
@@ -450,16 +494,19 @@ abstract class _BaseEntityModel implements BaseEntityModel {
       final String? description,
       @JsonKey(name: 'user_id') required final String userId,
       @JsonKey(name: 'app_category_id') final int? appCategoryId,
+      @JsonKey(name: 'category_id') final String? categoryId,
       final String? imageUrl,
       final String? parentId,
-      @JsonKey(name: 'entity_type_id') required final EntitySubtype subtype,
+      @JsonKey(name: 'subtype') required final EntitySubtype subtype,
       @JsonKey(name: 'created_at') required final DateTime createdAt,
       @JsonKey(name: 'updated_at') final DateTime? updatedAt,
       final bool? isHidden,
-      @JsonKey(name: 'attributes') final Map<String, dynamic>? customFields,
+      @JsonKey(name: 'custom_fields') final Map<String, dynamic>? customFields,
       final List<String>? attachments,
-      final DateTime? dueDate,
-      final String? status}) = _$BaseEntityModelImpl;
+      @JsonKey(name: 'due_date') final DateTime? dueDate,
+      final String? status,
+      @JsonKey(name: 'subcategory_id')
+      final String? subcategoryId}) = _$BaseEntityModelImpl;
 
   factory _BaseEntityModel.fromJson(Map<String, dynamic> json) =
       _$BaseEntityModelImpl.fromJson;
@@ -477,11 +524,14 @@ abstract class _BaseEntityModel implements BaseEntityModel {
   @JsonKey(name: 'app_category_id')
   int? get appCategoryId;
   @override
+  @JsonKey(name: 'category_id')
+  String? get categoryId;
+  @override
   String? get imageUrl;
   @override
   String? get parentId;
   @override
-  @JsonKey(name: 'entity_type_id')
+  @JsonKey(name: 'subtype')
   EntitySubtype get subtype;
   @override
   @JsonKey(name: 'created_at')
@@ -492,14 +542,18 @@ abstract class _BaseEntityModel implements BaseEntityModel {
   @override
   bool? get isHidden;
   @override
-  @JsonKey(name: 'attributes')
+  @JsonKey(name: 'custom_fields')
   Map<String, dynamic>? get customFields;
   @override
   List<String>? get attachments;
   @override
+  @JsonKey(name: 'due_date')
   DateTime? get dueDate;
   @override
   String? get status;
+  @override
+  @JsonKey(name: 'subcategory_id')
+  String? get subcategoryId;
 
   /// Create a copy of BaseEntityModel
   /// with the given fields replaced by the non-null parameter values.

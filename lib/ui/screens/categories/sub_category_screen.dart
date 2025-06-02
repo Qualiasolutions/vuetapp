@@ -1,688 +1,418 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:vuet_app/models/entity_subcategory_model.dart';
+import 'package:vuet_app/providers/category_providers.dart';
 import '../entities/entity_list_screen.dart';
-import '../../../models/entity_model.dart';
+import 'package:vuet_app/models/entity_model.dart';
 import '../../screens/tasks/tag_filter_task_screen.dart';
+import 'package:vuet_app/ui/helpers/ui_helpers.dart';
+import 'package:vuet_app/models/entity_category_model.dart';
+import 'package:vuet_app/providers/category_screen_providers.dart';
+import 'package:vuet_app/constants/default_subcategories.dart';
+import 'package:vuet_app/ui/screens/entities/entity_form_screen.dart';
 
-// Subcategory definition matching React's subCategories.ts exactly
-class SubCategoryItem {
-  final String name;
-  final String displayName;
-  final IconData icon;
-  final List<EntitySubtype> entityTypes;
-  final String? tagName; // For TagScreen navigation
-  final Color? color;
-
-  const SubCategoryItem({
-    required this.name,
-    required this.displayName,
-    required this.icon,
-    required this.entityTypes,
-    this.tagName,
-    this.color,
-  });
+// Helper to parse EntitySubtype from string
+EntitySubtype _parseEntitySubtype(String subtypeName) {
+  // Try to find a matching EntitySubtype by its JsonValue
+  try {
+    // Loop through all enum values and check if any has a matching JsonValue
+    for (final type in EntitySubtype.values) {
+      // Convert enum to its string representation which includes the JsonValue annotation
+      final typeString = type.toString().split('.').last;
+      
+      // Match by name or similar variations
+      if (subtypeName == typeString || 
+          subtypeName.toLowerCase().replaceAll(' ', '_') == typeString.toLowerCase() ||
+          subtypeName == type.toString().split('.').last) {
+        return type;
+      }
+    }
+    
+    // Fallback to the first enum value if no match found
+    print("Warning: Could not parse EntitySubtype '$subtypeName'. Unknown value. Falling back to first available subtype.");
+    return EntitySubtype.values.first;
+  } catch (e) {
+    print("Error parsing EntitySubtype: $e. Falling back to first available subtype.");
+    return EntitySubtype.values.first;
+  }
 }
 
-// Exact mapping from React's subCategories.ts - Updated with 50-entity system
-const Map<String, List<SubCategoryItem>> categorySubcategories = {
-  'PETS': [
-    SubCategoryItem(
-      name: 'myPets',
-      displayName: 'My Pets',
-      icon: Icons.pets,
-      entityTypes: [EntitySubtype.pet],
-      color: Color(0xFFE49F30),
-    ),
-    SubCategoryItem(
-      name: 'feedingSchedule',
-      displayName: 'Feeding Schedule',
-      icon: Icons.restaurant,
-      entityTypes: [],
-      tagName: 'PETS__FEEDING',
-      color: Color(0xFF4CAF50),
-    ),
-    SubCategoryItem(
-      name: 'exercise',
-      displayName: 'Exercise',
-      icon: Icons.directions_run,
-      entityTypes: [],
-      tagName: 'PETS__EXERCISE',
-      color: Color(0xFF2196F3),
-    ),
-    SubCategoryItem(
-      name: 'cleaningGrooming',
-      displayName: 'Cleaning & Grooming',
-      icon: Icons.content_cut,
-      entityTypes: [EntitySubtype.petGroomer],
-      tagName: 'PETS__GROOMING',
-      color: Color(0xFF9C27B0),
-    ),
-    SubCategoryItem(
-      name: 'health',
-      displayName: 'Health',
-      icon: Icons.medical_services,
-      entityTypes: [EntitySubtype.vet],
-      tagName: 'PETS__HEALTH',
-      color: Color(0xFFF44336),
-    ),
-  ],
-  'SOCIAL_INTERESTS': [
-    SubCategoryItem(
-      name: 'socialPlans',
-      displayName: 'Social Plans',
-      icon: Icons.people,
-      entityTypes: [EntitySubtype.socialPlan],
-      color: Color(0xFF9C27B0),
-    ),
-    SubCategoryItem(
-      name: 'anniversaries',
-      displayName: 'Anniversaries',
-      icon: Icons.favorite,
-      entityTypes: [EntitySubtype.anniversary, EntitySubtype.anniversaryPlan],
-      color: Color(0xFFE91E63),
-    ),
-    SubCategoryItem(
-      name: 'nationalHolidays',
-      displayName: 'National Holidays',
-      icon: Icons.flag,
-      entityTypes: [EntitySubtype.holiday, EntitySubtype.holidayPlan],
-      color: Color(0xFF3F51B5),
-    ),
-    SubCategoryItem(
-      name: 'events',
-      displayName: 'Events',
-      icon: Icons.event,
-      entityTypes: [EntitySubtype.event, EntitySubtype.guestListInvite],
-      color: Color(0xFF00BCD4),
-    ),
-    SubCategoryItem(
-      name: 'hobbies',
-      displayName: 'Hobbies',
-      icon: Icons.sports_esports,
-      entityTypes: [EntitySubtype.hobby],
-      color: Color(0xFF4CAF50),
-    ),
-    SubCategoryItem(
-      name: 'socialMedia',
-      displayName: 'Social Media',
-      icon: Icons.share,
-      entityTypes: [EntitySubtype.socialMedia],
-      color: Color(0xFF2196F3),
-    ),
-  ],
-  'EDUCATION': [
-    SubCategoryItem(
-      name: 'students',
-      displayName: 'Students',
-      icon: Icons.school,
-      entityTypes: [EntitySubtype.student],
-      color: Color(0xFF2196F3),
-    ),
-    SubCategoryItem(
-      name: 'schools',
-      displayName: 'Schools',
-      icon: Icons.account_balance,
-      entityTypes: [EntitySubtype.school],
-      // Note: schoolBreak, schoolTerm, schoolYear not in 50-entity system
-      color: Color(0xFF3F51B5),
-    ),
-    SubCategoryItem(
-      name: 'academicPlans',
-      displayName: 'Academic Plans',
-      icon: Icons.assignment,
-      entityTypes: [EntitySubtype.academicPlan],
-      color: Color(0xFF4CAF50),
-    ),
-    SubCategoryItem(
-      name: 'extracurricularPlans',
-      displayName: 'Extracurricular Plans',
-      icon: Icons.sports,
-      entityTypes: [EntitySubtype.extracurricularPlan],
-      color: Color(0xFFFF9800),
-    ),
-  ],
-  'CAREER': [
-    SubCategoryItem(
-      name: 'employees',
-      displayName: 'Employees',
-      icon: Icons.business_center,
-      entityTypes: [EntitySubtype.colleague, EntitySubtype.work],
-      color: Color(0xFF2196F3),
-    ),
-    SubCategoryItem(
-      name: 'daysOff',
-      displayName: 'Days Off',
-      icon: Icons.beach_access,
-      entityTypes: [], // daysOff not in 50-entity system
-      color: Color(0xFF4CAF50),
-    ),
-    SubCategoryItem(
-      name: 'careerGoals',
-      displayName: 'Career Goals',
-      icon: Icons.trending_up,
-      entityTypes: [], // careerGoal not in 50-entity system
-      color: Color(0xFFFF9800),
-    ),
-  ],
-  'TRAVEL': [
-    SubCategoryItem(
-      name: 'myTrips',
-      displayName: 'My Trips',
-      icon: Icons.flight,
-      entityTypes: [EntitySubtype.trip],
-      color: Color(0xFF00BCD4),
-    ),
-    SubCategoryItem(
-      name: 'myTravelPlans',
-      displayName: 'My Travel Plans',
-      icon: Icons.map,
-      entityTypes: [], // travelPlan not in 50-entity system
-      color: Color(0xFF2196F3),
-    ),
-    SubCategoryItem(
-      name: 'flights',
-      displayName: 'Flights',
-      icon: Icons.airplanemode_active,
-      entityTypes: [], // flight not in 50-entity system
-      color: Color(0xFF3F51B5),
-    ),
-    SubCategoryItem(
-      name: 'accommodation',
-      displayName: 'Accommodation',
-      icon: Icons.hotel,
-      entityTypes: [], // hotelOrRental, stayWithFriend not in 50-entity system
-      color: Color(0xFF4CAF50),
-    ),
-    SubCategoryItem(
-      name: 'transport',
-      displayName: 'Transport',
-      icon: Icons.directions_car,
-      entityTypes: [], // rentalCar, taxiOrTransfer, trainBusFerry not in 50-entity system
-      color: Color(0xFF607D8B),
-    ),
-  ],
-  'HEALTH_BEAUTY': [
-    SubCategoryItem(
-      name: 'patients',
-      displayName: 'Patients',
-      icon: Icons.person,
-      entityTypes: [], // patient not in 50-entity system
-      color: Color(0xFF4CAF50),
-    ),
-    SubCategoryItem(
-      name: 'appointments',
-      displayName: 'Appointments',
-      icon: Icons.event_available,
-      entityTypes: [], // appointment not in 50-entity system
-      color: Color(0xFF2196F3),
-    ),
-    SubCategoryItem(
-      name: 'healthGoals',
-      displayName: 'Health Goals',
-      icon: Icons.fitness_center,
-      entityTypes: [], // healthGoal not in 50-entity system
-      color: Color(0xFFFF9800),
-    ),
-    SubCategoryItem(
-      name: 'healthBeauty',
-      displayName: 'Health & Beauty',
-      icon: Icons.spa,
-      entityTypes: [EntitySubtype.beautySalon, EntitySubtype.stylist],
-      color: Color(0xFFE91E63),
-    ),
-    SubCategoryItem(
-      name: 'doctors',
-      displayName: 'Doctors',
-      icon: Icons.medical_services,
-      entityTypes: [EntitySubtype.doctor, EntitySubtype.specialist, EntitySubtype.surgeon],
-      color: Color(0xFFF44336),
-    ),
-    SubCategoryItem(
-      name: 'dentists',
-      displayName: 'Dentists',
-      icon: Icons.local_hospital,
-      entityTypes: [EntitySubtype.dentist],
-      color: Color(0xFF3F51B5),
-    ),
-    SubCategoryItem(
-      name: 'therapists',
-      displayName: 'Therapists',
-      icon: Icons.psychology,
-      entityTypes: [EntitySubtype.therapist, EntitySubtype.physiotherapist],
-      color: Color(0xFF9C27B0),
-    ),
-  ],
-  'HOME': [
-    SubCategoryItem(
-      name: 'myHomes',
-      displayName: 'My Homes',
-      icon: Icons.home,
-      entityTypes: [EntitySubtype.home],
-      color: Color(0xFF1A6E68),
-    ),
-    SubCategoryItem(
-      name: 'appliances',
-      displayName: 'Appliances',
-      icon: Icons.kitchen,
-      entityTypes: [EntitySubtype.appliance],
-      color: Color(0xFF607D8B),
-    ),
-  ],
-  'VEHICLES': [
-    SubCategoryItem(
-      name: 'cars',
-      displayName: 'Cars',
-      icon: Icons.directions_car,
-      entityTypes: [EntitySubtype.car],
-      color: Color(0xFF3F51B5),
-    ),
-    SubCategoryItem(
-      name: 'motorcycles',
-      displayName: 'Motorcycles',
-      icon: Icons.two_wheeler,
-      entityTypes: [EntitySubtype.motorcycle],
-      color: Color(0xFFF44336),
-    ),
-    SubCategoryItem(
-      name: 'bicycles',
-      displayName: 'Bicycles',
-      icon: Icons.pedal_bike,
-      entityTypes: [EntitySubtype.bicycle],
-      color: Color(0xFF4CAF50),
-    ),
-    SubCategoryItem(
-      name: 'trucks',
-      displayName: 'Trucks & Vans',
-      icon: Icons.local_shipping,
-      entityTypes: [EntitySubtype.truck, EntitySubtype.van],
-      color: Color(0xFF607D8B),
-    ),
-    SubCategoryItem(
-      name: 'boats',
-      displayName: 'Boats',
-      icon: Icons.directions_boat,
-      entityTypes: [EntitySubtype.boat, EntitySubtype.jetSki],
-      color: Color(0xFF00BCD4),
-    ),
-    SubCategoryItem(
-      name: 'recreational',
-      displayName: 'Recreational Vehicles',
-      icon: Icons.rv_hookup,
-      entityTypes: [EntitySubtype.rv, EntitySubtype.atv],
-      color: Color(0xFFFF9800),
-    ),
-    SubCategoryItem(
-      name: 'publicTransport',
-      displayName: 'Public Transport',
-      icon: Icons.directions_bus,
-      entityTypes: [EntitySubtype.publicTransport],
-      color: Color(0xFF2196F3),
-    ),
-  ],
-  'DOCUMENTS': [
-    SubCategoryItem(
-      name: 'personalDocuments',
-      displayName: 'Personal Documents',
-      icon: Icons.description,
-      entityTypes: [EntitySubtype.document],
-      color: Color(0xFF2196F3),
-    ),
-    SubCategoryItem(
-      name: 'identityDocuments',
-      displayName: 'Identity Documents',
-      icon: Icons.badge,
-      entityTypes: [EntitySubtype.passport, EntitySubtype.license],
-      color: Color(0xFF3F51B5),
-    ),
-    SubCategoryItem(
-      name: 'financialDocuments',
-      displayName: 'Financial Documents',
-      icon: Icons.account_balance,
-      entityTypes: [EntitySubtype.bankStatement, EntitySubtype.taxDocument],
-      color: Color(0xFF4CAF50),
-    ),
-    SubCategoryItem(
-      name: 'legalDocuments',
-      displayName: 'Legal Documents',
-      icon: Icons.gavel,
-      entityTypes: [EntitySubtype.contract, EntitySubtype.will],
-      color: Color(0xFF9C27B0),
-    ),
-    SubCategoryItem(
-      name: 'medicalDocuments',
-      displayName: 'Medical Documents',
-      icon: Icons.medical_services,
-      entityTypes: [EntitySubtype.medicalRecord, EntitySubtype.prescription],
-      color: Color(0xFFF44336),
-    ),
-    SubCategoryItem(
-      name: 'workDocuments',
-      displayName: 'Work Documents',
-      icon: Icons.work,
-      entityTypes: [EntitySubtype.resume, EntitySubtype.certificate],
-      color: Color(0xFF607D8B),
-    ),
-  ],
-  'GARDEN': [
-    SubCategoryItem(
-      name: 'gardens',
-      displayName: 'Gardens',
-      icon: Icons.local_florist,
-      entityTypes: [EntitySubtype.gardenTool, EntitySubtype.plant],
-      color: Color(0xFF4CAF50),
-    ),
-  ],
-  'FOOD': [
-    SubCategoryItem(
-      name: 'foodPlans',
-      displayName: 'Food Plans',
-      icon: Icons.restaurant_menu,
-      entityTypes: [EntitySubtype.foodPlan],
-      color: Color(0xFFFF9800),
-    ),
-    SubCategoryItem(
-      name: 'food',
-      displayName: 'Food Items',
-      icon: Icons.fastfood,
-      entityTypes: [EntitySubtype.recipe, EntitySubtype.restaurant],
-      color: Color(0xFFF44336),
-    ),
-  ],
-  'LAUNDRY': [
-    SubCategoryItem(
-      name: 'laundryPlans',
-      displayName: 'Laundry Plans',
-      icon: Icons.local_laundry_service,
-      entityTypes: [EntitySubtype.laundryItem, EntitySubtype.dryCleaners],
-      color: Color(0xFF607D8B),
-    ),
-  ],
-  'FINANCE': [
-    SubCategoryItem(
-      name: 'myFinances',
-      displayName: 'My Finances',
-      icon: Icons.account_balance,
-      entityTypes: [EntitySubtype.bank, EntitySubtype.bankAccount, EntitySubtype.creditCard],
-      color: Color(0xFF795548),
-    ),
-  ],
-  'TRANSPORT': [
-    SubCategoryItem(
-      name: 'cars',
-      displayName: 'Cars',
-      icon: Icons.directions_car,
-      entityTypes: [EntitySubtype.car],
-      color: Color(0xFF607D8B),
-    ),
-    SubCategoryItem(
-      name: 'boats',
-      displayName: 'Boats',
-      icon: Icons.directions_boat,
-      entityTypes: [EntitySubtype.boat],
-      color: Color(0xFF00BCD4),
-    ),
-    SubCategoryItem(
-      name: 'publicTransport',
-      displayName: 'Public Transport',
-      icon: Icons.directions_bus,
-      entityTypes: [EntitySubtype.publicTransport],
-      color: Color(0xFF2196F3),
-    ),
-    SubCategoryItem(
-      name: 'vehicles',
-      displayName: 'Other Vehicles',
-      icon: Icons.commute,
-      entityTypes: [], // vehicle not in 50-entity system
-      color: Color(0xFF9C27B0),
-    ),
-  ],
-  'CHARITY_RELIGION': [
-    SubCategoryItem(
-      name: 'charities',
-      displayName: 'Charities',
-      icon: Icons.volunteer_activism,
-      entityTypes: [], // charity, donation not in 50-entity system
-      color: Color(0xFFFF5722),
-    ),
-    SubCategoryItem(
-      name: 'religious',
-      displayName: 'Religious Organizations',
-      icon: Icons.church,
-      entityTypes: [], // religiousOrganization, religiousService not in 50-entity system
-      color: Color(0xFF9C27B0),
-    ),
-    SubCategoryItem(
-      name: 'charityEvents',
-      displayName: 'Charity Events',
-      icon: Icons.event,
-      entityTypes: [], // charityEvent not in 50-entity system
-      color: Color(0xFF4CAF50),
-    ),
-  ],
-};
-
-class SubCategoryScreen extends ConsumerWidget {
-  final String parentCategoryName;
-  final String parentCategoryId;
-  final List<SubCategoryItem> subCategories;
+class SubCategoryScreen extends ConsumerStatefulWidget {
+  final int? appCategoryId;
+  final String categoryId;
+  final String categoryName;
+  final List<String>? subCategoryKeys;
 
   const SubCategoryScreen({
     super.key,
-    required this.parentCategoryName,
-    required this.parentCategoryId,
-    required this.subCategories,
+    this.appCategoryId,
+    required this.categoryId,
+    required this.categoryName,
+    this.subCategoryKeys,
   });
 
-  // Constructor that automatically gets subcategories from the mapping
-  SubCategoryScreen.fromCategoryId({
-    super.key,
-    required this.parentCategoryName,
-    required this.parentCategoryId,
-  }) : subCategories = categorySubcategories[parentCategoryName.toUpperCase()] ?? [];
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      appBar: AppBar(
-        title: Text(parentCategoryName),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            height: 1,
-            color: Colors.grey.shade200,
-          ),
-        ),
-      ),
-      body: subCategories.isEmpty
-          ? _buildEmptyState(context)
-          : _buildSubCategoriesList(context),
+  factory SubCategoryScreen.fromCategoryId({
+    int? appCategoryId,
+    required String parentCategoryId,
+    required String parentCategoryName,
+    List<String>? subCategoryKeys,
+  }) {
+    return SubCategoryScreen(
+      key: ValueKey('SubCategoryScreen_$parentCategoryId'),
+      appCategoryId: appCategoryId,
+      categoryId: parentCategoryId,
+      categoryName: parentCategoryName,
+      subCategoryKeys: subCategoryKeys,
     );
   }
 
+  @override
+  ConsumerState<SubCategoryScreen> createState() => _SubCategoryScreenState();
+}
+
+class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> {
+  List<EntitySubcategoryModel> _subcategories = [];
+  bool _hasEntities = false; // Flag to track if there are entities
+  
+  // For dropdown menus
+  final List<String> _quickNavOptions = ['My Entities', 'Favorites', 'Recently Viewed'];
+  final List<String> _actionOptions = ['Add New Entity', 'Import Entities', 'Settings'];
+  String? _selectedQuickNavOption;
+  String? _selectedActionOption;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Determine if any entities exist (would be from a provider in real app)
+    _hasEntities = false; // This would be dynamic in a real app
+  }
+  
+  void _addNewEntity(BuildContext context, EntitySubcategoryModel? subcategory) {
+    final subtype = subcategory != null && subcategory.entityTypeIds.isNotEmpty
+        ? _parseEntitySubtype(subcategory.entityTypeIds.first)
+        : EntitySubtype.values.first;
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EntityFormScreen(
+          categoryId: widget.categoryId,
+          categoryName: widget.categoryName,
+          defaultSubtype: subtype,
+          subcategoryId: subcategory?.id,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget bodyContent;
+    
+    // If we have subCategoryKeys, display hardcoded subcategories from constants
+    if (widget.subCategoryKeys != null && widget.subCategoryKeys!.isNotEmpty) {
+      // Get the first key (for now we only use the first one)
+      final subcategoryKey = widget.subCategoryKeys!.first;
+      
+      // Try to get the subcategories for this key
+      final defaultSubcategories = allSubcategories[subcategoryKey];
+      
+      if (defaultSubcategories != null && defaultSubcategories.isNotEmpty) {
+        // Store subcategories for dropdown navigation
+        _subcategories = defaultSubcategories;
+        
+        if (_hasEntities) {
+          bodyContent = _buildEntityList(context);
+        } else {
+          bodyContent = _buildEmptyState(context);
+        }
+      } else {
+        // Fall back to the database if no hardcoded subcategories
+        final subcategoriesAsyncValue = ref.watch(entitySubcategoriesProvider(widget.categoryId));
+        
+        bodyContent = subcategoriesAsyncValue.when(
+          data: (subcategories) {
+            _subcategories = subcategories;
+            
+            if (subcategories.isEmpty) {
+              return const Center(
+                child: Text('No subcategories available for this category.'),
+              );
+            }
+            
+            if (_hasEntities) {
+              return _buildEntityList(context);
+            } else {
+              return _buildEmptyState(context);
+            }
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, stack) => Center(
+            child: Text('Error loading subcategories: $err'),
+          ),
+        );
+      }
+    } else {
+      // No subcategory keys provided, try to load from database
+      final subcategoriesAsyncValue = ref.watch(entitySubcategoriesProvider(widget.categoryId));
+      
+      bodyContent = subcategoriesAsyncValue.when(
+        data: (subcategories) {
+          _subcategories = subcategories;
+          
+          if (subcategories.isEmpty) {
+            return const Center(
+              child: Text('No subcategories available for this category.'),
+            );
+          }
+          
+          if (_hasEntities) {
+            return _buildEntityList(context);
+          } else {
+            return _buildEmptyState(context);
+          }
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(
+          child: Text('Error loading subcategories: $err'),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.categoryName),
+        backgroundColor: Colors.grey[700],
+        iconTheme: const IconThemeData(color: Colors.white),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      body: Column(
+        children: [
+          // Dropdown menu bar
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                bottom: BorderSide(color: Colors.grey[300]!, width: 1),
+              ),
+            ),
+            child: Row(
+              children: [
+                // Quick Nav dropdown
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        hint: const Padding(
+                          padding: EdgeInsets.only(left: 16),
+                          child: Text('Quick Nav'),
+                        ),
+                        value: _selectedQuickNavOption,
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                        isExpanded: true,
+                        borderRadius: BorderRadius.circular(12),
+                        onChanged: (String? value) {
+                          setState(() {
+                            _selectedQuickNavOption = value;
+                          });
+                        },
+                        items: _subcategories.map<DropdownMenuItem<String>>((subcategory) {
+                          return DropdownMenuItem<String>(
+                            value: subcategory.displayName,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16),
+                              child: Text(subcategory.displayName),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // I Want To dropdown
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        hint: const Padding(
+                          padding: EdgeInsets.only(left: 16),
+                          child: Text('I Want To'),
+                        ),
+                        value: _selectedActionOption,
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                        isExpanded: true,
+                        borderRadius: BorderRadius.circular(12),
+                        onChanged: (String? value) {
+                          if (value == 'Add New Entity') {
+                            _addNewEntity(context, _subcategories.isNotEmpty ? _subcategories.first : null);
+                          }
+                          setState(() {
+                            _selectedActionOption = value;
+                          });
+                        },
+                        items: _actionOptions.map<DropdownMenuItem<String>>((String option) {
+                          return DropdownMenuItem<String>(
+                            value: option,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16),
+                              child: Text(option),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Main content area
+          Expanded(
+            child: bodyContent,
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _addNewEntity(context, _subcategories.isNotEmpty ? _subcategories.first : null);
+        },
+        backgroundColor: const Color(0xFFB23B00),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+  
+  // Widget to show when there are no entities
   Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.category,
-              size: 64,
-              color: Colors.grey.shade400,
-            ),
-            const SizedBox(height: 24),
             const Text(
-              'No subcategories available',
+              'You don\'t currently have any Pets.',
               style: TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.w600,
+                color: Colors.grey,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
-            Text(
-              "This category doesn't have subcategories yet for ID: $parentCategoryId. Looked up with name: $parentCategoryName",
+            const SizedBox(height: 8),
+            const Text(
+              'Click the + button below to add some',
               style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade600,
+                fontSize: 20,
+                color: Colors.grey,
               ),
-              textAlign: TextAlign.center,
             ),
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildSubCategoriesList(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemCount: subCategories.length,
+  
+  // Widget to show when there are entities
+  Widget _buildEntityList(BuildContext context) {
+    // This would be replaced with actual entity data
+    return ListView.separated(
+      padding: const EdgeInsets.all(0),
+      itemCount: 1, // Example with one entity
+      separatorBuilder: (context, index) => const Divider(height: 1),
       itemBuilder: (context, index) {
-        final subCategory = subCategories[index];
-        return _buildSubCategoryCard(context, subCategory);
+        return ListTile(
+          leading: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.image, color: Colors.grey),
+          ),
+          title: const Text('Test'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {
+            // Navigate to entity detail screen
+          },
+        );
       },
     );
   }
+  
+  // Helper method to build a consistent list of subcategories
+  Widget _buildSubcategoriesList(BuildContext context, List<EntitySubcategoryModel> subcategories) {
+    return ListView.builder(
+      itemCount: subcategories.length,
+      itemBuilder: (context, index) {
+        final subcategory = subcategories[index];
+        final iconData = UiHelpers.getIconFromString(subcategory.icon);
+        final color = UiHelpers.getColorFromString(subcategory.color);
 
-  Widget _buildSubCategoryCard(BuildContext context, SubCategoryItem subCategory) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12.0),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: () => _navigateToSubCategory(context, subCategory, parentCategoryId),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: (subCategory.color ?? Colors.grey).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  subCategory.icon,
-                  color: subCategory.color ?? Colors.grey,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      subCategory.displayName,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          elevation: 2.0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: color.withOpacity(0.2),
+              child: Icon(iconData, color: color, size: 24),
+            ),
+            title: Text(
+              subcategory.displayName,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              if (subcategory.tagName != null && subcategory.tagName!.isNotEmpty) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TagFilterTaskScreen(
+                      categoryName: widget.categoryName,
+                      subcategoryName: subcategory.displayName,
+                      tagName: subcategory.tagName!,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subCategory.entityTypes.isNotEmpty
-                          ? '${subCategory.entityTypes.length} entity type${subCategory.entityTypes.length == 1 ? '' : 's'}'
-                          : 'Task category',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              } else if (subcategory.entityTypeIds.isNotEmpty) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EntityListScreen(
+                      appCategoryId: widget.appCategoryId,
+                      categoryId: widget.categoryId,
+                      subcategoryId: subcategory.id,
+                      categoryName: subcategory.displayName,
+                      defaultSubtypeForNew: _parseEntitySubtype(subcategory.entityTypeIds.first),
                     ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.grey.shade400,
-              ),
-            ],
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('No action defined for ${subcategory.displayName}')),
+                );
+              }
+            },
           ),
-        ),
-      ),
+        );
+      },
     );
-  }
-
-  void _navigateToSubCategory(BuildContext context, SubCategoryItem subCategory, String currentParentCatId) {
-    if (subCategory.entityTypes.isNotEmpty) {
-      // First priority: Navigate to entity list screen when entity types are defined
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EntityListScreen(
-            appCategoryId: _mapParentCategoryNameToAppId(currentParentCatId),
-            categoryName: subCategory.displayName,
-            defaultSubtypeForNew: subCategory.entityTypes.first,
-          ),
-        ),
-      );
-    } else if (subCategory.tagName != null) {
-      // Second priority: Navigate to tag-filtered task screen
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TagFilterTaskScreen(
-            categoryName: parentCategoryName,
-            subcategoryName: subCategory.displayName,
-            tagName: subCategory.tagName!,
-          ),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${subCategory.displayName} not implemented yet'),
-        ),
-      );
-    }
-  }
-
-  // Maps parent category string name (e.g., "PETS") to an integer app_category_id
-  // Based on Categories-Entities-Tasks-Connection.md
-  int _mapParentCategoryNameToAppId(String parentCategoryName) {
-     switch (parentCategoryName.toUpperCase()) {
-      case 'PETS':
-        return 1;
-      case 'SOCIAL_INTERESTS':
-        return 2;
-      case 'EDUCATION':
-        return 3;
-      case 'CAREER':
-        return 4;
-      case 'TRAVEL':
-        return 5;
-      case 'HEALTH_BEAUTY':
-        return 6;
-      case 'HOME':
-        return 7;
-      case 'GARDEN':
-        return 8;
-      case 'FOOD':
-        return 9;
-      case 'LAUNDRY':
-        return 10;
-      case 'FINANCE':
-        return 11;
-      case 'TRANSPORT':
-        return 12;
-      // CHARITY_RELIGION was not in the list of 12 predefined categories with IDs.
-      default:
-        // Warning: Unmapped parentCategoryName to app_category_id: $parentCategoryName
-        return 0; // Placeholder for unmapped category
-    }
   }
 }

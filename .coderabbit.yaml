@@ -1,0 +1,24 @@
+# CodeRabbit Configuration
+version: 1
+config:
+  # Your CodeRabbit API key should be stored as an environment variable
+  # and not directly in this file for security reasons
+  api_key: ${CODERABBIT_API_KEY}
+
+# Configure which files CodeRabbit should analyze
+files:
+  include:
+    - "lib/**/*.dart"
+    - "test/**/*.dart"
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/generated/**"
+
+# Analysis settings
+analysis:
+  linters:
+    - name: dart
+    - name: flutter
+  ai:
+    enabled: true 

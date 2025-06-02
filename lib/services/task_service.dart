@@ -174,6 +174,7 @@ class TaskService extends ChangeNotifier {
       }
       
       await _loadTasks();
+      notifyListeners(); // Add this line
       return taskId;
     } catch (e) {
       ErrorHandler.handleError('Failed to create task', e);

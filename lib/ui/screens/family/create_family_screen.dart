@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../providers/family_providers.dart';
+import '../../../providers/auth_providers.dart';
 
 class CreateFamilyScreen extends ConsumerStatefulWidget {
   const CreateFamilyScreen({super.key});
@@ -22,6 +23,20 @@ class _CreateFamilyScreenState extends ConsumerState<CreateFamilyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(currentUserProvider);
+
+    if (user == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Create Family'),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        ),
+        body: const Center(
+          child: Text('You must be logged in to create a family.'),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Family'),

@@ -14,7 +14,7 @@ class EntityOverviewTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final entityAsyncValue = ref.watch(entityDetailProvider(entityId));
+    final entityAsyncValue = ref.watch(entityByIdProvider(entityId));
 
     return entityAsyncValue.when(
       data: (entity) {

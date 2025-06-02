@@ -14,6 +14,8 @@ class CategoriesScreen extends ConsumerStatefulWidget {
 class _CategoriesScreenState extends ConsumerState<CategoriesScreen> 
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   bool _isProfessionalMode = false;
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   bool get wantKeepAlive => true;
@@ -31,6 +33,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -52,6 +55,15 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen>
       ref.invalidate(personalCategoriesProvider);
     }
   }
+  
+  void _toggleSearch() {
+    setState(() {
+      _isSearching = !_isSearching;
+      if (!_isSearching) {
+        _searchController.clear();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +71,30 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen>
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Categories'),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Search categories...',
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(color: Colors.white70),
+                ),
+                style: const TextStyle(color: Colors.white),
+                autofocus: true,
+                onChanged: (value) {
+                  // Trigger search on text change
+                  setState(() {});
+                },
+              )
+            : const Text('Categories'),
         actions: [
+          // Search icon/button
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            onPressed: _toggleSearch,
+            tooltip: _isSearching ? 'Cancel Search' : 'Search Categories',
+          ),
+          // Refresh button
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _refreshData,
@@ -104,8 +138,8 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen>
           // Display either CategoriesGrid or ProfessionalCategoriesList
           Expanded(
             child: _isProfessionalMode
-                ? const ProfessionalCategoriesList() // Instantiate the widget
-                : const CategoriesGrid(), // Instantiate the widget
+                ? ProfessionalCategoriesList(searchQuery: _searchController.text)
+                : CategoriesGrid(searchQuery: _searchController.text),
           ),
         ],
       ),

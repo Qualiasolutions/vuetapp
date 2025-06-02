@@ -55,17 +55,26 @@ class SupabaseFamilyRepository implements FamilyRepository {
         'updated_at': DateTime.now().toIso8601String(),
       };
 
-      final familyResult = await _client
+      // .insert().select().single() should return the Map directly or throw.
+      final Map<String, dynamic> familyResult = await _client 
           .from(_familiesTable)
           .insert(familyData)
           .select()
           .single();
 
+      // If we reach here, insertion was successful and familyResult is the data.
+      debugPrint('userId: $userId');
+      debugPrint('familyData: $familyData');
+      debugPrint('familyResult: $familyResult'); // Now familyResult is the map
+
+      // No need to check response.error or response.data here as familyResult is the data.
+      // The try-catch block will handle exceptions from the await call.
+
       // Create family member record for the owner
       final memberData = {
         'id': const Uuid().v4(),
         'user_id': userId,
-        'family_id': familyResult['id'],
+        'family_id': familyResult['id'], // Directly use familyResult
         'role': 'owner',
         'member_color': '#0066cc',
         'joined_at': DateTime.now().toIso8601String(),
@@ -76,7 +85,7 @@ class SupabaseFamilyRepository implements FamilyRepository {
 
       // Update user's profile with family info
       await _client.from(_profilesTable).update({
-        'family_id': familyResult['id'],
+        'family_id': familyResult['id'], // Directly use familyResult
         'family_role': 'owner',
         'updated_at': DateTime.now().toIso8601String(),
       }).eq('id', userId);
@@ -84,8 +93,14 @@ class SupabaseFamilyRepository implements FamilyRepository {
       return FamilyModel.fromJson(familyResult);
     } catch (e) {
       debugPrint('Error creating family: $e');
-      throw FamilyException(
-          'Failed to create family', FamilyErrorCodes.unknownError, e);
+      // It's good practice to check if e is a PostgrestException and handle its specifics if needed
+      if (e is PostgrestException) {
+        throw FamilyException(
+            'Failed to create family: ${e.message}', FamilyErrorCodes.unknownError, e);
+      } else {
+        throw FamilyException(
+            'Failed to create family', FamilyErrorCodes.unknownError, e);
+      }
     }
   }
 
@@ -432,16 +447,6 @@ class SupabaseFamilyRepository implements FamilyRepository {
           .eq('user_id', userId);
 
       // Update new owner
-      await _client
-          .from(_familyMembersTable)
-          .update({
-            'role': 'owner',
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('family_id', familyId)
-          .eq('user_id', newOwnerId);
-
-      // Update profiles
       await _client
           .from(_profilesTable)
           .update({'family_role': 'admin'}).eq('id', userId);

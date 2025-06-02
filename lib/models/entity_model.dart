@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:uuid/uuid.dart';
 
 part 'entity_model.freezed.dart';
 part 'entity_model.g.dart';
@@ -132,6 +133,8 @@ enum EntitySubtype {
   boat,
   @JsonValue('Car')
   car,
+  @JsonValue('vehicle_car')
+  vehicleCar,
   @JsonValue('Public Transport')
   publicTransport,
   @JsonValue('Motorcycle')
@@ -153,7 +156,7 @@ enum EntitySubtype {
   @JsonValue('Trip')
   trip,
   
-  // Document entities (Category 14)
+  // Documents entities (Category 14)
   @JsonValue('Document')
   document,
   @JsonValue('Passport')
@@ -186,16 +189,18 @@ class BaseEntityModel with _$BaseEntityModel {
     String? description,
     @JsonKey(name: 'user_id') required String userId,
     @JsonKey(name: 'app_category_id') int? appCategoryId,
+    @JsonKey(name: 'category_id') String? categoryId,
     String? imageUrl,
     String? parentId,
-    @JsonKey(name: 'entity_type_id') required EntitySubtype subtype,
+    @JsonKey(name: 'subtype') required EntitySubtype subtype,
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
     bool? isHidden,
-    @JsonKey(name: 'attributes') Map<String, dynamic>? customFields,
+    @JsonKey(name: 'custom_fields') Map<String, dynamic>? customFields,
     List<String>? attachments,
-    DateTime? dueDate,
+    @JsonKey(name: 'due_date') DateTime? dueDate,
     String? status,
+    @JsonKey(name: 'subcategory_id') String? subcategoryId,
   }) = _BaseEntityModel;
 
   factory BaseEntityModel.fromJson(Map<String, dynamic> json) =>
@@ -204,6 +209,7 @@ class BaseEntityModel with _$BaseEntityModel {
 
 // Entity type helper class for category mapping
 class EntityTypeHelper {
+  // Category ID mapping
   static const Map<EntitySubtype, int> categoryMapping = {
     // Pets (Category 1)
     EntitySubtype.pet: 1,
@@ -282,6 +288,7 @@ class EntityTypeHelper {
     // Transport (Category 12)
     EntitySubtype.boat: 12,
     EntitySubtype.car: 12,
+    EntitySubtype.vehicleCar: 12,
     EntitySubtype.publicTransport: 12,
     EntitySubtype.motorcycle: 12,
     EntitySubtype.bicycle: 12,
@@ -305,8 +312,182 @@ class EntityTypeHelper {
     EntitySubtype.certificate: 14,
   };
   
+  // Map from EntitySubtype to entity_type_id in the database
+  static const Map<EntitySubtype, String> entityTypeIdMapping = {
+    // Pet category
+    EntitySubtype.pet: 'pet',
+    EntitySubtype.vet: 'vet',
+    EntitySubtype.petWalker: 'pet_walker',
+    EntitySubtype.petGroomer: 'pet_groomer',
+    EntitySubtype.petSitter: 'pet_sitter',
+    EntitySubtype.microchipCompany: 'microchip_company',
+    EntitySubtype.petInsuranceCompany: 'insurance_company_pet',
+    EntitySubtype.petInsurancePolicy: 'insurance_policy_pet',
+    
+    // Social category
+    EntitySubtype.event: 'event',
+    EntitySubtype.hobby: 'hobby',
+    EntitySubtype.socialMedia: 'social_media',
+    EntitySubtype.socialPlan: 'social_plan',
+    EntitySubtype.anniversary: 'anniversary',
+    EntitySubtype.anniversaryPlan: 'anniversary_plan',
+    EntitySubtype.birthday: 'birthday',
+    EntitySubtype.holiday: 'holiday',
+    EntitySubtype.holidayPlan: 'holiday_plan',
+    EntitySubtype.guestListInvite: 'guest_list_invite',
+    
+    // Education category
+    EntitySubtype.academicPlan: 'academic_plan',
+    EntitySubtype.courseWork: 'course_work',
+    EntitySubtype.extracurricularPlan: 'extracurricular_plan',
+    EntitySubtype.school: 'school',
+    EntitySubtype.student: 'student',
+    EntitySubtype.subject: 'subject',
+    EntitySubtype.teacher: 'teacher',
+    EntitySubtype.tutor: 'tutor',
+    
+    // Career category
+    EntitySubtype.colleague: 'colleague',
+    EntitySubtype.work: 'work',
+    
+    // Travel category
+    EntitySubtype.trip: 'trip',
+    
+    // Health category
+    EntitySubtype.beautySalon: 'beauty_salon',
+    EntitySubtype.dentist: 'dentist',
+    EntitySubtype.doctor: 'doctor',
+    EntitySubtype.stylist: 'stylist',
+    EntitySubtype.therapist: 'therapist',
+    EntitySubtype.physiotherapist: 'physiotherapist',
+    EntitySubtype.specialist: 'specialist',
+    EntitySubtype.surgeon: 'surgeon',
+    
+    // Home category
+    EntitySubtype.appliance: 'appliance',
+    EntitySubtype.contractor: 'contractor',
+    EntitySubtype.furniture: 'furniture',
+    EntitySubtype.home: 'home',
+    EntitySubtype.room: 'room',
+    
+    // Garden category
+    EntitySubtype.gardenTool: 'garden_tool',
+    EntitySubtype.plant: 'plant',
+    
+    // Food category
+    EntitySubtype.foodPlan: 'food_plan',
+    EntitySubtype.recipe: 'recipe',
+    EntitySubtype.restaurant: 'restaurant',
+    
+    // Laundry category
+    EntitySubtype.dryCleaners: 'dry_cleaners',
+    EntitySubtype.laundryItem: 'laundry_item',
+    
+    // Finance category
+    EntitySubtype.bank: 'bank',
+    EntitySubtype.bankAccount: 'bank_account',
+    EntitySubtype.creditCard: 'credit_card',
+    
+    // Transport category
+    EntitySubtype.boat: 'vehicle_boat',
+    EntitySubtype.car: 'vehicle_car',
+    EntitySubtype.vehicleCar: 'vehicle_car',
+    EntitySubtype.publicTransport: 'public_transport',
+    EntitySubtype.motorcycle: 'motorcycle',
+    EntitySubtype.bicycle: 'bicycle',
+    EntitySubtype.truck: 'truck',
+    EntitySubtype.van: 'van',
+    EntitySubtype.rv: 'rv',
+    EntitySubtype.atv: 'atv',
+    EntitySubtype.jetSki: 'jet_ski',
+    
+    // Documents category
+    EntitySubtype.document: 'document',
+    EntitySubtype.passport: 'passport',
+    EntitySubtype.license: 'license',
+    EntitySubtype.bankStatement: 'bank_statement',
+    EntitySubtype.taxDocument: 'tax_document',
+    EntitySubtype.contract: 'contract',
+    EntitySubtype.will: 'will',
+    EntitySubtype.medicalRecord: 'medical_record',
+    EntitySubtype.prescription: 'prescription',
+    EntitySubtype.resume: 'resume',
+    EntitySubtype.certificate: 'certificate',
+  };
+  
+  // Map from display name to EntitySubtype - useful for reverse lookup
+  static final Map<String, EntitySubtype> displayNameToEnum = {
+    'Pet': EntitySubtype.pet,
+    'Vet': EntitySubtype.vet,
+    'Pet Walker': EntitySubtype.petWalker,
+    'Pet Groomer': EntitySubtype.petGroomer,
+    'Pet Sitter': EntitySubtype.petSitter,
+    'Microchip Company': EntitySubtype.microchipCompany,
+    'Pet Insurance Company': EntitySubtype.petInsuranceCompany,
+    'Pet Insurance Policy': EntitySubtype.petInsurancePolicy,
+    
+    'Event': EntitySubtype.event,
+    'Hobby': EntitySubtype.hobby,
+    'Holiday': EntitySubtype.holiday,
+    'Holiday Plan': EntitySubtype.holidayPlan,
+    'Social Plan': EntitySubtype.socialPlan,
+    'Social Media': EntitySubtype.socialMedia,
+    'Anniversary Plan': EntitySubtype.anniversaryPlan,
+    'Birthday': EntitySubtype.birthday,
+    'Anniversary': EntitySubtype.anniversary,
+    'Guest List Invite': EntitySubtype.guestListInvite,
+    
+    // Add more mappings for all entity types as needed
+  };
+  
+  // Map from database entity_type_id to EntitySubtype - useful for parsing database values
+  static final Map<String, EntitySubtype> dbIdToEnum = {
+    'pet': EntitySubtype.pet,
+    'vet': EntitySubtype.vet,
+    'pet_walker': EntitySubtype.petWalker,
+    'pet_groomer': EntitySubtype.petGroomer,
+    'pet_sitter': EntitySubtype.petSitter,
+    'microchip_company': EntitySubtype.microchipCompany,
+    'insurance_company_pet': EntitySubtype.petInsuranceCompany,
+    'insurance_policy_pet': EntitySubtype.petInsurancePolicy,
+    
+    'event': EntitySubtype.event,
+    'hobby': EntitySubtype.hobby,
+    'social_media': EntitySubtype.socialMedia,
+    'social_plan': EntitySubtype.socialPlan,
+    'anniversary': EntitySubtype.anniversary,
+    'anniversary_plan': EntitySubtype.anniversaryPlan,
+    'birthday': EntitySubtype.birthday,
+    'holiday': EntitySubtype.holiday,
+    'holiday_plan': EntitySubtype.holidayPlan,
+    'guest_list_invite': EntitySubtype.guestListInvite,
+    
+    // Add more mappings for all entity types as needed
+  };
+  
+  static String getEntityTypeId(EntitySubtype subtype) {
+    final typeId = entityTypeIdMapping[subtype];
+    if (typeId == null) {
+      print('⚠️ WARNING: No entity_type_id mapping found for subtype: ${subtype.toString()}');
+      
+      // Convert the enum value to snake_case to try to match database format
+      final enumName = subtype.toString().split('.').last;
+      final snakeCaseName = enumName.replaceAllMapped(
+          RegExp(r'([A-Z])'), 
+          (match) => match.start > 0 ? '_${match.group(0)!.toLowerCase()}' : match.group(0)!.toLowerCase()
+      );
+      
+      print('🔍 Trying fallback snake_case mapping: $snakeCaseName');
+      
+      // Return the converted name as a fallback
+      return snakeCaseName;
+    }
+    return typeId;
+  }
+  
   static int getCategoryId(EntitySubtype subtype) {
-    return categoryMapping[subtype] ?? 1;
+    // Use the mapping or default to social category (2) if not found
+    return categoryMapping[subtype] ?? 2;
   }
   
   static List<EntitySubtype> getEntityTypesForCategory(int categoryId) {
@@ -317,6 +498,185 @@ class EntityTypeHelper {
   }
   
   static String getDisplayName(EntitySubtype subtype) {
-    return subtype.toString().split('.').last;
+    // This should return the formatted display name, not the enum name
+    switch (subtype) {
+      case EntitySubtype.pet: return 'Pet';
+      case EntitySubtype.vet: return 'Vet';
+      case EntitySubtype.petWalker: return 'Pet Walker';
+      case EntitySubtype.petGroomer: return 'Pet Groomer';
+      case EntitySubtype.petSitter: return 'Pet Sitter';
+      case EntitySubtype.microchipCompany: return 'Microchip Company';
+      case EntitySubtype.petInsuranceCompany: return 'Pet Insurance Company';
+      case EntitySubtype.petInsurancePolicy: return 'Pet Insurance Policy';
+      
+      case EntitySubtype.event: return 'Event';
+      case EntitySubtype.hobby: return 'Hobby';
+      case EntitySubtype.socialMedia: return 'Social Media';
+      case EntitySubtype.socialPlan: return 'Social Plan';
+      case EntitySubtype.anniversary: return 'Anniversary';
+      case EntitySubtype.anniversaryPlan: return 'Anniversary Plan';
+      case EntitySubtype.birthday: return 'Birthday';
+      case EntitySubtype.holiday: return 'Holiday';
+      case EntitySubtype.holidayPlan: return 'Holiday Plan';
+      case EntitySubtype.guestListInvite: return 'Guest List Invite';
+      
+      // Add cases for all other entity types
+      default:
+        // Convert camelCase to Title Case with spaces
+        return subtype.toString().split('.').last
+            .replaceAllMapped(
+                RegExp(r'([A-Z])'),
+                (match) => match.start > 0 ? ' ${match.group(0)}' : match.group(0)!
+            );
+    }
+  }
+
+  // Helper method to diagnose entity type issues - can be called before saving
+  static void diagnoseEntityType(EntitySubtype subtype) {
+    final entityTypeId = EntityTypeHelper.getEntityTypeId(subtype);
+    final categoryId = EntityTypeHelper.getCategoryId(subtype);
+    final displayName = EntityTypeHelper.getDisplayName(subtype);
+    
+    print('🔍 DIAGNOSIS for ${subtype.toString()}:');
+    print('  - Display name: "$displayName"');
+    print('  - entity_type_id to save: "$entityTypeId"');
+    print('  - app_category_id: $categoryId');
+    print('  - Original enum value: ${subtype.toString().split('.').last}');
+  }
+  
+  // Parse entity subtype from database id - useful when loading from DB
+  static EntitySubtype parseFromTypeId(String? typeId) {
+    if (typeId == null) {
+      print('⚠️ WARNING: Null entity_type_id, defaulting to event');
+      return EntitySubtype.event;
+    }
+    
+    final subtype = dbIdToEnum[typeId];
+    if (subtype != null) {
+      return subtype;
+    }
+    
+    // Try to match by camelCase conversion
+    final camelCase = typeId.replaceAllMapped(
+        RegExp(r'_([a-z])'),
+        (match) => match.group(1)!.toUpperCase()
+    );
+    
+    try {
+      return EntitySubtype.values.firstWhere(
+        (e) => e.toString().split('.').last.toLowerCase() == camelCase.toLowerCase()
+      );
+    } catch (e) {
+      print('⚠️ WARNING: Could not parse entity_type_id: $typeId, defaulting to event');
+      return EntitySubtype.event;
+    }
+  }
+}
+
+// Update the toJson method if needed
+extension BaseEntityModelExtensions on BaseEntityModel {
+  // Helper method to get app category ID from entity subtype if needed
+  int? getAppCategoryId() {
+    return appCategoryId ?? EntityTypeHelper.getCategoryId(subtype);
+  }
+  
+  // Method to create a map for Supabase (handles fields that need special conversion)
+  Map<String, dynamic> toSupabaseJson() {
+    final json = toJson();
+    
+    // Add diagnostic information 
+    EntityTypeHelper.diagnoseEntityType(subtype);
+    
+    // Generate UUID if id is null
+    if (json['id'] == null) {
+      // Use Supabase's UUID format (matches database)
+      json['id'] = const Uuid().v4();
+    }
+    
+    // Ensure app_category_id is included
+    if (json['app_category_id'] == null) {
+      json['app_category_id'] = EntityTypeHelper.getCategoryId(subtype);
+    }
+    
+    // Get entity_type_id value (the database key format) using a direct mapping
+    // This ensures we get the exact database ID regardless of the JsonValue annotation
+    final entityTypeId = EntityTypeHelper.getEntityTypeId(subtype);
+    
+    print('🔍 DEBUG - Entity subtype: ${subtype.toString()}');
+    print('🔍 DEBUG - Setting entity_type_id: $entityTypeId');
+    
+    // Set the required entity_type_id field from the direct mapping
+    json['entity_type_id'] = entityTypeId;
+    
+    // Remove category_id if it exists since this field doesn't exist in the database schema
+    json.remove('category_id');
+    
+    // Make sure field names match database column names
+    if (json.containsKey('imageUrl')) {
+      json['image_url'] = json.remove('imageUrl');
+    }
+    
+    if (json.containsKey('parentId')) {
+      json['parent_id'] = json.remove('parentId');
+    }
+    
+    if (json.containsKey('isHidden')) {
+      json['is_hidden'] = json.remove('isHidden');
+    }
+    
+    // Ensure custom_fields is a valid JSONB value
+    if (json.containsKey('custom_fields') && json['custom_fields'] != null) {
+      // If custom_fields is empty, ensure it's an empty object, not null
+      if (json['custom_fields'].isEmpty) {
+        json['custom_fields'] = {};
+      }
+    } else {
+      // Provide an empty object as default
+      json['custom_fields'] = {};
+    }
+    
+    // Handle the 'subtype' field - in database we need the display name, not the enum
+    try {
+      // Get the JsonValue annotation if it exists
+      final subtypeString = _getSubtypeDisplayName();
+      json['subtype'] = subtypeString;
+    } catch (e) {
+      print('⚠️ Warning: Could not get JsonValue for subtype: $e');
+      // Fallback to string representation
+      json['subtype'] = subtype.toString().split('.').last;
+    }
+    
+    return json;
+  }
+  
+  // Helper to extract the JsonValue annotation for the EntitySubtype enum
+  String _getSubtypeDisplayName() {
+    // Get the JsonValue string or fallback to the enum name
+    switch (subtype) {
+      case EntitySubtype.pet: return 'Pet';
+      case EntitySubtype.vet: return 'Vet';
+      case EntitySubtype.petWalker: return 'Pet Walker';
+      case EntitySubtype.petGroomer: return 'Pet Groomer';
+      case EntitySubtype.petSitter: return 'Pet Sitter';
+      case EntitySubtype.microchipCompany: return 'Microchip Company';
+      case EntitySubtype.petInsuranceCompany: return 'Pet Insurance Company';
+      case EntitySubtype.petInsurancePolicy: return 'Pet Insurance Policy';
+      
+      case EntitySubtype.event: return 'Event';
+      case EntitySubtype.hobby: return 'Hobby';
+      case EntitySubtype.socialMedia: return 'Social Media';
+      case EntitySubtype.socialPlan: return 'Social Plan';
+      case EntitySubtype.anniversary: return 'Anniversary';
+      case EntitySubtype.anniversaryPlan: return 'Anniversary Plan';
+      case EntitySubtype.birthday: return 'Birthday';
+      case EntitySubtype.holiday: return 'Holiday';
+      case EntitySubtype.holidayPlan: return 'Holiday Plan';
+      case EntitySubtype.guestListInvite: return 'Guest List Invite';
+      
+      // Add cases for all other EntitySubtype values...
+      default:
+        // Just return the enum name without the enum type prefix
+        return subtype.toString().split('.').last;
+    }
   }
 }

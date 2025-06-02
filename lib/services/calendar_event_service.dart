@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vuet_app/models/calendar_event_model.dart';
+import 'package:vuet_app/models/entity_model.dart';
 import 'package:vuet_app/repositories/calendar_event_repository.dart';
 import 'package:vuet_app/repositories/supabase_calendar_event_repository.dart';
 import 'package:vuet_app/utils/logger.dart';
@@ -136,6 +138,57 @@ class CalendarEventService {
     required DateTime endDate,
   }) {
     return streamEventsByDateRange(userId, startDate, endDate);
+  }
+
+  /// Create a calendar event from an entity
+  Future<CalendarEventModel> createEventFromEntity(BaseEntityModel entity, {
+    DateTime? startTime,
+    DateTime? endTime,
+    String? location,
+    String? description,
+  }) async {
+    if (entity.userId.isEmpty) {
+      throw Exception('Entity must have a user ID');
+    }
+    
+    final eventType = _getEventTypeFromEntitySubtype(entity.subtype);
+    
+    final event = CalendarEventModel.fromEntity(
+      entityId: entity.id!,
+      title: entity.name,
+      userId: entity.userId,
+      description: description ?? entity.description,
+      startTime: startTime,
+      endTime: endTime,
+      location: location,
+      eventType: eventType,
+    );
+    
+    return await createEvent(event);
+  }
+  
+  /// Get the event type based on entity subtype
+  String _getEventTypeFromEntitySubtype(EntitySubtype subtype) {
+    switch (subtype) {
+      case EntitySubtype.event:
+        return 'social_event';
+      case EntitySubtype.anniversary:
+      case EntitySubtype.birthday:
+        return 'celebration';
+      case EntitySubtype.doctor:
+      case EntitySubtype.dentist:
+      case EntitySubtype.therapist:
+      case EntitySubtype.physiotherapist:
+      case EntitySubtype.specialist:
+      case EntitySubtype.surgeon:
+        return 'appointment';
+      case EntitySubtype.trip:
+        return 'travel';
+      case EntitySubtype.restaurant:
+        return 'dining';
+      default:
+        return 'entity_event';
+    }
   }
 
   // Private method to handle and log errors

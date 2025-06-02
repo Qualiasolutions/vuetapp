@@ -6,6 +6,10 @@ version: 1.0.0+1
 environment:
   sdk: '>=3.2.3 <4.0.0'
 
+# Adding scripts section for easy access to common commands
+scripts:
+  coderabbit: dart scripts/run_coderabbit.dart
+
 dependencies:
   flutter:
     sdk: flutter

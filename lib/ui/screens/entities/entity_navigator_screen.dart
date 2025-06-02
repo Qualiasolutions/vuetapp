@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/entity_model.dart';
 import 'package:vuet_app/providers/entity_providers.dart';
+import 'package:vuet_app/providers/entity_actions_provider.dart';
 import 'package:vuet_app/ui/screens/entities/tabs/entity_overview_tab.dart';
 import 'package:vuet_app/ui/screens/entities/tabs/entity_calendar_tab.dart';
 import 'package:vuet_app/ui/screens/entities/tabs/entity_references_tab.dart';
@@ -143,7 +144,7 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
 
   @override
   Widget build(BuildContext context) {
-    final entityAsyncValue = ref.watch(entityDetailProvider(widget.entityId));
+    final entityAsyncValue = ref.watch(entityByIdProvider(widget.entityId));
 
     return entityAsyncValue.when(
       data: (entity) {

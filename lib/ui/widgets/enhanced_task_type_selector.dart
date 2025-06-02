@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/task_type_enums.dart';
-import 'package:vuet_app/providers/entity_providers.dart';
 import 'package:vuet_app/ui/widgets/modern_components.dart';
+import 'package:vuet_app/providers/category_providers.dart';
+import 'package:vuet_app/providers/entity_providers.dart';
 
 class EnhancedTaskTypeSelector extends ConsumerStatefulWidget {
   final TaskType? initialTaskType;
   final String? initialTaskSubtype;
   final String? initialEntityId;
-  final Function(TaskType?, String?, String?) onTypeChanged;
+  final void Function(TaskType? type, String? subtype, String? entityId) onTypeChanged;
 
   const EnhancedTaskTypeSelector({
-    super.key,
+    Key? key,
     this.initialTaskType,
     this.initialTaskSubtype,
     this.initialEntityId,
     required this.onTypeChanged,
-  });
+  }) : super(key: key);
 
   @override
   ConsumerState<EnhancedTaskTypeSelector> createState() => _EnhancedTaskTypeSelectorState();
@@ -172,7 +173,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
   }
 
   Widget _buildEntitySelector() {
-    final entityCategoriesAsync = ref.watch(entityCategoriesProvider);
+    final entityCategoriesAsync = ref.watch(allEntityCategoriesProvider);
 
     return entityCategoriesAsync.when(
       data: (categories) {
@@ -183,7 +184,7 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
         // For now, show all entities from the first category
         // This can be enhanced later to match task types to specific categories
         final firstCategory = categories.first;
-        final entitiesAsync = ref.watch(EntityProviders.entitiesByCategoryIdProvider(firstCategory.id));
+        final entitiesAsync = ref.watch(entitiesByCategoryProvider(firstCategory.appCategoryId ?? 1));
 
         return entitiesAsync.when(
           data: (entities) {

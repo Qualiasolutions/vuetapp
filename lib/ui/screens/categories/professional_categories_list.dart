@@ -8,7 +8,12 @@ import 'package:vuet_app/providers/category_screen_providers.dart'; // Import ce
 
 
 class ProfessionalCategoriesList extends ConsumerStatefulWidget {
-  const ProfessionalCategoriesList({super.key});
+  final String searchQuery;
+  
+  const ProfessionalCategoriesList({
+    super.key,
+    this.searchQuery = '',
+  });
 
   @override
   ConsumerState<ProfessionalCategoriesList> createState() => _ProfessionalCategoriesListState();
@@ -43,6 +48,30 @@ class _ProfessionalCategoriesListState extends ConsumerState<ProfessionalCategor
             loading: () => 0, // Default to 0 while loading
             error: (error, stack) => 0, // Default to 0 on error
           );
+          
+          // Filter categories based on search query if provided
+          final filteredCategories = widget.searchQuery.isEmpty
+              ? categories
+              : categories.where((category) => 
+                  category.name.toLowerCase().contains(widget.searchQuery.toLowerCase())).toList();
+          
+          // Show empty state for search with no results
+          if (filteredCategories.isEmpty && widget.searchQuery.isNotEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.search_off, size: 48, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No categories matching "${widget.searchQuery}"',
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+          }
 
           return Column(
           children: [
@@ -50,10 +79,10 @@ class _ProfessionalCategoriesListState extends ConsumerState<ProfessionalCategor
               child: ListView.builder(
                 physics: const AlwaysScrollableScrollPhysics(), // Enable scrolling even with few items for pull-to-refresh
                 padding: const EdgeInsets.all(10.0),
-                itemCount: categories.length + (uncategorisedCount > 0 ? 1 : 0), // Add 1 for uncategorised if needed
+                itemCount: filteredCategories.length + (uncategorisedCount > 0 ? 1 : 0), // Add 1 for uncategorised if needed
                 itemBuilder: (context, index) {
                   // Handle Uncategorised section
-                  if (uncategorisedCount > 0 && index == categories.length) {
+                  if (uncategorisedCount > 0 && index == filteredCategories.length) {
                      return Card(
                        child: ListTile(
                          title: const Text('Uncategorised'), // TODO: Localize
@@ -67,7 +96,7 @@ class _ProfessionalCategoriesListState extends ConsumerState<ProfessionalCategor
                      );
                   }
 
-                  final category = categories[index];
+                  final category = filteredCategories[index];
 
                   return Card(
                     child: ListTile(
