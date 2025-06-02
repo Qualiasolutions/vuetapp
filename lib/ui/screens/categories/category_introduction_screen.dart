@@ -32,10 +32,10 @@ class _CategoryIntroductionScreenState extends State<CategoryIntroductionScreen>
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => SubCategoryScreen.fromCategoryId(
-            parentCategoryId: widget.categoryId,
-            parentCategoryName: widget.categoryName,
-            subCategoryKeys: widget.subCategoryKeys,
+          builder: (context) => SubCategoryScreen(
+            categoryId: widget.categoryId,
+            categoryName: widget.categoryName,
+            subCategoryKeys: widget.subCategoryKeys ?? [widget.categoryId],
           ),
         ),
       );
@@ -200,7 +200,7 @@ class CategoryIntroFactory {
     return CategoryIntroductionScreen(
       categoryId: 'education_career',
       categoryName: 'Education & Career',
-      subCategoryKeys: ['education_career'],
+      subCategoryKeys: ['education', 'career'],
       introPages: const [
         CategoryIntroPage(
           content: "The Education & Career category helps you manage your educational and professional goals.",
@@ -209,6 +209,96 @@ class CategoryIntroFactory {
         CategoryIntroPage(
           content: "You can track courses, educational goals, career paths, and professional development all in one place.",
           backgroundImage: 'assets/images/categories/education.png',
+        ),
+      ],
+    );
+  }
+
+  static CategoryIntroductionScreen createTravelIntro({required VoidCallback onComplete}) {
+    return CategoryIntroductionScreen(
+      categoryId: 'travel',
+      categoryName: 'Travel',
+      subCategoryKeys: ['travel'],
+      introPages: const [
+        CategoryIntroPage(
+          content: "The Travel category helps you plan and manage your trips and vacations.",
+          backgroundImage: 'assets/images/categories/travel.png',
+        ),
+        CategoryIntroPage(
+          content: "You can organize trips, accommodations, and attractions for all your travel needs.",
+          backgroundImage: 'assets/images/categories/travel.png',
+        ),
+      ],
+    );
+  }
+
+  static CategoryIntroductionScreen createHealthBeautyIntro({required VoidCallback onComplete}) {
+    return CategoryIntroductionScreen(
+      categoryId: 'health_beauty',
+      categoryName: 'Health & Beauty',
+      subCategoryKeys: ['health_beauty'],
+      introPages: const [
+        CategoryIntroPage(
+          content: "The Health & Beauty category helps you manage your health and wellness routines.",
+          backgroundImage: 'assets/images/categories/health.png',
+        ),
+        CategoryIntroPage(
+          content: "Track fitness activities, medical appointments, and beauty routines all in one place.",
+          backgroundImage: 'assets/images/categories/health.png',
+        ),
+      ],
+    );
+  }
+
+  static CategoryIntroductionScreen createHomeGardenIntro({required VoidCallback onComplete}) {
+    return CategoryIntroductionScreen(
+      categoryId: 'home_garden',
+      categoryName: 'Home & Garden',
+      subCategoryKeys: ['home', 'garden', 'food', 'laundry'],
+      introPages: const [
+        CategoryIntroPage(
+          content: "The Home & Garden category helps you manage your household tasks and maintenance.",
+          backgroundImage: 'assets/images/categories/home.png',
+        ),
+        CategoryIntroPage(
+          content: "Organize home maintenance, gardening tasks, cooking, and laundry all in one convenient place.",
+          backgroundImage: 'assets/images/categories/home.png',
+        ),
+      ],
+    );
+  }
+
+  static CategoryIntroductionScreen createFinanceIntro({required VoidCallback onComplete}) {
+    return CategoryIntroductionScreen(
+      categoryId: 'finance',
+      categoryName: 'Finance',
+      subCategoryKeys: ['finance'],
+      introPages: const [
+        CategoryIntroPage(
+          content: "The Finance category helps you manage your financial accounts and budgeting.",
+          backgroundImage: 'assets/images/categories/finance.png',
+        ),
+        CategoryIntroPage(
+          content: "Track accounts, budgets, and investments to stay on top of your financial goals.",
+          backgroundImage: 'assets/images/categories/finance.png',
+        ),
+      ],
+    );
+  }
+
+  static CategoryIntroductionScreen createTransportIntro({required VoidCallback onComplete}) {
+    return CategoryIntroductionScreen(
+      categoryId: 'transport',
+      categoryName: 'Transport',
+      subCategoryKeys: ['transport'],
+      introPages: const [
+        CategoryIntroPage(
+          content: "The Transport category helps you manage your vehicles and transportation needs.",
+          backgroundImage: 'assets/images/categories/transport.png',
+        ),
+        CategoryIntroPage(
+          content: "Track vehicle maintenance, public transportation options, and other transport-related tasks.",
+          backgroundImage: 'assets/images/categories/transport.png',
         ),
       ],
     );

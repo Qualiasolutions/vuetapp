@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/entity_category_model.dart'; // Using EntityCategoryModel
 import 'package:vuet_app/ui/widgets/premium_tag.dart';
-import 'package:vuet_app/ui/screens/categories/sub_category_screen.dart'; // Import the subcategory screen
 import 'package:vuet_app/providers/category_screen_providers.dart'; // Import centralized providers
 import 'package:vuet_app/ui/screens/categories/category_introduction_screen.dart'; // Import the introduction screen
 
@@ -20,63 +19,63 @@ class CategoriesGrid extends ConsumerWidget {
       'id': 'pets',
       'name': 'Pets',
       'color': '#8B4513', // Brown
-      'categoryIds': <String>['pets'], // Explicitly typed as List<String>
+      'categoryIds': <String>['pets'], 
       'isPremium': false,
     },
     {
       'id': 'social_interests',
       'name': 'Social & Interests',
       'color': '#4682B4', // Steel Blue
-      'categoryIds': <String>['social_interests'], // Explicitly typed as List<String>
+      'categoryIds': <String>['social_interests'], 
       'isPremium': false,
     },
     {
       'id': 'education_career',
       'name': 'Education & Career',
       'color': '#2E8B57', // Sea Green
-      'categoryIds': <String>['education_career'], // Explicitly typed as List<String>
+      'categoryIds': <String>['education', 'career'], // Split into two base categories
       'isPremium': false,
     },
     {
       'id': 'travel',
       'name': 'Travel',
       'color': '#FF8C00', // Dark Orange
-      'categoryIds': <String>['travel'], // Explicitly typed as List<String>
+      'categoryIds': <String>['travel'], 
       'isPremium': false,
     },
     {
       'id': 'health_beauty',
       'name': 'Health & Beauty',
       'color': '#9370DB', // Medium Purple
-      'categoryIds': <String>['health_beauty'], // Explicitly typed as List<String>
+      'categoryIds': <String>['health_beauty'], 
       'isPremium': true,
     },
     {
       'id': 'home_garden',
       'name': 'Home & Garden',
       'color': '#3CB371', // Medium Sea Green
-      'categoryIds': <String>['home_garden'], // Explicitly typed as List<String>
+      'categoryIds': <String>['home', 'garden', 'food', 'laundry'], // Combines four base categories
       'isPremium': false,
     },
     {
       'id': 'finance',
       'name': 'Finance',
       'color': '#6A5ACD', // Slate Blue
-      'categoryIds': <String>['finance'], // Explicitly typed as List<String>
+      'categoryIds': <String>['finance'], 
       'isPremium': false,
     },
     {
       'id': 'transport',
       'name': 'Transport',
       'color': '#CD5C5C', // Indian Red
-      'categoryIds': <String>['transport'], // Explicitly typed as List<String>
+      'categoryIds': <String>['transport'], 
       'isPremium': false,
     },
     {
       'id': 'references',
       'name': 'References',
       'color': '#808080', // Grey
-      'categoryIds': <String>[], // Empty List<String> for special premium feature
+      'categoryIds': <String>['references'], // Special premium feature
       'isPremium': true,
     },
   ];
@@ -171,11 +170,11 @@ class CategoriesGrid extends ConsumerWidget {
                           if (isReferences) {
                             // References screen not implemented yet
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('References screen not implemented yet.')),
+                              const SnackBar(content: Text('References is a premium feature that will be available soon.')),
                             );
                           } else {
                             // For category groups, we need to pass the subcategory key directly
-                            final subCategoryKeys = category.description?.split(',') ?? [];
+                            final subCategoryKeys = (categoryGroups[originalIndex]['categoryIds'] as List<String>);
                             
                             // Navigate to introduction screen based on category
                             Widget introScreen;
@@ -193,6 +192,31 @@ class CategoriesGrid extends ConsumerWidget {
                                 break;
                               case 'education_career':
                                 introScreen = CategoryIntroFactory.createEducationIntro(
+                                  onComplete: () {},
+                                );
+                                break;
+                              case 'travel':
+                                introScreen = CategoryIntroFactory.createTravelIntro(
+                                  onComplete: () {},
+                                );
+                                break;
+                              case 'health_beauty':
+                                introScreen = CategoryIntroFactory.createHealthBeautyIntro(
+                                  onComplete: () {},
+                                );
+                                break;
+                              case 'home_garden':
+                                introScreen = CategoryIntroFactory.createHomeGardenIntro(
+                                  onComplete: () {},
+                                );
+                                break;
+                              case 'finance':
+                                introScreen = CategoryIntroFactory.createFinanceIntro(
+                                  onComplete: () {},
+                                );
+                                break;
+                              case 'transport':
+                                introScreen = CategoryIntroFactory.createTransportIntro(
                                   onComplete: () {},
                                 );
                                 break;

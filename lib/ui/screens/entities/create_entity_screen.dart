@@ -7,26 +7,30 @@ import 'package:vuet_app/models/entity_model.dart';
 import 'package:vuet_app/models/form_field_definition.dart';
 import 'package:vuet_app/config/entity_form_fields.dart';
 import 'package:vuet_app/providers/entity_providers.dart';
-import 'package:vuet_app/providers/user_providers.dart'; // Import user_providers
 import 'package:vuet_app/models/entity_category_model.dart';
 import 'package:vuet_app/providers/category_providers.dart';
-import 'package:vuet_app/models/entity_subcategory_model.dart'; // Added import for EntitySubcategoryModel
-// Removed faulty import: import 'package:vuet_app/ui/screens/categories/sub_category_screen.dart' show categorySubcategories, SubCategoryItem;
+import 'package:vuet_app/models/entity_subcategory_model.dart';
 
 class CreateEntityScreen extends ConsumerStatefulWidget {
   final EntitySubtype? initialSubtype;
   final String? initialCategoryId;
   final String? initialSubcategoryId;
+  final int? appCategoryId;
+  final EntitySubcategoryModel? subcategory;
+  final String? entityId; // For editing existing entities
 
   const CreateEntityScreen({
     super.key,
     this.initialSubtype,
     this.initialCategoryId,
     this.initialSubcategoryId,
+    this.appCategoryId,
+    this.subcategory,
+    this.entityId,
   });
 
   @override
-  _CreateEntityScreenState createState() => _CreateEntityScreenState();
+  ConsumerState<CreateEntityScreen> createState() => _CreateEntityScreenState();
 }
 
 class _CreateEntityScreenState extends ConsumerState<CreateEntityScreen> {
@@ -41,7 +45,6 @@ class _CreateEntityScreenState extends ConsumerState<CreateEntityScreen> {
 
   List<EntityCategoryModel> _allCategories = [];
   List<EntityCategoryModel> _subcategoriesForSelectedParent = [];
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -113,7 +116,8 @@ class _CreateEntityScreenState extends ConsumerState<CreateEntityScreen> {
         if (_allCategories.isEmpty) return;
 
         for (var parentCat in _allCategories.where((c) => c.parentId == null)) {
-          final List<EntityCategoryModel> currentSubcategories = _allCategories.where((sub) => sub.parentId == parentCat.id).toList();
+          // Get subcategories of the parent category
+          _allCategories.where((sub) => sub.parentId == parentCat.id).toList();
 
           // The problematic block using categorySubcategories and SubCategoryItem starts here
           // This logic needs to be re-evaluated or removed as categorySubcategories is undefined
@@ -181,18 +185,14 @@ class _CreateEntityScreenState extends ConsumerState<CreateEntityScreen> {
 
   void _determineSubtypeFromSelection() {
     EntitySubtype? determinedSubtype;
-    String? categoryKeyForMapLookup;
 
     EntityCategoryModel? categoryForDirectNameMatch = _selectedSubEntityCategory ?? _selectedParentCategory;
 
+    // We previously determined a category key for mapping, but it's not being used
+    // since the categorySubcategories lookup code is commented out
     if (_selectedSubEntityCategory != null) {
-        final parent = _allCategories.where(
-            (cat) => cat.id == _selectedSubEntityCategory!.parentId).firstOrNull;
-        if (parent != null) {
-          categoryKeyForMapLookup = parent.name.toUpperCase();
-        }
-    } else if (_selectedParentCategory != null) {
-        categoryKeyForMapLookup = _selectedParentCategory!.name.toUpperCase();
+        // Look up parent if needed, but we're not using it now
+        // _allCategories.where((cat) => cat.id == _selectedSubEntityCategory!.parentId).firstOrNull;
     }
 
     // This block also uses categorySubcategories and SubCategoryItem
@@ -221,7 +221,7 @@ class _CreateEntityScreenState extends ConsumerState<CreateEntityScreen> {
     }
     */
 
-    if (determinedSubtype == null && categoryForDirectNameMatch != null) {
+    if (categoryForDirectNameMatch != null) {
         final subtypeString = categoryForDirectNameMatch.name.toLowerCase().replaceAll(' ', '_');
          try {
             determinedSubtype = EntitySubtype.values.firstWhere(
@@ -246,16 +246,20 @@ class _CreateEntityScreenState extends ConsumerState<CreateEntityScreen> {
 
   void _initializeFormFieldsBasedOnSubtype() {
     _clearDynamicControllers();
+    
+    // If no subtype is selected, just return after clearing controllers
     if (_selectedSubtype == null) {
       if (mounted) setState(() {});
       return;
     }
-    final fields = entityFormFields[_selectedSubtype!] ?? [];
+    
+    // At this point, _selectedSubtype is guaranteed to be non-null
+    final fields = entityFormFields[_selectedSubtype] ?? [];
     for (var fieldDef in fields) {
       if (FormFieldDefinition.textTypes.contains(fieldDef.type)) {
         _controllers[fieldDef.name] = TextEditingController();
       } else if (fieldDef.type == FormFieldType.dropdown) {
-        _dropdownSelectedValues[fieldDef.name] = fieldDef.options?.isNotEmpty ?? false
+        _dropdownSelectedValues[fieldDef.name] = fieldDef.options != null && fieldDef.options!.isNotEmpty
             ? fieldDef.options!.first.value
             : null;
       } else if (fieldDef.type == FormFieldType.boolean) {
@@ -340,10 +344,6 @@ class _CreateEntityScreenState extends ConsumerState<CreateEntityScreen> {
       _formKey.currentState!.save();
       
       try {
-        setState(() {
-          _isLoading = true;
-        });
-
         final customFields = <String, dynamic>{};
         for (var field in _controllers.entries) {
           if (field.value.text.isNotEmpty) {
@@ -393,12 +393,6 @@ class _CreateEntityScreenState extends ConsumerState<CreateEntityScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error creating entity: ${e.toString()}'))
           );
-        }
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
         }
       }
     }

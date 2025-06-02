@@ -2,21 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/entity_category_model.dart';
 import 'package:vuet_app/providers/category_providers.dart';
-import 'package:vuet_app/providers/entity_actions_provider.dart';
-import 'package:vuet_app/ui/helpers/ui_helpers.dart';
 import 'package:vuet_app/ui/screens/categories/sub_category_screen.dart';
 import 'package:vuet_app/ui/screens/routines/routines_screen.dart';
-import 'package:vuet_app/widgets/premium_tag.dart';
+import 'package:vuet_app/ui/widgets/premium_tag.dart';
+import 'package:vuet_app/ui/helpers/ui_helpers.dart';
 import 'package:vuet_app/widgets/premium_modal.dart';
 import 'package:vuet_app/providers/user_providers.dart';
 
+// Colors class for the app (defined locally to avoid dependencies)
 class VuetColors {
-  static const primaryDark = Color(0xFF1C2827);
-  static const secondary = Color(0xFF55C6D4);
-  static const accent = Color(0xFFE49F30);
-  static const neutral = Color(0xFF79858D);
-  static const categoryHome = Color(0xFF1A6E68);
-  static const categoryPets = Color(0xFFE49F30);
+  static const Color primary = Color(0xFF2196F3);
+  static const Color primaryDark = Color(0xFF1976D2);
+  static const Color accent = Color(0xFFFF4081);
+  static const Color secondary = Color(0xFF4CAF50);
+  static const Color neutral = Color(0xFFF5F5F5);
 }
 
 // Professional/Personal mode provider
@@ -29,10 +28,10 @@ class MainCategoriesScreen extends ConsumerWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SubCategoryScreen.fromCategoryId(
-          appCategoryId: category.appCategoryId,
-          parentCategoryName: category.name,
-          parentCategoryId: category.id,
+        builder: (context) => SubCategoryScreen(
+          categoryId: category.id,
+          categoryName: category.name,
+          subCategoryKeys: [category.id], // Assume the subcategory key is the same as the category id
         ),
       ),
     );

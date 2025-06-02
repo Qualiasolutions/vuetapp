@@ -1,83 +1,55 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/entity_model.dart';
 import 'package:vuet_app/providers/entity_providers.dart';
-import 'package:vuet_app/services/entity_service.dart' hide entityServiceProvider;
 
-// State class for entity operations
-class EntityActionsState {
-  final bool isLoading;
-  final String? errorMessage;
-  
-  const EntityActionsState({
-    this.isLoading = false,
-    this.errorMessage,
-  });
-  
-  EntityActionsState copyWith({
-    bool? isLoading,
-    String? errorMessage,
-  }) {
-    return EntityActionsState(
-      isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage,
-    );
+/// Provider that exposes entity CRUD operations as AsyncNotifier
+class EntityActionsNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {
+    // Initial state is just void
+    return;
   }
-}
 
-// Notifier class for entity operations
-class EntityActionsNotifier extends StateNotifier<EntityActionsState> {
-  final EntityService _entityService;
-  
-  EntityActionsNotifier(this._entityService) : super(const EntityActionsState());
-  
-  Future<BaseEntityModel?> createEntity(BaseEntityModel entity) async {
+  Future<BaseEntityModel> createEntity(BaseEntityModel entity) async {
+    state = const AsyncLoading();
     try {
-      state = state.copyWith(isLoading: true, errorMessage: null);
-      final createdEntity = await _entityService.createEntity(entity);
-      state = state.copyWith(isLoading: false);
-      return createdEntity;
-    } catch (error) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Failed to create entity: ${error.toString()}',
-      );
-      return null;
+      final entityService = ref.read(entityServiceProvider);
+      final result = await entityService.createEntity(entity);
+      state = const AsyncData(null);
+      return result;
+    } catch (e, stackTrace) {
+      state = AsyncError(e, stackTrace);
+      rethrow;
     }
   }
-  
-  Future<BaseEntityModel?> updateEntity(BaseEntityModel entity) async {
+
+  Future<BaseEntityModel> updateEntity(BaseEntityModel entity) async {
+    state = const AsyncLoading();
     try {
-      state = state.copyWith(isLoading: true, errorMessage: null);
-      final updatedEntity = await _entityService.updateEntity(entity);
-      state = state.copyWith(isLoading: false);
-      return updatedEntity;
-    } catch (error) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Failed to update entity: ${error.toString()}',
-      );
-      return null;
+      final entityService = ref.read(entityServiceProvider);
+      final result = await entityService.updateEntity(entity);
+      state = const AsyncData(null);
+      return result;
+    } catch (e, stackTrace) {
+      state = AsyncError(e, stackTrace);
+      rethrow;
     }
   }
-  
-  Future<bool> deleteEntity(String entityId) async {
+
+  Future<void> deleteEntity(String id) async {
+    state = const AsyncLoading();
     try {
-      state = state.copyWith(isLoading: true, errorMessage: null);
-      await _entityService.deleteEntity(entityId);
-      state = state.copyWith(isLoading: false);
-      return true;
-    } catch (error) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: 'Failed to delete entity: ${error.toString()}',
-      );
-      return false;
+      final entityService = ref.read(entityServiceProvider);
+      await entityService.deleteEntity(id);
+      state = const AsyncData(null);
+    } catch (e, stackTrace) {
+      state = AsyncError(e, stackTrace);
+      rethrow;
     }
   }
 }
 
-// Provider for EntityActionsNotifier
-final entityActionsProvider = StateNotifierProvider<EntityActionsNotifier, EntityActionsState>((ref) {
-  final entityService = ref.watch(entityServiceProvider);
-  return EntityActionsNotifier(entityService);
+/// Provider for entity actions
+final entityActionsProvider = AsyncNotifierProvider<EntityActionsNotifier, void>(() {
+  return EntityActionsNotifier();
 }); 

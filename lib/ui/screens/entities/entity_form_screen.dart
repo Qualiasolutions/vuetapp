@@ -205,7 +205,7 @@ class _EntityFormScreenState extends ConsumerState<EntityFormScreen> {
             hintText: fieldDef.hintText,
           ),
           maxLines: 1,
-          keyboardType: fieldDef.keyboardType,
+          keyboardType: _getKeyboardType(fieldDef.type),
           validator: fieldDef.isRequired
               ? (value) => (value == null || value.isEmpty) ? 'Please enter ${fieldDef.label}' : null
               : null,
@@ -276,9 +276,6 @@ class _EntityFormScreenState extends ConsumerState<EntityFormScreen> {
             });
           },
         );
-
-      default:
-        return const SizedBox.shrink();
     }
   }
 
@@ -294,7 +291,11 @@ class _EntityFormScreenState extends ConsumerState<EntityFormScreen> {
         return TextInputType.multiline;
       case FormFieldType.number:
         return TextInputType.number;
-      default:
+      case FormFieldType.text:
+      case FormFieldType.date:
+      case FormFieldType.dateTime:
+      case FormFieldType.dropdown:
+      case FormFieldType.boolean:
         return TextInputType.text;
     }
   }

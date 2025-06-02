@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/entity_model.dart';
-import 'package:vuet_app/providers/entity_providers.dart';
 import 'package:vuet_app/services/auth_service.dart'; // For userId
 import 'package:vuet_app/ui/widgets/entities/dynamic_entity_form.dart';
 import 'package:vuet_app/utils/logger.dart';
+import 'package:vuet_app/providers/entity_actions_provider.dart';
 
 class EntityUpsertScreen extends ConsumerStatefulWidget {
   final BaseEntityModel? entity; // If null, creating new entity

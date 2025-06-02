@@ -14,7 +14,6 @@ import 'package:vuet_app/constants/default_categories.dart';
 import 'package:vuet_app/repositories/supabase_entity_repository.dart';
 import 'package:vuet_app/repositories/supabase_category_repository.dart';
 import 'package:vuet_app/repositories/supabase_entity_subcategory_repository.dart';
-import 'package:vuet_app/utils/logger.dart';
 
 /// Service class for entity operations
 class EntityService {
