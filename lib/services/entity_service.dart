@@ -21,14 +21,14 @@ class EntityService {
   final EntityRepository _repository;
   final CategoryRepository? _categoryRepository;
   final EntitySubcategoryRepository? _subcategoryRepository;
-  final AuthService? _authService;
+  final dynamic _authService;
 
   /// Constructor for EntityService
   EntityService({
     required EntityRepository repository,
     CategoryRepository? categoryRepository,
     EntitySubcategoryRepository? subcategoryRepository,
-    AuthService? authService,
+    dynamic authService,
   }) : 
     _repository = repository,
     _categoryRepository = categoryRepository,
