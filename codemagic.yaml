@@ -7,12 +7,12 @@ workflows:
       groups:
         - supabase_credentials
         - app_store_credentials
-        - ios_credentials      # Contains CERTIFICATE_P12, PROVISIONING_PROFILE, and CERTIFICATE_PASSWORD
+        - ios_credentials
       vars:
         BUNDLE_ID: "ai.vuet.vuet"
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        DEVELOPMENT_TEAM: "36AP5U42Q4"  # Your team ID
+        DEVELOPMENT_TEAM: "36AP5U42Q4"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -24,35 +24,25 @@ workflows:
     scripts:
       - name: Set up code signing
         script: |
-          # Debug info
           echo "Setting up code signing..."
-          
-          # Use app-store-connect to fetch the profiles directly from Apple
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
-          
-          # Set up the keychain and add the certificate
           keychain initialize
           
-          # If we have a certificate from environment, use it
           if [ ! -z "$CERTIFICATE_P12" ]; then
             echo "Using certificate from environment variable"
             echo "$CERTIFICATE_P12" | base64 --decode > /tmp/certificate.p12
             keychain add-certificates --certificate /tmp/certificate.p12 --certificate-password "$CERTIFICATE_PASSWORD"
           else
             echo "No certificate found in environment, downloading from App Store Connect"
-            # Try to download the certificate from App Store Connect
             app-store-connect download-distribution-certificate --save-private-key
           fi
           
-          # Debug - list available certificates
           echo "Available certificates:"
           security find-identity -v -p codesigning
           
-          # Set up code signing settings in the Xcode project
           cd ios
           xcode-project use-profiles
           
-          # Use the provided provisioning profile
           if [ ! -z "$PROVISIONING_PROFILE" ]; then
             echo "Using provisioning profile from environment"
             echo "$PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
@@ -60,8 +50,8 @@ workflows:
             cp /tmp/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
           fi
           
-          # Create exportOptions.plist file
-          cat > exportOptions.plist << EOL
+          # Create exportOptions.plist with proper YAML escaping
+          tee exportOptions.plist > /dev/null << 'EOL'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -85,7 +75,6 @@ workflows:
 </plist>
 EOL
           
-          # Show the content to verify
           cat exportOptions.plist
       - name: Get Flutter packages
         script: flutter pub get
@@ -97,16 +86,14 @@ EOL
           pod install --repo-update
       - name: Setup environment variables for the app
         script: |
-          echo "Setting up environment variables for the app..."
           if [ -f ".env.production" ]; then
             cp .env.production .env
             echo "Copied .env.production to .env"
           elif [ -f ".env.development" ]; then
             cp .env.development .env
-            echo "Warning: .env.production not found. Copied .env.development to .env for branch $CM_BRANCH"
+            echo "Warning: Using .env.development"
           else
-            echo "Error: Neither .env.production nor .env.development found at the repository root."
-            echo "Please ensure one of these files exists in your repository."
+            echo "Error: No .env file found"
             exit 1
           fi
       - name: Set iOS build number
@@ -118,32 +105,22 @@ EOL
           echo "Set iOS build number to $NEW_BUILD_NUMBER"
       - name: Flutter build iOS
         script: |
-          # Build with manual code signing
           cd ios
           
-          # Update the project settings for Runner
           echo "Updating Runner project settings..."
-          
-          # Update bundle ID in Xcode project
           /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ai.vuet.vuet" Runner/Info.plist || true
           
-          # First, make sure the Runner target is set to manual signing
-          /usr/libexec/PlistBuddy -c "Set :objects:PBXProject.1:attributes:TargetAttributes:97C146ED1CF9000F007C117D:ProvisioningStyle Manual" Runner.xcodeproj/project.pbxproj
+          # Update project settings
+          plutil -replace "objects.PBXProject.1.attributes.TargetAttributes.97C146ED1CF9000F007C117D.ProvisioningStyle" -string "Manual" Runner.xcodeproj/project.pbxproj
+          plutil -replace "objects.PBXProject.1.attributes.TargetAttributes.97C146ED1CF9000F007C117D.DevelopmentTeam" -string "36AP5U42Q4" Runner.xcodeproj/project.pbxproj
           
-          # Set team ID and bundle ID for the Runner target
-          /usr/libexec/PlistBuddy -c "Set :objects:PBXProject.1:attributes:TargetAttributes:97C146ED1CF9000F007C117D:DevelopmentTeam 36AP5U42Q4" Runner.xcodeproj/project.pbxproj
-          /usr/libexec/PlistBuddy -c "Set :objects:XCBuildConfiguration:*:buildSettings:PRODUCT_BUNDLE_IDENTIFIER ai.vuet.vuet" Runner.xcodeproj/project.pbxproj
-          
-          # Build Flutter bundle
           echo "Building Flutter bundle..."
           flutter build ios --release --no-codesign
           
-          # Create clean archive
-          echo "Creating archive with proper code signing..."
+          echo "Creating archive..."
           rm -rf build/Runner.xcarchive
           mkdir -p build
           
-          # Use xcodebuild to create the archive with the proper code signing
           xcodebuild clean archive \
             -workspace Runner.xcworkspace \
             -scheme Runner \
@@ -156,7 +133,7 @@ EOL
             PROVISIONING_PROFILE_SPECIFIER="Vuet ios_app_store 1748898756" \
             PRODUCT_BUNDLE_IDENTIFIER="ai.vuet.vuet"
           
-          # Create the IPA
+          echo "Creating IPA..."
           xcodebuild -exportArchive \
             -archivePath build/Runner.xcarchive \
             -exportOptionsPlist exportOptions.plist \
