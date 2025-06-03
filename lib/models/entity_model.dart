@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 part 'entity_model.freezed.dart';
@@ -477,8 +478,8 @@ class EntityTypeHelper {
           (match) => match.start > 0 ? '_${match.group(0)!.toLowerCase()}' : match.group(0)!.toLowerCase()
       );
       
-      print('🔍 Trying fallback snake_case mapping: $snakeCaseName');
-      
+      debugPrint('🔍 Trying fallback snake_case mapping: $snakeCaseName');
+
       // Return the converted name as a fallback
       return snakeCaseName;
     }

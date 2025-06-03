@@ -71,14 +71,6 @@ workflows:
         - ~/.pub-cache
         - ~/Library/Developer/Xcode/DerivedData
     scripts:
-      - name: Clone App Source Code # New first step
-        script: |
-          set -e # exit on error
-          echo "Cloning application source..."
-          # Ensure Codemagic has access to this repository (e.g. via SSH key if private)
-          git clone https://github.com/Qualiasolutions/vuetapp.git app_source
-          cd app_source
-          echo "Cloned successfully. Current directory: $(pwd)"
       - name: Get Flutter packages
         script: |
           flutter pub get
@@ -87,15 +79,13 @@ workflows:
           flutter pub run build_runner build --delete-conflicting-outputs
       - name: Install CocoaPods
         script: |
-          # This command should run inside the 'ios' directory of the cloned app_source
           cd ios && pod install
       - name: Setup environment variables
         script: |
-          # This assumes your .env files are in the root of app_source
           cp .env.production .env
       - name: Set build number
         script: |
-          # This command should run inside the 'ios' directory of the cloned app_source
+          # Get the latest TestFlight build number and increment it
           LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$BUNDLE_ID")
           NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
           cd ios
@@ -105,17 +95,15 @@ workflows:
           flutter build ios --release --no-codesign
       - name: Sign and build IPA
         script: |
-          # This command should run inside the 'ios' directory of the cloned app_source
           cd ios
           xcode-project use-profiles
           xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
     artifacts:
-      - app_source/build/ios/ipa/*.ipa # Adjusted path
+      - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
     publishing:
       app_store_connect:
-        api_key_details:
-          key_id: $APP_STORE_CONNECT_KEY_ID
-          issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-          private_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        submit_to_testflight: true
+        key_id: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        private_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        submit_to_testflight: true 

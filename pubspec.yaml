@@ -43,7 +43,7 @@ dependencies:
   path: ^1.9.0 # For path operations
   image_picker: ^1.0.7 # Or latest stable version
   js: ^0.6.7 # For JavaScript interop (compatible with flutter_secure_storage)
-  logger: ^2.0.2 # Added logger package
+  logger: ^2.5.0 # Added logger package
   flutter_colorpicker: ^1.1.0 # For color selection in account settings
   email_validator: ^2.1.17 # For email validation in contact settings
   shimmer: ^3.0.0 # For loading skeleton animations
