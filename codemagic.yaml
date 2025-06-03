@@ -1,56 +1,4 @@
 workflows:
-  android-workflow:
-    name: Android Build
-    max_build_duration: 60
-    instance_type: mac_mini_m1
-    environment:
-      groups:
-        - supabase_credentials
-      flutter: stable
-      xcode: latest
-      android_signing:
-        - keystore_reference
-    cache:
-      cache_paths:
-        - ~/.pub-cache
-        - ~/.gradle/caches
-    scripts:
-      - name: Get Flutter packages
-        script: |
-          flutter pub get
-      - name: Generate code
-        script: |
-          flutter pub run build_runner build --delete-conflicting-outputs
-      - name: Flutter analyze
-        script: |
-          flutter analyze
-      - name: Setup environment variables
-        script: |
-          if [ "$CM_BRANCH" = "main" ] || [ "$CM_BRANCH" = "master" ]
-          then
-            cp .env.production .env
-          else
-            cp .env.development .env
-          fi
-      - name: Build AAB
-        script: |
-          BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "com.vuetapp.vuet_app") + 1))
-          flutter build appbundle --flavor production --release --build-number=$BUILD_NUMBER
-      - name: Build APK
-        script: |
-          flutter build apk --flavor production --release --split-per-abi
-    artifacts:
-      - build/app/outputs/bundle/productionRelease/app-production-release.aab
-      - build/app/outputs/apk/production/release/*.apk
-    publishing:
-      email:
-        recipients:
-          - your_email@example.com # Replace with your email
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
-        submit_as_draft: true
-
   ios-testflight:
     name: iOS TestFlight
     max_build_duration: 60
@@ -60,7 +8,7 @@ workflows:
         - supabase_credentials
         - app_store_credentials
       vars:
-        BUNDLE_ID: "ai.vuet.vuet" # Based on your TestFlight README
+        BUNDLE_ID: "ai.vuet.vuet"
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
       flutter: stable
@@ -70,52 +18,54 @@ workflows:
       cache_paths:
         - ~/.pub-cache
         - ~/Library/Developer/Xcode/DerivedData
+        - $CM_BUILD_DIR/ios/Pods
     scripts:
-      - name: Clone App Source Code # New first step
-        script: |
-          set -e # exit on error
-          echo "Cloning application source..."
-          # Ensure Codemagic has access to this repository (e.g. via SSH key if private)
-          git clone https://github.com/Qualiasolutions/vuetapp.git app_source
-          cd app_source
-          echo "Cloned successfully. Current directory: $(pwd)"
       - name: Get Flutter packages
-        script: |
-          flutter pub get
+        script: flutter pub get
       - name: Generate code
+        script: flutter pub run build_runner build --delete-conflicting-outputs
+      - name: Install CocoaPods dependencies
         script: |
-          flutter pub run build_runner build --delete-conflicting-outputs
-      - name: Install CocoaPods
-        script: |
-          # This command should run inside the 'ios' directory of the cloned app_source
-          cd ios && pod install
-      - name: Setup environment variables
-        script: |
-          # This assumes your .env files are in the root of app_source
-          cp .env.production .env
-      - name: Set build number
-        script: |
-          # This command should run inside the 'ios' directory of the cloned app_source
-          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$BUNDLE_ID")
-          NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
           cd ios
+          pod install --repo-update
+      - name: Setup environment variables for the app
+        script: |
+          echo "Setting up environment variables for the app..."
+          if [ -f ".env.production" ]; then
+            cp .env.production .env
+            echo "Copied .env.production to .env"
+          elif [ -f ".env.development" ]; then
+            cp .env.development .env
+            echo "Warning: .env.production not found. Copied .env.development to .env for branch $CM_BRANCH"
+          else
+            echo "Error: Neither .env.production nor .env.development found at the repository root."
+            echo "Please ensure one of these files exists in your vuetapp.git repository."
+            exit 1
+          fi
+      - name: Set iOS build number
+        script: |
+          cd ios
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-testflight-build-number "$BUNDLE_ID" || echo "0")
+          NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
           agvtool new-version -all $NEW_BUILD_NUMBER
-      - name: Flutter build iOS
+          echo "Set iOS build number to $NEW_BUILD_NUMBER"
+      - name: Flutter build iOS for release
         script: |
           flutter build ios --release --no-codesign
-      - name: Sign and build IPA
+      - name: Build and sign IPA
         script: |
-          # This command should run inside the 'ios' directory of the cloned app_source
           cd ios
           xcode-project use-profiles
-          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
     artifacts:
-      - app_source/build/ios/ipa/*.ipa # Adjusted path
+      - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
+      - $CM_BUILD_DIR/flutter_drive.log
     publishing:
       app_store_connect:
-        api_key_details:
-          key_id: $APP_STORE_CONNECT_KEY_ID
-          issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-          private_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        api_key: $APP_STORE_P8_CONTENT
+        key_id: $APPLE_KEY_ID
+        issuer_id: $APPLE_ISSUER_ID
         submit_to_testflight: true
