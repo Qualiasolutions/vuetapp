@@ -12,12 +12,12 @@ class EnhancedTaskTypeSelector extends ConsumerStatefulWidget {
   final void Function(TaskType? type, String? subtype, String? entityId) onTypeChanged;
 
   const EnhancedTaskTypeSelector({
-    Key? key,
+    super.key,
     this.initialTaskType,
     this.initialTaskSubtype,
     this.initialEntityId,
     required this.onTypeChanged,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<EnhancedTaskTypeSelector> createState() => _EnhancedTaskTypeSelectorState();

@@ -191,7 +191,7 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
       setState(() {});
     });
   }
-
+  
   // Widget to show when there are no entities
   Widget _buildEmptyState(BuildContext context) {
     return Center(
@@ -236,7 +236,7 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
       ),
     );
   }
-
+  
   // Helper method to get icon for category
   IconData _getCategoryIcon(String categoryId) {
     switch (categoryId) {
@@ -265,26 +265,15 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.categoryName),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: const Text('Loading Subcategories...')),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_subcategories.isEmpty) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.categoryName),
-        ),
+        appBar: AppBar(title: Text(widget.categoryName)),
         body: _buildEmptyState(context),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _onCreateEntity,
-          child: const Icon(Icons.add),
-          tooltip: 'Create Entity',
-        ),
       );
     }
 
@@ -295,11 +284,23 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
           controller: _tabController,
           isScrollable: true,
           tabs: _subcategories.map((subcategory) {
+            Widget iconWidget;
+            if (subcategory.icon != null && subcategory.icon!.isNotEmpty) {
+              iconWidget = Image.asset(
+                subcategory.icon!,
+                width: 24, // Example size, adjust as needed
+                height: 24, // Example size, adjust as needed
+                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                  log('Failed to load subcategory icon: ${subcategory.icon}, Error: $error', name: 'SubCategoryScreen');
+                  return const Icon(Icons.category, size: 24); // Default icon on error
+                },
+              );
+            } else {
+              iconWidget = const Icon(Icons.category, size: 24); // Default icon if path is null or empty
+            }
             return Tab(
+              icon: iconWidget,
               text: subcategory.displayName,
-              icon: subcategory.icon != null && subcategory.icon!.isNotEmpty
-                  ? Icon(IconData(int.parse(subcategory.icon!), fontFamily: 'MaterialIcons'))
-                  : null,
             );
           }).toList(),
         ),
@@ -308,21 +309,19 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
         controller: _tabController,
         children: _subcategories.map((subcategory) {
           final entitySubtype = _getEntitySubtypeForSubcategory(subcategory);
-          final appCategoryId = entitySubtype != null ? EntityTypeHelper.categoryMapping[entitySubtype] : null;
-          
+          final int? appCategoryIdForEntityList = entitySubtype != null ? EntityTypeHelper.categoryMapping[entitySubtype] : null;
+
           return EntityListScreen(
-            appCategoryId: appCategoryId,
             categoryId: widget.categoryId,
             subcategoryId: subcategory.id,
-            categoryName: subcategory.displayName,
-            defaultEntityType: entitySubtype,
-            emptyStateBuilder: () => _buildEmptyState(context),
+            categoryName: widget.categoryName, // Main category name for EntityListScreen
+            appCategoryId: appCategoryIdForEntityList,
           );
         }).toList(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _onCreateEntity,
-        tooltip: 'Create ${widget.categoryName} Entity',
+        tooltip: 'Add New ${widget.categoryName} Entity',
         child: const Icon(Icons.add),
       ),
     );

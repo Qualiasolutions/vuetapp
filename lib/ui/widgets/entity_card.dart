@@ -211,9 +211,9 @@ class EntityCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             // Header with icon and background color
             Container(
               color: color.withOpacity(0.2),
@@ -236,7 +236,7 @@ class EntityCard extends StatelessWidget {
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
+                    ),
                 ],
               ),
             ),
@@ -265,9 +265,9 @@ class EntityCard extends StatelessWidget {
                           fontSize: 12,
                           color: Colors.grey[600],
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                     ],
                     const Spacer(),
                     if (entity.customFields != null && entity.customFields!.isNotEmpty)
@@ -303,11 +303,11 @@ class EntityCard extends StatelessWidget {
                         onPressed: onDelete,
                         tooltip: 'Delete',
                         visualDensity: VisualDensity.compact,
-                      ),
+                    ),
                   ],
                 ),
               ),
-          ],
+            ],
         ),
       ),
     );

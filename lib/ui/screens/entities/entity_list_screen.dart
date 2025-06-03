@@ -15,14 +15,14 @@ class EntityListScreen extends ConsumerStatefulWidget {
   final Widget Function()? emptyStateBuilder;
 
   const EntityListScreen({
-    Key? key,
+    super.key,
     this.appCategoryId,
     this.categoryId,
     this.subcategoryId,
     this.categoryName,
     this.defaultEntityType,
     this.emptyStateBuilder,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<EntityListScreen> createState() => _EntityListScreenState();
@@ -220,8 +220,8 @@ class _EntityListScreenState extends ConsumerState<EntityListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreateEntity,
-        child: const Icon(Icons.add),
         tooltip: 'Add ${widget.categoryName ?? 'Entity'}',
+        child: const Icon(Icons.add),
       ),
     );
   }

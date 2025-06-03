@@ -8,12 +8,12 @@ class CategoryIntroductionScreen extends StatefulWidget {
   final List<String>? subCategoryKeys;
 
   const CategoryIntroductionScreen({
-    Key? key,
+    super.key,
     required this.categoryId,
     required this.categoryName,
     required this.introPages,
     this.subCategoryKeys,
-  }) : super(key: key);
+  });
 
   @override
   State<CategoryIntroductionScreen> createState() => _CategoryIntroductionScreenState();

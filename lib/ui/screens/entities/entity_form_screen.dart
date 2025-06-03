@@ -15,13 +15,13 @@ class EntityFormScreen extends ConsumerStatefulWidget {
   final BaseEntityModel? existingEntity; // For editing mode
 
   const EntityFormScreen({
-    Key? key,
+    super.key,
     required this.categoryId,
     required this.categoryName,
     required this.defaultSubtype,
     this.subcategoryId,
     this.existingEntity,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<EntityFormScreen> createState() => _EntityFormScreenState();
