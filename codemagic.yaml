@@ -7,12 +7,12 @@ workflows:
       groups:
         - supabase_credentials
         - app_store_credentials
-        - ios_credentials # Contains certificate, profile, and passwords
+        - ios_credentials      # Contains CERTIFICATE_P12, PROVISIONING_PROFILE, and CERTIFICATE_PASSWORD
       vars:
         BUNDLE_ID: "ai.vuet.vuet"
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        DEVELOPMENT_TEAM: "36AP5U42Q4" # Your team ID from the provisioning profile
+        DEVELOPMENT_TEAM: "36AP5U42Q4"  # Your team ID
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -34,9 +34,9 @@ workflows:
           keychain initialize
           
           # If we have a certificate from environment, use it
-          if [ ! -z "$CERTIFICATE" ]; then
+          if [ ! -z "$CERTIFICATE_P12" ]; then
             echo "Using certificate from environment variable"
-            echo "$CERTIFICATE" | base64 --decode > /tmp/certificate.p12
+            echo "$CERTIFICATE_P12" | base64 --decode > /tmp/certificate.p12
             keychain add-certificates --certificate /tmp/certificate.p12 --certificate-password "$CERTIFICATE_PASSWORD"
           else
             echo "No certificate found in environment, downloading from App Store Connect"
@@ -52,29 +52,38 @@ workflows:
           cd ios
           xcode-project use-profiles
           
-          # Create exportOptions.plist file with individual echo statements
-          echo "Creating exportOptions.plist file..."
-          echo '<?xml version="1.0" encoding="UTF-8"?>' > exportOptions.plist
-          echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> exportOptions.plist
-          echo '<plist version="1.0">' >> exportOptions.plist
-          echo '<dict>' >> exportOptions.plist
-          echo '    <key>method</key>' >> exportOptions.plist
-          echo '    <string>app-store</string>' >> exportOptions.plist
-          echo '    <key>teamID</key>' >> exportOptions.plist
-          echo '    <string>36AP5U42Q4</string>' >> exportOptions.plist
-          echo '    <key>uploadBitcode</key>' >> exportOptions.plist
-          echo '    <false/>' >> exportOptions.plist
-          echo '    <key>uploadSymbols</key>' >> exportOptions.plist
-          echo '    <true/>' >> exportOptions.plist
-          echo '    <key>signingStyle</key>' >> exportOptions.plist
-          echo '    <string>manual</string>' >> exportOptions.plist
-          echo '    <key>provisioningProfiles</key>' >> exportOptions.plist
-          echo '    <dict>' >> exportOptions.plist
-          echo '        <key>ai.vuet.vuet</key>' >> exportOptions.plist
-          echo '        <string>Vuet ios_app_store 1748898756</string>' >> exportOptions.plist
-          echo '    </dict>' >> exportOptions.plist
-          echo '</dict>' >> exportOptions.plist
-          echo '</plist>' >> exportOptions.plist
+          # Use the provided provisioning profile
+          if [ ! -z "$PROVISIONING_PROFILE" ]; then
+            echo "Using provisioning profile from environment"
+            echo "$PROVISIONING_PROFILE" | base64 --decode > /tmp/profile.mobileprovision
+            mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+            cp /tmp/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+          fi
+          
+          # Create exportOptions.plist file
+          cat > exportOptions.plist << EOL
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>app-store</string>
+    <key>teamID</key>
+    <string>36AP5U42Q4</string>
+    <key>uploadBitcode</key>
+    <false/>
+    <key>uploadSymbols</key>
+    <true/>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>ai.vuet.vuet</key>
+        <string>Vuet ios_app_store 1748898756</string>
+    </dict>
+</dict>
+</plist>
+EOL
           
           # Show the content to verify
           cat exportOptions.plist
@@ -86,10 +95,6 @@ workflows:
         script: |
           cd ios
           pod install --repo-update
-          
-          # Display pod dependency structure to help debug
-          echo "Displaying pod dependency structure..."
-          pod list
       - name: Setup environment variables for the app
         script: |
           echo "Setting up environment variables for the app..."
@@ -101,7 +106,7 @@ workflows:
             echo "Warning: .env.production not found. Copied .env.development to .env for branch $CM_BRANCH"
           else
             echo "Error: Neither .env.production nor .env.development found at the repository root."
-            echo "Please ensure one of these files exists in your vuetapp.git repository."
+            echo "Please ensure one of these files exists in your repository."
             exit 1
           fi
       - name: Set iOS build number
@@ -111,32 +116,23 @@ workflows:
           NEW_BUILD_NUMBER=$((LATEST_BUILD_NUMBER + 1))
           agvtool new-version -all $NEW_BUILD_NUMBER
           echo "Set iOS build number to $NEW_BUILD_NUMBER"
-      - name: Prepare Flutter for build
-        script: |
-          # Make sure Flutter uses the provisioning profile we set up
-          echo "Setting up Flutter for release build..."
-          flutter config --no-analytics
-          flutter doctor -v
       - name: Flutter build iOS
         script: |
-          # Build with automatic code signing using the profiles we've set up
+          # Build with manual code signing
           cd ios
           
           # Update the project settings for Runner
           echo "Updating Runner project settings..."
           
+          # Update bundle ID in Xcode project
+          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ai.vuet.vuet" Runner/Info.plist || true
+          
           # First, make sure the Runner target is set to manual signing
-          /usr/bin/plutil -replace "objects.PBXProject.1.attributes.TargetAttributes.97C146ED1CF9000F007C117D.ProvisioningStyle" -string "Manual" "Runner.xcodeproj/project.pbxproj"
+          /usr/libexec/PlistBuddy -c "Set :objects:PBXProject.1:attributes:TargetAttributes:97C146ED1CF9000F007C117D:ProvisioningStyle Manual" Runner.xcodeproj/project.pbxproj
           
-          # Set team ID for the Runner target
-          /usr/bin/plutil -replace "objects.PBXProject.1.attributes.TargetAttributes.97C146ED1CF9000F007C117D.DevelopmentTeam" -string "36AP5U42Q4" "Runner.xcodeproj/project.pbxproj"
-          
-          # Set the development team in build settings too
-          /usr/libexec/PlistBuddy -c "Set :buildSettings:DEVELOPMENT_TEAM 36AP5U42Q4" "Runner.xcodeproj/project.pbxproj" || true
-          
-          # Update Pods project to use automatic signing
-          echo "Updating Pods project to use automatic signing..."
-          find Pods -name "*.pbxproj" -exec /usr/bin/plutil -replace "objects.PBXProject.1.attributes.TargetAttributes.*.ProvisioningStyle" -string "Automatic" {} \; || true
+          # Set team ID and bundle ID for the Runner target
+          /usr/libexec/PlistBuddy -c "Set :objects:PBXProject.1:attributes:TargetAttributes:97C146ED1CF9000F007C117D:DevelopmentTeam 36AP5U42Q4" Runner.xcodeproj/project.pbxproj
+          /usr/libexec/PlistBuddy -c "Set :objects:XCBuildConfiguration:*:buildSettings:PRODUCT_BUNDLE_IDENTIFIER ai.vuet.vuet" Runner.xcodeproj/project.pbxproj
           
           # Build Flutter bundle
           echo "Building Flutter bundle..."
@@ -144,11 +140,11 @@ workflows:
           
           # Create clean archive
           echo "Creating archive with proper code signing..."
-          rm -rf build/Runner.xcarchive || true
+          rm -rf build/Runner.xcarchive
           mkdir -p build
           
           # Use xcodebuild to create the archive with the proper code signing
-          /usr/bin/xcodebuild clean archive \
+          xcodebuild clean archive \
             -workspace Runner.xcworkspace \
             -scheme Runner \
             -configuration Release \
@@ -158,37 +154,20 @@ workflows:
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM=36AP5U42Q4 \
             PROVISIONING_PROFILE_SPECIFIER="Vuet ios_app_store 1748898756" \
-            OTHER_CODE_SIGN_FLAGS="--keychain=login"
+            PRODUCT_BUNDLE_IDENTIFIER="ai.vuet.vuet"
           
-          # If that fails, try the alternative approach with automatic signing for pods
-          if [ $? -ne 0 ]; then
-            echo "First archive attempt failed, trying alternative approach..."
-            /usr/bin/xcodebuild clean archive \
-              -workspace Runner.xcworkspace \
-              -scheme Runner \
-              -configuration Release \
-              -destination 'generic/platform=iOS' \
-              -archivePath build/Runner.xcarchive \
-              CODE_SIGN_IDENTITY="Apple Distribution" \
-              CODE_SIGN_STYLE=Manual \
-              DEVELOPMENT_TEAM=36AP5U42Q4 \
-              PROVISIONING_PROFILE_SPECIFIER="Vuet ios_app_store 1748898756" \
-              PODS_CONFIGURATION_BUILD_DIR="${PODS_CONFIGURATION_BUILD_DIR:-build/Release-iphoneos}" \
-              EXCLUDED_ARCHS="i386 armv7" \
-              ONLY_ACTIVE_ARCH=NO \
-              -allowProvisioningUpdates
-          fi
-          
-          # Create the IPA from the archive
-          echo "Creating IPA from archive..."
-          /usr/bin/xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/ios/ipa/
+          # Create the IPA
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath build/ios/ipa/
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - $CM_BUILD_DIR/flutter_drive.log
     publishing:
       app_store_connect:
-        api_key: $APP_STORE_P8_CONTENT
-        key_id: $APPLE_KEY_ID
-        issuer_id: $APPLE_ISSUER_ID
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_ID
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true
