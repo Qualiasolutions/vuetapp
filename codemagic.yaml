@@ -35,16 +35,22 @@ workflows:
           
           # If we have a certificate from environment, use it
           if [ ! -z "$CERTIFICATE" ]; then
+            echo "Using certificate from environment variable"
             echo "$CERTIFICATE" | base64 --decode > /tmp/certificate.p12
             keychain add-certificates --certificate /tmp/certificate.p12 --certificate-password "$CERTIFICATE_PASSWORD"
+          else
+            echo "No certificate found in environment, downloading from App Store Connect"
+            # Try to download the certificate from App Store Connect
+            app-store-connect download-distribution-certificate --save-private-key
           fi
+          
+          # Debug - list available certificates
+          echo "Available certificates:"
+          security find-identity -v -p codesigning
           
           # Set up code signing settings in the Xcode project
           cd ios
           xcode-project use-profiles
-          
-          # List available certificates to verify setup
-          security find-identity -v -p codesigning
           
           # Create exportOptions.plist file with individual echo statements
           echo "Creating exportOptions.plist file..."
@@ -80,6 +86,10 @@ workflows:
         script: |
           cd ios
           pod install --repo-update
+          
+          # Display pod dependency structure to help debug
+          echo "Displaying pod dependency structure..."
+          pod list
       - name: Setup environment variables for the app
         script: |
           echo "Setting up environment variables for the app..."
@@ -111,24 +121,66 @@ workflows:
         script: |
           # Build with automatic code signing using the profiles we've set up
           cd ios
-          # Update the project settings with development team
-          /usr/libexec/PlistBuddy -c "Set :buildSettings:DEVELOPMENT_TEAM 36AP5U42Q4" "Runner.xcodeproj/project.pbxproj"
           
-          # First, build Flutter without code signing
+          # Update the project settings for Runner
+          echo "Updating Runner project settings..."
+          
+          # First, make sure the Runner target is set to manual signing
+          /usr/bin/plutil -replace "objects.PBXProject.1.attributes.TargetAttributes.97C146ED1CF9000F007C117D.ProvisioningStyle" -string "Manual" "Runner.xcodeproj/project.pbxproj"
+          
+          # Set team ID for the Runner target
+          /usr/bin/plutil -replace "objects.PBXProject.1.attributes.TargetAttributes.97C146ED1CF9000F007C117D.DevelopmentTeam" -string "36AP5U42Q4" "Runner.xcodeproj/project.pbxproj"
+          
+          # Set the development team in build settings too
+          /usr/libexec/PlistBuddy -c "Set :buildSettings:DEVELOPMENT_TEAM 36AP5U42Q4" "Runner.xcodeproj/project.pbxproj" || true
+          
+          # Update Pods project to use automatic signing
+          echo "Updating Pods project to use automatic signing..."
+          find Pods -name "*.pbxproj" -exec /usr/bin/plutil -replace "objects.PBXProject.1.attributes.TargetAttributes.*.ProvisioningStyle" -string "Automatic" {} \; || true
+          
+          # Build Flutter bundle
+          echo "Building Flutter bundle..."
           flutter build ios --release --no-codesign
           
-          # Then, create archive with code signing only for Runner target
-          /usr/bin/xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release \
+          # Create clean archive
+          echo "Creating archive with proper code signing..."
+          rm -rf build/Runner.xcarchive || true
+          mkdir -p build
+          
+          # Use xcodebuild to create the archive with the proper code signing
+          /usr/bin/xcodebuild clean archive \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath build/Runner.xcarchive \
-            DEVELOPMENT_TEAM=36AP5U42Q4 \
-            PROVISIONING_PROFILE_SPECIFIER_Runner="Vuet ios_app_store 1748898756" \
             CODE_SIGN_IDENTITY="Apple Distribution" \
-            CODE_SIGN_STYLE_Runner=Manual \
-            OTHER_CODE_SIGN_FLAGS="--keychain=login" \
-            archive
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=36AP5U42Q4 \
+            PROVISIONING_PROFILE_SPECIFIER="Vuet ios_app_store 1748898756" \
+            OTHER_CODE_SIGN_FLAGS="--keychain=login"
+          
+          # If that fails, try the alternative approach with automatic signing for pods
+          if [ $? -ne 0 ]; then
+            echo "First archive attempt failed, trying alternative approach..."
+            /usr/bin/xcodebuild clean archive \
+              -workspace Runner.xcworkspace \
+              -scheme Runner \
+              -configuration Release \
+              -destination 'generic/platform=iOS' \
+              -archivePath build/Runner.xcarchive \
+              CODE_SIGN_IDENTITY="Apple Distribution" \
+              CODE_SIGN_STYLE=Manual \
+              DEVELOPMENT_TEAM=36AP5U42Q4 \
+              PROVISIONING_PROFILE_SPECIFIER="Vuet ios_app_store 1748898756" \
+              PODS_CONFIGURATION_BUILD_DIR="${PODS_CONFIGURATION_BUILD_DIR:-build/Release-iphoneos}" \
+              EXCLUDED_ARCHS="i386 armv7" \
+              ONLY_ACTIVE_ARCH=NO \
+              -allowProvisioningUpdates
+          fi
           
           # Create the IPA from the archive
+          echo "Creating IPA from archive..."
           /usr/bin/xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/ios/ipa/
     artifacts:
       - build/ios/ipa/*.ipa
