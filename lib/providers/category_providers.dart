@@ -7,7 +7,7 @@ import 'package:vuet_app/services/auth_service.dart';
 import 'package:vuet_app/services/entity_service.dart';
 import 'package:vuet_app/utils/logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart'; // Removed unnecessary import
 import '../models/entity_subcategory_model.dart';
 import '../repositories/supabase_entity_category_repository.dart';
 import '../repositories/supabase_entity_subcategory_repository.dart';
@@ -79,7 +79,8 @@ final hierarchicalCategoriesProvider = FutureProvider<List<HierarchicalCategoryD
 
 // Provider to fetch all entity categories
 @riverpod
-Future<List<EntityCategoryModel>> allEntityCategories(AutoDisposeFutureProviderRef<List<EntityCategoryModel>> ref) async {
+// ignore: deprecated_member_use_from_same_package
+Future<List<EntityCategoryModel>> allEntityCategories(AllEntityCategoriesRef ref) async {
   final categoryRepository = ref.watch(supabaseEntityCategoryRepositoryProvider);
   // Assuming your listCategories can be called without ownerId to get all
   return categoryRepository.listCategories();
@@ -88,7 +89,8 @@ Future<List<EntityCategoryModel>> allEntityCategories(AutoDisposeFutureProviderR
 // Provider family to fetch subcategories for a given categoryId
 @riverpod
 Future<List<EntitySubcategoryModel>> entitySubcategories(
-    AutoDisposeFutureProviderRef<List<EntitySubcategoryModel>> ref, String categoryId) async {
+    // ignore: deprecated_member_use_from_same_package
+    EntitySubcategoriesRef ref, String categoryId) async {
   final subcategoryRepository = ref.watch(supabaseEntitySubcategoryRepositoryProvider);
   
   try {

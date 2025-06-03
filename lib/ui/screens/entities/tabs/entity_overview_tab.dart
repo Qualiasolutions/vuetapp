@@ -258,12 +258,12 @@ class EntityOverviewTab extends ConsumerWidget {
       // Pets Category - Orange
       case EntitySubtype.pet:
       case EntitySubtype.vet:
-      case EntitySubtype.petWalker:
-      case EntitySubtype.petGroomer:
-      case EntitySubtype.petSitter:
+      case EntitySubtype.walker:
+      case EntitySubtype.groomer:
+      case EntitySubtype.sitter:
       case EntitySubtype.microchipCompany:
-      case EntitySubtype.petInsuranceCompany:
-      case EntitySubtype.petInsurancePolicy:
+      case EntitySubtype.insuranceCompany:
+      case EntitySubtype.insurancePolicy:
         return const Color(0xFFE49F30);
       
       // Social Category - Purple  
@@ -319,7 +319,7 @@ class EntityOverviewTab extends ConsumerWidget {
         return const Color(0xFF009688);
       
       // Garden Category - Light Green
-      case EntitySubtype.gardenTool:
+      case EntitySubtype.tool:
       case EntitySubtype.plant:
         return const Color(0xFF8BC34A);
       
@@ -331,7 +331,7 @@ class EntityOverviewTab extends ConsumerWidget {
       
       // Laundry Category - Deep Purple
       case EntitySubtype.dryCleaners:
-      case EntitySubtype.laundryItem:
+      case EntitySubtype.item:
         return const Color(0xFF673AB7);
       
       // Finance Category - Brown
@@ -364,11 +364,21 @@ class EntityOverviewTab extends ConsumerWidget {
       case EntitySubtype.pet:
         return Icons.pets;
       case EntitySubtype.vet:
-        return Icons.medical_services;
-      case EntitySubtype.car:
-        return Icons.directions_car;
-      case EntitySubtype.home:
-        return Icons.home;
+        return Icons.local_hospital;
+      case EntitySubtype.walker:
+        return Icons.directions_walk;
+      case EntitySubtype.groomer:
+        return Icons.content_cut;
+      case EntitySubtype.sitter:
+        return Icons.night_shelter;
+      case EntitySubtype.microchipCompany:
+        return Icons.memory;
+      case EntitySubtype.insuranceCompany:
+        return Icons.shield;
+      case EntitySubtype.insurancePolicy:
+        return Icons.policy;
+      case EntitySubtype.birthday:
+        return Icons.cake;
       case EntitySubtype.event:
         return Icons.event;
       case EntitySubtype.hobby:
@@ -433,10 +443,20 @@ class EntityOverviewTab extends ConsumerWidget {
         return 'Pet';
       case EntitySubtype.vet:
         return 'Veterinarian';
-      case EntitySubtype.car:
-        return 'Car';
-      case EntitySubtype.home:
-        return 'Home';
+      case EntitySubtype.walker:
+        return 'Walker';
+      case EntitySubtype.groomer:
+        return 'Groomer';
+      case EntitySubtype.sitter:
+        return 'Sitter';
+      case EntitySubtype.microchipCompany:
+        return 'Microchip Company';
+      case EntitySubtype.insuranceCompany:
+        return 'Insurance Company';
+      case EntitySubtype.insurancePolicy:
+        return 'Insurance Policy';
+      case EntitySubtype.birthday:
+        return 'Birthday';
       case EntitySubtype.event:
         return 'Event';
       case EntitySubtype.hobby:

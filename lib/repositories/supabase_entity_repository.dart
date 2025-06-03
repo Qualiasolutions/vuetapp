@@ -33,7 +33,7 @@ class SupabaseEntityRepository extends BaseSupabaseRepository implements EntityR
       
       // Verify this entity_type_id exists in the database
       try {
-        final typeCheck = await from('entity_types')
+        /* final typeCheck = */ await from('entity_types')
             .select('id, name')
             .eq('id', entityTypeId)
             .single();
@@ -68,7 +68,7 @@ class SupabaseEntityRepository extends BaseSupabaseRepository implements EntityR
           // Last resort: query all entity_types to see what's available
           try {
             // print('🔍 Listing available entity types for reference...');
-            final allTypes = await from('entity_types').select('id, name, app_category_id').limit(20);
+            /* final allTypes = */ await from('entity_types').select('id, name, app_category_id').limit(20);
             
             // print('🔍 Available entity types:');
             // for (final type in allTypes) {

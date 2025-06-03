@@ -18,19 +18,19 @@ final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
     const FormFieldDefinition(name: 'address', label: 'Address', type: FormFieldType.multilineText, isRequired: false),
   ],
 
-  EntitySubtype.petWalker: [
+  EntitySubtype.walker: [
     const FormFieldDefinition(name: 'walker_name', label: 'Walker Name', type: FormFieldType.text, isRequired: true),
     const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
     const FormFieldDefinition(name: 'rate', label: 'Rate per Walk', type: FormFieldType.number, isRequired: false),
   ],
 
-  EntitySubtype.petGroomer: [
+  EntitySubtype.groomer: [
     const FormFieldDefinition(name: 'groomer_name', label: 'Groomer Name', type: FormFieldType.text, isRequired: true),
     const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
     const FormFieldDefinition(name: 'services', label: 'Services Offered', type: FormFieldType.multilineText, isRequired: false),
   ],
 
-  EntitySubtype.petSitter: [
+  EntitySubtype.sitter: [
     const FormFieldDefinition(name: 'sitter_name', label: 'Sitter Name', type: FormFieldType.text, isRequired: true),
     const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
     const FormFieldDefinition(name: 'rate_per_day', label: 'Rate per Day', type: FormFieldType.number, isRequired: false),
@@ -42,13 +42,13 @@ final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
     const FormFieldDefinition(name: 'website', label: 'Website', type: FormFieldType.url, isRequired: false),
   ],
 
-  EntitySubtype.petInsuranceCompany: [
+  EntitySubtype.insuranceCompany: [
     const FormFieldDefinition(name: 'company_name', label: 'Insurance Company', type: FormFieldType.text, isRequired: true),
     const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
     const FormFieldDefinition(name: 'coverage_types', label: 'Coverage Types', type: FormFieldType.multilineText, isRequired: false),
   ],
 
-  EntitySubtype.petInsurancePolicy: [
+  EntitySubtype.insurancePolicy: [
     const FormFieldDefinition(name: 'policy_number', label: 'Policy Number', type: FormFieldType.text, isRequired: true),
     const FormFieldDefinition(name: 'coverage_amount', label: 'Coverage Amount', type: FormFieldType.number, isRequired: false),
     const FormFieldDefinition(name: 'premium', label: 'Monthly Premium', type: FormFieldType.number, isRequired: false),
@@ -289,12 +289,6 @@ final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
   ],
 
   // ========== GARDEN CATEGORY (Category 8) - 2 entity types ==========
-  EntitySubtype.gardenTool: [
-    const FormFieldDefinition(name: 'tool_name', label: 'Tool Name', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'brand', label: 'Brand', type: FormFieldType.text, isRequired: false),
-    const FormFieldDefinition(name: 'maintenance_schedule', label: 'Maintenance Schedule', type: FormFieldType.text, isRequired: false),
-  ],
-
   EntitySubtype.plant: [
     const FormFieldDefinition(name: 'plant_name', label: 'Plant Name', type: FormFieldType.text, isRequired: true),
     const FormFieldDefinition(name: 'plant_type', label: 'Plant Type', type: FormFieldType.dropdown, isRequired: false, options: [
@@ -303,6 +297,12 @@ final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
       FormFieldOption(value: 'herb', label: 'Herb'),
     ]),
     const FormFieldDefinition(name: 'location', label: 'Location', type: FormFieldType.text, isRequired: false),
+  ],
+
+  EntitySubtype.tool: [
+    const FormFieldDefinition(name: 'tool_name', label: 'Tool Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'brand', label: 'Brand', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'maintenance_schedule', label: 'Maintenance Schedule', type: FormFieldType.text, isRequired: false),
   ],
 
   // ========== FOOD CATEGORY (Category 9) - 3 entity types ==========
@@ -328,16 +328,16 @@ final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
   ],
 
   // ========== LAUNDRY CATEGORY (Category 10) - 2 entity types ==========
+  EntitySubtype.item: [
+    const FormFieldDefinition(name: 'item_name', label: 'Item Name', type: FormFieldType.text, isRequired: true),
+    const FormFieldDefinition(name: 'care_instructions', label: 'Care Instructions', type: FormFieldType.multilineText, isRequired: false),
+    const FormFieldDefinition(name: 'color', label: 'Color', type: FormFieldType.text, isRequired: false),
+  ],
+
   EntitySubtype.dryCleaners: [
     const FormFieldDefinition(name: 'business_name', label: 'Business Name', type: FormFieldType.text, isRequired: true),
     const FormFieldDefinition(name: 'address', label: 'Address', type: FormFieldType.multilineText, isRequired: false),
     const FormFieldDefinition(name: 'phone_number', label: 'Phone Number', type: FormFieldType.phone, isRequired: false),
-  ],
-
-  EntitySubtype.laundryItem: [
-    const FormFieldDefinition(name: 'item_name', label: 'Item Name', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'care_instructions', label: 'Care Instructions', type: FormFieldType.multilineText, isRequired: false),
-    const FormFieldDefinition(name: 'color', label: 'Color', type: FormFieldType.text, isRequired: false),
   ],
 
   // ========== FINANCE CATEGORY (Category 11) - 3 entity types ==========

@@ -17,31 +17,56 @@ class EntityCard extends StatelessWidget {
 
   // Helper to get icon for entity subtype
   IconData _getEntityTypeIcon(EntitySubtype subtype) {
+    IconData iconData;
     switch (subtype) {
-      // Pets
       case EntitySubtype.pet:
-        return Icons.pets;
+        iconData = Icons.pets;
+        break;
+      case EntitySubtype.sitter:
+        iconData = Icons.night_shelter;
+        break;
+      case EntitySubtype.walker:
+        iconData = Icons.directions_walk;
+        break;
+      case EntitySubtype.groomer:
+        iconData = Icons.content_cut;
+        break;
       case EntitySubtype.vet:
-      case EntitySubtype.petSitter:
-      case EntitySubtype.petWalker:
-      case EntitySubtype.petGroomer:
-        return Icons.medical_services;
-        
+        iconData = Icons.medical_services;
+        break;
+      case EntitySubtype.microchipCompany:
+        iconData = Icons.memory;
+        break;
+      case EntitySubtype.insuranceCompany:
+        iconData = Icons.shield;
+        break;
+      case EntitySubtype.insurancePolicy:
+        iconData = Icons.policy;
+        break;
+      case EntitySubtype.petBirthday:
+        iconData = Icons.cake;
+        break;
+      
       // Social
       case EntitySubtype.event:
       case EntitySubtype.socialPlan:
-        return Icons.event;
+        iconData = Icons.event;
+        break;
       case EntitySubtype.holiday:
       case EntitySubtype.holidayPlan:
-        return Icons.celebration;
+        iconData = Icons.celebration;
+        break;
       case EntitySubtype.hobby:
-        return Icons.interests;
+        iconData = Icons.interests;
+        break;
       case EntitySubtype.socialMedia:
-        return Icons.connect_without_contact;
+        iconData = Icons.connect_without_contact;
+        break;
       case EntitySubtype.anniversary:
       case EntitySubtype.anniversaryPlan:
       case EntitySubtype.birthday:
-        return Icons.cake;
+        iconData = Icons.cake;
+        break;
         
       // Education
       case EntitySubtype.academicPlan:
@@ -52,28 +77,33 @@ class EntityCard extends StatelessWidget {
       case EntitySubtype.subject:
       case EntitySubtype.teacher:
       case EntitySubtype.tutor:
-        return Icons.school;
+        iconData = Icons.school;
+        break;
         
       // Career
       case EntitySubtype.colleague:
       case EntitySubtype.work:
-        return Icons.work;
+        iconData = Icons.work;
+        break;
         
       // Travel
       case EntitySubtype.trip:
-        return Icons.flight;
+        iconData = Icons.flight;
+        break;
         
       // Health
       case EntitySubtype.beautySalon:
       case EntitySubtype.stylist:
-        return Icons.spa;
+        iconData = Icons.spa;
+        break;
       case EntitySubtype.doctor:
       case EntitySubtype.dentist:
       case EntitySubtype.therapist:
       case EntitySubtype.physiotherapist:
       case EntitySubtype.specialist:
       case EntitySubtype.surgeon:
-        return Icons.local_hospital;
+        iconData = Icons.local_hospital;
+        break;
         
       // Home
       case EntitySubtype.appliance:
@@ -81,29 +111,50 @@ class EntityCard extends StatelessWidget {
       case EntitySubtype.furniture:
       case EntitySubtype.home:
       case EntitySubtype.room:
-        return Icons.home;
+        iconData = Icons.home;
+        break;
         
       // Garden
-      case EntitySubtype.gardenTool:
       case EntitySubtype.plant:
-        return Icons.yard;
-        
+        iconData = Icons.local_florist;
+        break;
+      case EntitySubtype.tool:
+        iconData = Icons.build;
+        break;
+      case EntitySubtype.garden:
+        iconData = Icons.eco;
+        break;
+      case EntitySubtype.gardening:
+        iconData = Icons.content_paste;
+        break;
+
       // Food
       case EntitySubtype.foodPlan:
       case EntitySubtype.recipe:
       case EntitySubtype.restaurant:
-        return Icons.restaurant;
+        iconData = Icons.restaurant;
+        break;
         
       // Laundry
+      case EntitySubtype.item:
+        iconData = Icons.checkroom;
+        break;
       case EntitySubtype.dryCleaners:
-      case EntitySubtype.laundryItem:
-        return Icons.local_laundry_service;
+        iconData = Icons.local_laundry_service;
+        break;
+      case EntitySubtype.clothing:
+        iconData = Icons.accessibility_new;
+        break;
+      case EntitySubtype.laundryPlan:
+        iconData = Icons.event_note;
+        break;
         
       // Finance
       case EntitySubtype.bank:
       case EntitySubtype.bankAccount:
       case EntitySubtype.creditCard:
-        return Icons.account_balance;
+        iconData = Icons.account_balance;
+        break;
         
       // Transport
       case EntitySubtype.boat:
@@ -117,7 +168,8 @@ class EntityCard extends StatelessWidget {
       case EntitySubtype.rv:
       case EntitySubtype.atv:
       case EntitySubtype.jetSki:
-        return Icons.directions_car;
+        iconData = Icons.directions_car;
+        break;
         
       // Documents
       case EntitySubtype.document:
@@ -131,11 +183,13 @@ class EntityCard extends StatelessWidget {
       case EntitySubtype.prescription:
       case EntitySubtype.resume:
       case EntitySubtype.certificate:
-        return Icons.description;
+        iconData = Icons.description;
+        break;
         
       default:
-        return Icons.category;
+        iconData = Icons.category;
     }
+    return iconData;
   }
 
   // Helper to get color for entity subtype

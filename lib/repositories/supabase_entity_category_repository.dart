@@ -37,7 +37,7 @@ class SupabaseEntityCategoryRepository extends BaseSupabaseRepository
         return EntityCategoryModel.fromJson(response);
       } catch (e) {
         // Handle cases where the category might not be found or other errors
-        print('Error fetching category $id: $e');
+        // print('Error fetching category $id: $e');
         return null;
       }
     });

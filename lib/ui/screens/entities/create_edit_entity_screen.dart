@@ -121,12 +121,12 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
       // print('📝 Creating entity with type: ${_selectedSubtype?.toString()}');
       if (_selectedSubtype != null) {
         // Get the JsonValue from the enum
-        final enumString = _selectedSubtype.toString();
-        final enumValue = enumString.split('.').last;
+        // final enumString = _selectedSubtype.toString(); // Removed unused variable
+        // final enumValue = enumString.split('.').last; // Removed unused variable
         // print('📝 EntitySubtype enum value: $enumValue');
         
         // Get the database ID that will be used
-        final databaseTypeId = EntityTypeHelper.getEntityTypeId(_selectedSubtype!);
+        // final databaseTypeId = EntityTypeHelper.getEntityTypeId(_selectedSubtype!); // Removed unused variable
         // print('📝 Database entity_type_id that will be used: $databaseTypeId');
       }
       

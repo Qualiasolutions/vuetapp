@@ -375,12 +375,12 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
       // Pets category (1) - Orange
       case EntitySubtype.pet:
       case EntitySubtype.vet:
-      case EntitySubtype.petWalker:
-      case EntitySubtype.petGroomer:
-      case EntitySubtype.petSitter:
+      case EntitySubtype.walker:
+      case EntitySubtype.groomer:
+      case EntitySubtype.sitter:
       case EntitySubtype.microchipCompany:
-      case EntitySubtype.petInsuranceCompany:
-      case EntitySubtype.petInsurancePolicy:
+      case EntitySubtype.insuranceCompany:
+      case EntitySubtype.insurancePolicy:
         return const Color(0xFFE49F30);
       
       // Social Interests category (2) - Purple
@@ -436,7 +436,7 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
         return const Color(0xFF1A6E68);
       
       // Garden category (8) - Green
-      case EntitySubtype.gardenTool:
+      case EntitySubtype.tool:
       case EntitySubtype.plant:
         return const Color(0xFF4CAF50);
       
@@ -447,8 +447,8 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
         return const Color(0xFFFF9800);
       
       // Laundry category (10) - Blue Grey
+      case EntitySubtype.item:
       case EntitySubtype.dryCleaners:
-      case EntitySubtype.laundryItem:
         return const Color(0xFF607D8B);
       
       // Finance category (11) - Brown
@@ -481,23 +481,31 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
       case EntitySubtype.pet:
         return Icons.pets;
       case EntitySubtype.vet:
-        return Icons.medical_services;
-      case EntitySubtype.car:
-        return Icons.directions_car;
-      case EntitySubtype.home:
-        return Icons.home;
-      case EntitySubtype.event:
-        return Icons.event;
-      case EntitySubtype.hobby:
-        return Icons.sports_esports;
-      case EntitySubtype.therapist:
-        return Icons.psychology;
-      case EntitySubtype.doctor:
         return Icons.local_hospital;
+      case EntitySubtype.walker:
+        return Icons.directions_walk;
+      case EntitySubtype.groomer:
+        return Icons.content_cut;
+      case EntitySubtype.sitter:
+        return Icons.night_shelter;
+      case EntitySubtype.microchipCompany:
+        return Icons.memory;
+      case EntitySubtype.insuranceCompany:
+        return Icons.shield;
+      case EntitySubtype.insurancePolicy:
+        return Icons.policy;
+      case EntitySubtype.petBirthday:
+        return Icons.cake;
       case EntitySubtype.plant:
         return Icons.local_florist;
+      case EntitySubtype.tool:
+        return Icons.build;
       case EntitySubtype.restaurant:
         return Icons.restaurant;
+      case EntitySubtype.item:
+        return Icons.checkroom;
+      case EntitySubtype.dryCleaners:
+        return Icons.checkroom;
       case EntitySubtype.bank:
         return Icons.account_balance;
       case EntitySubtype.creditCard:

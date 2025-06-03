@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart'; // Removed unused import
 import 'package:uuid/uuid.dart';
 
 part 'entity_model.freezed.dart';
@@ -8,11 +8,11 @@ part 'entity_model.g.dart';
 // Entity subtypes matching exact database values (50 total)
 enum EntitySubtype {
   // Education entities (Category 3)
-  @JsonValue('Academic Plan')
+  @JsonValue('AcademicPlan')
   academicPlan,
-  @JsonValue('Course Work')
+  @JsonValue('CourseWork')
   courseWork,
-  @JsonValue('Extracurricular Plan')
+  @JsonValue('ExtracurricularPlan')
   extracurricularPlan,
   @JsonValue('School')
   school,
@@ -24,55 +24,77 @@ enum EntitySubtype {
   teacher,
   @JsonValue('Tutor')
   tutor,
+  @JsonValue('SchoolBreak')
+  schoolBreak,
+  @JsonValue('SchoolTerm')
+  schoolTerm,
+  @JsonValue('SchoolTermEnd')
+  schoolTermEnd,
+  @JsonValue('SchoolTermStart')
+  schoolTermStart,
+  @JsonValue('SchoolYearEnd')
+  schoolYearEnd,
+  @JsonValue('SchoolYearStart')
+  schoolYearStart,
   
   // Social entities (Category 2)
   @JsonValue('Anniversary')
   anniversary,
-  @JsonValue('Anniversary Plan')
+  @JsonValue('AnniversaryPlan')
   anniversaryPlan,
   @JsonValue('Birthday')
   birthday,
   @JsonValue('Event')
   event,
-  @JsonValue('Guest List Invite')
+  @JsonValue('GuestListInvite')
   guestListInvite,
   @JsonValue('Hobby')
   hobby,
   @JsonValue('Holiday')
   holiday,
-  @JsonValue('Holiday Plan')
+  @JsonValue('HolidayPlan')
   holidayPlan,
-  @JsonValue('Social Media')
+  @JsonValue('SocialMedia')
   socialMedia,
-  @JsonValue('Social Plan')
+  @JsonValue('SocialPlan')
   socialPlan,
+  @JsonValue('EventSubentity')
+  eventSubentity,
+  @JsonValue('PetBirthday')
+  petBirthday,
   
   // Pets entities (Category 1)
   @JsonValue('Pet')
   pet,
   @JsonValue('Vet')
   vet,
-  @JsonValue('Pet Walker')
-  petWalker,
-  @JsonValue('Pet Groomer')
-  petGroomer,
-  @JsonValue('Pet Sitter')
-  petSitter,
-  @JsonValue('Microchip Company')
+  @JsonValue('Walker')
+  walker,
+  @JsonValue('Groomer')
+  groomer,
+  @JsonValue('Sitter')
+  sitter,
+  @JsonValue('MicrochipCompany')
   microchipCompany,
-  @JsonValue('Pet Insurance Company')
-  petInsuranceCompany,
-  @JsonValue('Pet Insurance Policy')
-  petInsurancePolicy,
+  @JsonValue('InsuranceCompany')
+  insuranceCompany,
+  @JsonValue('InsurancePolicy')
+  insurancePolicy,
   
   // Career entities (Category 4)
   @JsonValue('Colleague')
   colleague,
   @JsonValue('Work')
   work,
+  @JsonValue('CareerGoal')
+  careerGoal,
+  @JsonValue('DaysOff')
+  daysOff,
+  @JsonValue('Employee')
+  employee,
   
   // Health entities (Category 6)
-  @JsonValue('Beauty Salon')
+  @JsonValue('BeautySalon')
   beautySalon,
   @JsonValue('Dentist')
   dentist,
@@ -88,6 +110,18 @@ enum EntitySubtype {
   specialist,
   @JsonValue('Surgeon')
   surgeon,
+  @JsonValue('Appointment')
+  appointment,
+  @JsonValue('BEAUTY')
+  beauty,
+  @JsonValue('FITNESS_ACTIVITY')
+  fitnessActivity,
+  @JsonValue('HealthGoal')
+  healthGoal,
+  @JsonValue('MEDICAL')
+  medical,
+  @JsonValue('Patient')
+  patient,
   
   // Home entities (Category 7)
   @JsonValue('Appliance')
@@ -100,34 +134,52 @@ enum EntitySubtype {
   home,
   @JsonValue('Room')
   room,
+  @JsonValue('CLEANING')
+  cleaning,
+  @JsonValue('COOKING')
+  cooking,
+  @JsonValue('HOME_MAINTENANCE')
+  homeMaintenance,
   
   // Garden entities (Category 8)
-  @JsonValue('Garden Tool')
-  gardenTool,
+  @JsonValue('Tool')
+  tool,
   @JsonValue('Plant')
   plant,
+  @JsonValue('Garden')
+  garden,
+  @JsonValue('GARDENING')
+  gardening,
   
   // Food entities (Category 9)
-  @JsonValue('Food Plan')
+  @JsonValue('FoodPlan')
   foodPlan,
   @JsonValue('Recipe')
   recipe,
   @JsonValue('Restaurant')
   restaurant,
+  @JsonValue('Food')
+  food,
   
   // Laundry entities (Category 10)
-  @JsonValue('Dry Cleaners')
+  @JsonValue('DryCleaners')
   dryCleaners,
-  @JsonValue('Laundry Item')
-  laundryItem,
+  @JsonValue('Item')
+  item,
+  @JsonValue('Clothing')
+  clothing,
+  @JsonValue('LaundryPlan')
+  laundryPlan,
   
   // Finance entities (Category 11)
   @JsonValue('Bank')
   bank,
-  @JsonValue('Bank Account')
+  @JsonValue('BankAccount')
   bankAccount,
-  @JsonValue('Credit Card')
+  @JsonValue('CreditCard')
   creditCard,
+  @JsonValue('Finance')
+  finance,
   
   // Transport entities (Category 12)
   @JsonValue('Boat')
@@ -136,7 +188,7 @@ enum EntitySubtype {
   car,
   @JsonValue('vehicle_car')
   vehicleCar,
-  @JsonValue('Public Transport')
+  @JsonValue('PublicTransport')
   publicTransport,
   @JsonValue('Motorcycle')
   motorcycle,
@@ -150,12 +202,32 @@ enum EntitySubtype {
   rv,
   @JsonValue('ATV')
   atv,
-  @JsonValue('Jet Ski')
+  @JsonValue('JetSki')
   jetSki,
   
   // Travel entities (Category 5)
   @JsonValue('Trip')
   trip,
+  @JsonValue('ACCOMMODATION')
+  accommodation,
+  @JsonValue('PLACE')
+  place,
+  @JsonValue('DriveTime')
+  driveTime,
+  @JsonValue('Flight')
+  flight,
+  @JsonValue('HotelOrRental')
+  hotelOrRental,
+  @JsonValue('RentalCar')
+  rentalCar,
+  @JsonValue('StayWithFriend')
+  stayWithFriend,
+  @JsonValue('TaxiOrTransfer')
+  taxiOrTransfer,
+  @JsonValue('TrainBusFerry')
+  trainBusFerry,
+  @JsonValue('TravelPlan')
+  travelPlan,
   
   // Documents entities (Category 14)
   @JsonValue('Document')
@@ -164,15 +236,15 @@ enum EntitySubtype {
   passport,
   @JsonValue('License')
   license,
-  @JsonValue('Bank Statement')
+  @JsonValue('BankStatement')
   bankStatement,
-  @JsonValue('Tax Document')
+  @JsonValue('TaxDocument')
   taxDocument,
   @JsonValue('Contract')
   contract,
   @JsonValue('Will')
   will,
-  @JsonValue('Medical Record')
+  @JsonValue('MedicalRecord')
   medicalRecord,
   @JsonValue('Prescription')
   prescription,
@@ -180,6 +252,12 @@ enum EntitySubtype {
   resume,
   @JsonValue('Certificate')
   certificate,
+  
+  // Fallback/General types - if needed
+  @JsonValue('other')
+  other,
+  @JsonValue('general')
+  general,
 }
 
 @freezed
@@ -215,12 +293,12 @@ class EntityTypeHelper {
     // Pets (Category 1)
     EntitySubtype.pet: 1,
     EntitySubtype.vet: 1,
-    EntitySubtype.petWalker: 1,
-    EntitySubtype.petGroomer: 1,
-    EntitySubtype.petSitter: 1,
+    EntitySubtype.walker: 1,
+    EntitySubtype.groomer: 1,
+    EntitySubtype.sitter: 1,
     EntitySubtype.microchipCompany: 1,
-    EntitySubtype.petInsuranceCompany: 1,
-    EntitySubtype.petInsurancePolicy: 1,
+    EntitySubtype.insuranceCompany: 1,
+    EntitySubtype.insurancePolicy: 1,
     
     // Social (Category 2)
     EntitySubtype.anniversary: 2,
@@ -269,7 +347,7 @@ class EntityTypeHelper {
     EntitySubtype.room: 7,
     
     // Garden (Category 8)
-    EntitySubtype.gardenTool: 8,
+    EntitySubtype.tool: 8,
     EntitySubtype.plant: 8,
     
     // Food (Category 9)
@@ -279,7 +357,7 @@ class EntityTypeHelper {
     
     // Laundry (Category 10)
     EntitySubtype.dryCleaners: 10,
-    EntitySubtype.laundryItem: 10,
+    EntitySubtype.item: 10,
     
     // Finance (Category 11)
     EntitySubtype.bank: 11,
@@ -318,12 +396,12 @@ class EntityTypeHelper {
     // Pet category
     EntitySubtype.pet: 'pet',
     EntitySubtype.vet: 'vet',
-    EntitySubtype.petWalker: 'pet_walker',
-    EntitySubtype.petGroomer: 'pet_groomer',
-    EntitySubtype.petSitter: 'pet_sitter',
+    EntitySubtype.walker: 'walker',
+    EntitySubtype.groomer: 'groomer',
+    EntitySubtype.sitter: 'sitter',
     EntitySubtype.microchipCompany: 'microchip_company',
-    EntitySubtype.petInsuranceCompany: 'insurance_company_pet',
-    EntitySubtype.petInsurancePolicy: 'insurance_policy_pet',
+    EntitySubtype.insuranceCompany: 'insurance_company_pet',
+    EntitySubtype.insurancePolicy: 'insurance_policy_pet',
     
     // Social category
     EntitySubtype.event: 'event',
@@ -372,7 +450,7 @@ class EntityTypeHelper {
     EntitySubtype.room: 'room',
     
     // Garden category
-    EntitySubtype.gardenTool: 'garden_tool',
+    EntitySubtype.tool: 'tool',
     EntitySubtype.plant: 'plant',
     
     // Food category
@@ -382,7 +460,7 @@ class EntityTypeHelper {
     
     // Laundry category
     EntitySubtype.dryCleaners: 'dry_cleaners',
-    EntitySubtype.laundryItem: 'laundry_item',
+    EntitySubtype.item: 'item',
     
     // Finance category
     EntitySubtype.bank: 'bank',
@@ -420,12 +498,12 @@ class EntityTypeHelper {
   static final Map<String, EntitySubtype> displayNameToEnum = {
     'Pet': EntitySubtype.pet,
     'Vet': EntitySubtype.vet,
-    'Pet Walker': EntitySubtype.petWalker,
-    'Pet Groomer': EntitySubtype.petGroomer,
-    'Pet Sitter': EntitySubtype.petSitter,
+    'Pet Walker': EntitySubtype.walker,
+    'Pet Groomer': EntitySubtype.groomer,
+    'Pet Sitter': EntitySubtype.sitter,
     'Microchip Company': EntitySubtype.microchipCompany,
-    'Pet Insurance Company': EntitySubtype.petInsuranceCompany,
-    'Pet Insurance Policy': EntitySubtype.petInsurancePolicy,
+    'Pet Insurance Company': EntitySubtype.insuranceCompany,
+    'Pet Insurance Policy': EntitySubtype.insurancePolicy,
     
     'Event': EntitySubtype.event,
     'Hobby': EntitySubtype.hobby,
@@ -445,12 +523,12 @@ class EntityTypeHelper {
   static final Map<String, EntitySubtype> dbIdToEnum = {
     'pet': EntitySubtype.pet,
     'vet': EntitySubtype.vet,
-    'pet_walker': EntitySubtype.petWalker,
-    'pet_groomer': EntitySubtype.petGroomer,
-    'pet_sitter': EntitySubtype.petSitter,
+    'walker': EntitySubtype.walker,
+    'groomer': EntitySubtype.groomer,
+    'sitter': EntitySubtype.sitter,
     'microchip_company': EntitySubtype.microchipCompany,
-    'insurance_company_pet': EntitySubtype.petInsuranceCompany,
-    'insurance_policy_pet': EntitySubtype.petInsurancePolicy,
+    'insurance_company_pet': EntitySubtype.insuranceCompany,
+    'insurance_policy_pet': EntitySubtype.insurancePolicy,
     
     'event': EntitySubtype.event,
     'hobby': EntitySubtype.hobby,
@@ -503,12 +581,12 @@ class EntityTypeHelper {
     switch (subtype) {
       case EntitySubtype.pet: return 'Pet';
       case EntitySubtype.vet: return 'Vet';
-      case EntitySubtype.petWalker: return 'Pet Walker';
-      case EntitySubtype.petGroomer: return 'Pet Groomer';
-      case EntitySubtype.petSitter: return 'Pet Sitter';
+      case EntitySubtype.walker: return 'Pet Walker';
+      case EntitySubtype.groomer: return 'Pet Groomer';
+      case EntitySubtype.sitter: return 'Pet Sitter';
       case EntitySubtype.microchipCompany: return 'Microchip Company';
-      case EntitySubtype.petInsuranceCompany: return 'Pet Insurance Company';
-      case EntitySubtype.petInsurancePolicy: return 'Pet Insurance Policy';
+      case EntitySubtype.insuranceCompany: return 'Pet Insurance Company';
+      case EntitySubtype.insurancePolicy: return 'Pet Insurance Policy';
       
       case EntitySubtype.event: return 'Event';
       case EntitySubtype.hobby: return 'Hobby';
@@ -534,9 +612,9 @@ class EntityTypeHelper {
 
   // Helper method to diagnose entity type issues - can be called before saving
   static void diagnoseEntityType(EntitySubtype subtype) {
-    final entityTypeId = EntityTypeHelper.getEntityTypeId(subtype);
-    final categoryId = EntityTypeHelper.getCategoryId(subtype);
-    final displayName = EntityTypeHelper.getDisplayName(subtype);
+    // final entityTypeId = EntityTypeHelper.getEntityTypeId(subtype); // Removed unused variable
+    // final categoryId = EntityTypeHelper.getCategoryId(subtype); // Removed unused variable
+    // final displayName = EntityTypeHelper.getDisplayName(subtype); // Removed unused variable
     
     // print('🔍 DIAGNOSIS for ${subtype.toString()}:');
     // print('  - Display name: "$displayName"');
@@ -656,12 +734,12 @@ extension BaseEntityModelExtensions on BaseEntityModel {
     switch (subtype) {
       case EntitySubtype.pet: return 'Pet';
       case EntitySubtype.vet: return 'Vet';
-      case EntitySubtype.petWalker: return 'Pet Walker';
-      case EntitySubtype.petGroomer: return 'Pet Groomer';
-      case EntitySubtype.petSitter: return 'Pet Sitter';
+      case EntitySubtype.walker: return 'Pet Walker';
+      case EntitySubtype.groomer: return 'Pet Groomer';
+      case EntitySubtype.sitter: return 'Pet Sitter';
       case EntitySubtype.microchipCompany: return 'Microchip Company';
-      case EntitySubtype.petInsuranceCompany: return 'Pet Insurance Company';
-      case EntitySubtype.petInsurancePolicy: return 'Pet Insurance Policy';
+      case EntitySubtype.insuranceCompany: return 'Pet Insurance Company';
+      case EntitySubtype.insurancePolicy: return 'Pet Insurance Policy';
       
       case EntitySubtype.event: return 'Event';
       case EntitySubtype.hobby: return 'Hobby';
