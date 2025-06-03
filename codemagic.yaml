@@ -51,7 +51,7 @@ workflows:
           echo "Set iOS build number to $NEW_BUILD_NUMBER"
       - name: Flutter build iOS for release
         script: |
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --no-tree-shake-icons
       - name: Build and sign IPA
         script: |
           cd ios
