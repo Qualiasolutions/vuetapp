@@ -216,13 +216,13 @@ class EntityCard extends StatelessWidget {
             children: [
             // Header with icon and background color
             Container(
-              color: color.withOpacity(0.2),
+              color: color.withAlpha((0.2 * 255).round()),
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 16,
-                    backgroundColor: color.withOpacity(0.7),
+                    backgroundColor: color.withAlpha((0.7 * 255).round()),
                     child: Icon(iconData, color: Colors.white, size: 18),
                   ),
                   const SizedBox(width: 8),
@@ -231,7 +231,7 @@ class EntityCard extends StatelessWidget {
                       _formatSubtypeName(entity.subtype),
                       style: TextStyle(
                         fontSize: 12,
-                        color: color.withOpacity(0.8),
+                        color: color.withAlpha((0.8 * 255).round()),
                         fontWeight: FontWeight.bold,
                       ),
                       overflow: TextOverflow.ellipsis,

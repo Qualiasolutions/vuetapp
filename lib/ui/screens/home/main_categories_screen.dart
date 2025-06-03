@@ -163,10 +163,10 @@ class MainCategoriesScreen extends ConsumerWidget {
 
           if (item == "Routines") {
             icon = Icons.alarm;
-            tileColor = VuetColors.secondary.withOpacity(0.7);
+            tileColor = VuetColors.secondary.withAlpha((0.7 * 255).round());
           } else if (item == "References") {
             icon = Icons.library_books;
-            tileColor = VuetColors.accent.withOpacity(0.7);
+            tileColor = VuetColors.accent.withAlpha((0.7 * 255).round());
             isPremiumFeature = true;
           }
 
@@ -213,7 +213,7 @@ class MainCategoriesScreen extends ConsumerWidget {
         } else if (item is EntityCategoryModel) {
           final category = item;
           final IconData iconData = UiHelpers.getIconFromString(category.icon);
-          final Color tileColor = UiHelpers.getColorFromString(category.color).withOpacity(0.7);
+          final Color tileColor = UiHelpers.getColorFromString(category.color).withAlpha((0.7 * 255).round());
           final bool isCategoryPremium = category.name == "Health & Beauty";
 
           return GestureDetector(

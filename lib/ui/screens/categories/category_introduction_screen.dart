@@ -66,7 +66,7 @@ class _CategoryIntroductionScreenState extends State<CategoryIntroductionScreen>
               Container(
                 height: 160,
                 width: double.infinity,
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withAlpha((0.4 * 255).round()),
               ),
               // Back button and title
               Positioned(

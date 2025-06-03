@@ -27,7 +27,7 @@ class UiHelpers {
       try {
         return Color(int.parse(colorName.substring(1), radix: 16) + 0xFF000000);
       } catch (e) {
-        print('Error parsing hex color: $colorName. Error: $e');
+        // print('Error parsing hex color: $colorName. Error: $e');
         return Colors.grey; // Fallback for invalid hex
       }
     } else if (colorName.length == 6 && RegExp(r'^[0-9a-fA-F]+$').hasMatch(colorName)) {
@@ -35,7 +35,7 @@ class UiHelpers {
        try {
         return Color(int.parse(colorName, radix: 16) + 0xFF000000);
       } catch (e) {
-        print('Error parsing hex color: $colorName. Error: $e');
+        // print('Error parsing hex color: $colorName. Error: $e');
         return Colors.grey; // Fallback for invalid hex
       }
     }

@@ -118,16 +118,16 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
       }
       
       // Debug selected entity type before saving
-      print('📝 Creating entity with type: ${_selectedSubtype?.toString()}');
+      // print('📝 Creating entity with type: ${_selectedSubtype?.toString()}');
       if (_selectedSubtype != null) {
         // Get the JsonValue from the enum
         final enumString = _selectedSubtype.toString();
         final enumValue = enumString.split('.').last;
-        print('📝 EntitySubtype enum value: $enumValue');
+        // print('📝 EntitySubtype enum value: $enumValue');
         
         // Get the database ID that will be used
         final databaseTypeId = EntityTypeHelper.getEntityTypeId(_selectedSubtype!);
-        print('📝 Database entity_type_id that will be used: $databaseTypeId');
+        // print('📝 Database entity_type_id that will be used: $databaseTypeId');
       }
       
       // Collect custom field values
@@ -652,11 +652,11 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
   
   Widget _buildEntityTypeDisplay() {
     return Card(
-      color: _getEntityTypeColor(_selectedSubtype).withOpacity(0.1),
+      color: _getEntityTypeColor(_selectedSubtype).withAlpha((0.1 * 255).round()),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: _getEntityTypeColor(_selectedSubtype).withOpacity(0.3)),
+        side: BorderSide(color: _getEntityTypeColor(_selectedSubtype).withAlpha((0.3 * 255).round())),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),

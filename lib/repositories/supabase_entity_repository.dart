@@ -22,14 +22,14 @@ class SupabaseEntityRepository extends BaseSupabaseRepository implements EntityR
       final jsonData = entity.toSupabaseJson();
       
       // Debug log the exact data being sent to Supabase
-      print('🔍 DEBUG - Full JSON being sent to Supabase:');
-      jsonData.forEach((key, value) {
-        print('  - $key: $value');
-      });
+      // print('🔍 DEBUG - Full JSON being sent to Supabase:');
+      // jsonData.forEach((key, value) {
+      //   print('  - $key: $value');
+      // });
       
       // Get the entity_type_id that will be sent
       final entityTypeId = jsonData['entity_type_id'];
-      print('🔍 DEBUG - Using entity_type_id: $entityTypeId');
+      // print('🔍 DEBUG - Using entity_type_id: $entityTypeId');
       
       // Verify this entity_type_id exists in the database
       try {
@@ -38,42 +38,42 @@ class SupabaseEntityRepository extends BaseSupabaseRepository implements EntityR
             .eq('id', entityTypeId)
             .single();
         
-        print('✅ Found entity_type_id in database: ${typeCheck['id']} (${typeCheck['name']})');
+        // print('✅ Found entity_type_id in database: ${typeCheck['id']} (${typeCheck['name']})');
       } catch (e) {
-        print('❌ Entity type not found: $e');
+        // print('❌ Entity type not found: $e');
         
         // Try to find by display name instead
         try {
           final enumString = entity.subtype.toString();
           final displayName = enumString.split('.').last;
           
-          print('🔍 Trying to find entity type by name...');
+          // print('🔍 Trying to find entity type by name...');
           // Try to convert the display name to snake_case to match database format
           final snakeCaseName = displayName.replaceAllMapped(
               RegExp(r'([A-Z])'), 
               (match) => match.start > 0 ? '_${match.group(0)!.toLowerCase()}' : match.group(0)!.toLowerCase()
           );
           
-          print('🔍 Looking for entity_type with id: $snakeCaseName');
+          // print('🔍 Looking for entity_type with id: $snakeCaseName');
           final nameCheck = await from('entity_types')
               .select('id, name')
               .eq('id', snakeCaseName)
               .single();
           
-          print('✅ Found by name conversion: ${nameCheck['id']}');
+          // print('✅ Found by name conversion: ${nameCheck['id']}');
           jsonData['entity_type_id'] = nameCheck['id'];
         } catch (nameError) {
-          print('❌ Could not find entity type by converted name: $nameError');
+          // print('❌ Could not find entity type by converted name: $nameError');
           
           // Last resort: query all entity_types to see what's available
           try {
-            print('🔍 Listing available entity types for reference...');
+            // print('🔍 Listing available entity types for reference...');
             final allTypes = await from('entity_types').select('id, name, app_category_id').limit(20);
             
-            print('🔍 Available entity types:');
-            for (final type in allTypes) {
-              print('  - ${type['id']} (${type['name']}) - Category ${type['app_category_id']}');
-            }
+            // print('🔍 Available entity types:');
+            // for (final type in allTypes) {
+            //   print('  - ${type['id']} (${type['name']}) - Category ${type['app_category_id']}');
+            // }
             
             // Try to use a fallback from the same category
             final appCategoryId = jsonData['app_category_id'];
@@ -85,20 +85,20 @@ class SupabaseEntityRepository extends BaseSupabaseRepository implements EntityR
                     .limit(1)
                     .single();
                 
-                print('✅ Using fallback from same category: ${fallbackType['id']}');
+                // print('✅ Using fallback from same category: ${fallbackType['id']}');
                 jsonData['entity_type_id'] = fallbackType['id'];
               } catch (_) {
                 // If all else fails, use a known safe value
-                print('⚠️ Using last resort fallback: "event"');
+                // print('⚠️ Using last resort fallback: "event"');
                 jsonData['entity_type_id'] = 'event';
               }
             } else {
               // Default fallback
-              print('⚠️ Using default fallback: "event"');
+              // print('⚠️ Using default fallback: "event"');
               jsonData['entity_type_id'] = 'event';
             }
           } catch (listError) {
-            print('❌ Failed to list entity types: $listError');
+            // print('❌ Failed to list entity types: $listError');
             // Use a final hardcoded fallback that we know exists
             jsonData['entity_type_id'] = 'event';
           }
@@ -111,10 +111,10 @@ class SupabaseEntityRepository extends BaseSupabaseRepository implements EntityR
         jsonData['app_category_id'] = 2;
       }
       
-      print('🔍 FINAL DATA TO INSERT:');
-      jsonData.forEach((key, value) {
-        print('  - $key: $value');
-      });
+      // print('🔍 FINAL DATA TO INSERT:');
+      // jsonData.forEach((key, value) {
+      //   print('  - $key: $value');
+      // });
       
       final response = await from('entities')
           .insert(jsonData)

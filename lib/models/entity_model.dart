@@ -469,7 +469,7 @@ class EntityTypeHelper {
   static String getEntityTypeId(EntitySubtype subtype) {
     final typeId = entityTypeIdMapping[subtype];
     if (typeId == null) {
-      print('⚠️ WARNING: No entity_type_id mapping found for subtype: ${subtype.toString()}');
+      // print('⚠️ WARNING: No entity_type_id mapping found for subtype: ${subtype.toString()}');
       
       // Convert the enum value to snake_case to try to match database format
       final enumName = subtype.toString().split('.').last;
@@ -478,7 +478,7 @@ class EntityTypeHelper {
           (match) => match.start > 0 ? '_${match.group(0)!.toLowerCase()}' : match.group(0)!.toLowerCase()
       );
       
-      debugPrint('🔍 Trying fallback snake_case mapping: $snakeCaseName');
+      // print('🔍 Trying fallback snake_case mapping: $snakeCaseName');
 
       // Return the converted name as a fallback
       return snakeCaseName;
@@ -538,17 +538,17 @@ class EntityTypeHelper {
     final categoryId = EntityTypeHelper.getCategoryId(subtype);
     final displayName = EntityTypeHelper.getDisplayName(subtype);
     
-    print('🔍 DIAGNOSIS for ${subtype.toString()}:');
-    print('  - Display name: "$displayName"');
-    print('  - entity_type_id to save: "$entityTypeId"');
-    print('  - app_category_id: $categoryId');
-    print('  - Original enum value: ${subtype.toString().split('.').last}');
+    // print('🔍 DIAGNOSIS for ${subtype.toString()}:');
+    // print('  - Display name: "$displayName"');
+    // print('  - entity_type_id to save: "$entityTypeId"');
+    // print('  - app_category_id: $categoryId');
+    // print('  - Original enum value: ${subtype.toString().split('.').last}');
   }
   
   // Parse entity subtype from database id - useful when loading from DB
   static EntitySubtype parseFromTypeId(String? typeId) {
     if (typeId == null) {
-      print('⚠️ WARNING: Null entity_type_id, defaulting to event');
+      // print('⚠️ WARNING: Null entity_type_id, defaulting to event');
       return EntitySubtype.event;
     }
     
@@ -568,7 +568,7 @@ class EntityTypeHelper {
         (e) => e.toString().split('.').last.toLowerCase() == camelCase.toLowerCase()
       );
     } catch (e) {
-      print('⚠️ WARNING: Could not parse entity_type_id: $typeId, defaulting to event');
+      // print('⚠️ WARNING: Could not parse entity_type_id: $typeId, defaulting to event');
       return EntitySubtype.event;
     }
   }
@@ -603,8 +603,8 @@ extension BaseEntityModelExtensions on BaseEntityModel {
     // This ensures we get the exact database ID regardless of the JsonValue annotation
     final entityTypeId = EntityTypeHelper.getEntityTypeId(subtype);
     
-    print('🔍 DEBUG - Entity subtype: ${subtype.toString()}');
-    print('🔍 DEBUG - Setting entity_type_id: $entityTypeId');
+    // print('🔍 DEBUG - Entity subtype: ${subtype.toString()}');
+    // print('🔍 DEBUG - Setting entity_type_id: $entityTypeId');
     
     // Set the required entity_type_id field from the direct mapping
     json['entity_type_id'] = entityTypeId;
@@ -642,7 +642,7 @@ extension BaseEntityModelExtensions on BaseEntityModel {
       final subtypeString = _getSubtypeDisplayName();
       json['subtype'] = subtypeString;
     } catch (e) {
-      print('⚠️ Warning: Could not get JsonValue for subtype: $e');
+      // print('⚠️ Warning: Could not get JsonValue for subtype: $e');
       // Fallback to string representation
       json['subtype'] = subtype.toString().split('.').last;
     }
