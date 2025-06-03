@@ -7,13 +7,11 @@ workflows:
       groups:
         - supabase_credentials
         - app_store_credentials
-        - ios_credentials
+        - ios_credentials # Contains certificate, profile, and passwords
       vars:
         BUNDLE_ID: "ai.vuet.vuet"
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
-        APPLE_CERTIFICATE_PRIVATE_KEY: $CERTIFICATE_PRIVATE_KEY
-        PROVISIONING_PROFILE: $APPSTORE_PROVISIONING_PROFILE
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -25,15 +23,26 @@ workflows:
     scripts:
       - name: Set up code signing
         script: |
-          echo $PROVISIONING_PROFILE | base64 --decode > /tmp/profile.mobileprovision
+          # Debug info
+          echo "Setting up code signing..."
+          
+          # Create directories
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp /tmp/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
           
-          echo $CERTIFICATE | base64 --decode > /tmp/certificate.p12
+          # Write the provisioning profile directly from environment variable
+          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
           
+          # Write the certificate to a file
+          echo "$CERTIFICATE" | base64 --decode > /tmp/certificate.p12
+          
+          # Set up the keychain and add the certificate
           keychain initialize
-          keychain add-certificates --certificate /tmp/certificate.p12 --certificate-password $CERTIFICATE_PASSWORD
+          keychain add-certificates --certificate /tmp/certificate.p12 --certificate-password "$CERTIFICATE_PASSWORD"
           
+          # Use app-store-connect to fetch the profiles - this is a fallback if the profile doesn't work
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          
+          # Configure the Xcode project to use our provisioning profile
           cd ios
           xcode-project use-profiles
       - name: Get Flutter packages
