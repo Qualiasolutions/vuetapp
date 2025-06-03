@@ -46,30 +46,32 @@ workflows:
           # List available certificates to verify setup
           security find-identity -v -p codesigning
           
-          # Create exportOptions.plist file dynamically
-          cat > exportOptions.plist << 'EOL'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>method</key>
-    <string>app-store</string>
-    <key>teamID</key>
-    <string>36AP5U42Q4</string>
-    <key>uploadBitcode</key>
-    <false/>
-    <key>uploadSymbols</key>
-    <true/>
-    <key>signingStyle</key>
-    <string>manual</string>
-    <key>provisioningProfiles</key>
-    <dict>
-        <key>ai.vuet.vuet</key>
-        <string>Vuet ios_app_store 1748898756</string>
-    </dict>
-</dict>
-</plist>
-EOL
+          # Create exportOptions.plist file with individual echo statements
+          echo "Creating exportOptions.plist file..."
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > exportOptions.plist
+          echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' >> exportOptions.plist
+          echo '<plist version="1.0">' >> exportOptions.plist
+          echo '<dict>' >> exportOptions.plist
+          echo '    <key>method</key>' >> exportOptions.plist
+          echo '    <string>app-store</string>' >> exportOptions.plist
+          echo '    <key>teamID</key>' >> exportOptions.plist
+          echo '    <string>36AP5U42Q4</string>' >> exportOptions.plist
+          echo '    <key>uploadBitcode</key>' >> exportOptions.plist
+          echo '    <false/>' >> exportOptions.plist
+          echo '    <key>uploadSymbols</key>' >> exportOptions.plist
+          echo '    <true/>' >> exportOptions.plist
+          echo '    <key>signingStyle</key>' >> exportOptions.plist
+          echo '    <string>manual</string>' >> exportOptions.plist
+          echo '    <key>provisioningProfiles</key>' >> exportOptions.plist
+          echo '    <dict>' >> exportOptions.plist
+          echo '        <key>ai.vuet.vuet</key>' >> exportOptions.plist
+          echo '        <string>Vuet ios_app_store 1748898756</string>' >> exportOptions.plist
+          echo '    </dict>' >> exportOptions.plist
+          echo '</dict>' >> exportOptions.plist
+          echo '</plist>' >> exportOptions.plist
+          
+          # Show the content to verify
+          cat exportOptions.plist
       - name: Get Flutter packages
         script: flutter pub get
       - name: Generate code
