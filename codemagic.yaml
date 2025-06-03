@@ -26,7 +26,6 @@ workflows:
           # Debug info
           echo "Setting up code signing..."
           
-<<<<<<< HEAD
           # Use app-store-connect to fetch the profiles directly from Apple
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
           
@@ -45,27 +44,6 @@ workflows:
           
           # List available certificates to verify setup
           security find-identity -v -p codesigning
-=======
-          # Create directories
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          
-          # Write the provisioning profile directly from environment variable
-          echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
-          
-          # Write the certificate to a file
-          echo "$CERTIFICATE" | base64 --decode > /tmp/certificate.p12
-          
-          # Set up the keychain and add the certificate
-          keychain initialize
-          keychain add-certificates --certificate /tmp/certificate.p12 --certificate-password "$CERTIFICATE_PASSWORD"
-          
-          # Use app-store-connect to fetch the profiles - this is a fallback if the profile doesn't work
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
-          
-          # Configure the Xcode project to use our provisioning profile
-          cd ios
-          xcode-project use-profiles
->>>>>>> 97d40638530ac15e7ce4a6a3e88c553f13b1d44e
       - name: Get Flutter packages
         script: flutter pub get
       - name: Generate code
@@ -97,30 +75,19 @@ workflows:
           echo "Set iOS build number to $NEW_BUILD_NUMBER"
       - name: Prepare Flutter for build
         script: |
-<<<<<<< HEAD
           # Make sure Flutter uses the provisioning profile we set up
           echo "Setting up Flutter for release build..."
           flutter config --no-analytics
           flutter doctor -v
       - name: Flutter build iOS
-=======
-          flutter build ios --release
-      - name: Build and sign IPA
->>>>>>> 97d40638530ac15e7ce4a6a3e88c553f13b1d44e
         script: |
           # Build with automatic code signing using the profiles we've set up
           cd ios
-<<<<<<< HEAD
           # Update the project's code signing settings to use the provisioning profile
           /usr/bin/xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER="Vuet ios_app_store*" CODE_SIGN_IDENTITY="Apple Distribution" clean archive -archivePath build/Runner.xcarchive
           
           # Create the IPA from the archive
           /usr/bin/xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/ios/ipa/
-=======
-          xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
->>>>>>> 97d40638530ac15e7ce4a6a3e88c553f13b1d44e
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
