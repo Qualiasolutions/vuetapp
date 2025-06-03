@@ -114,13 +114,19 @@ workflows:
           # Update the project settings with development team
           /usr/libexec/PlistBuddy -c "Set :buildSettings:DEVELOPMENT_TEAM 36AP5U42Q4" "Runner.xcodeproj/project.pbxproj"
           
-          # Build the archive with explicit team ID
+          # First, build Flutter without code signing
+          flutter build ios --release --no-codesign
+          
+          # Then, create archive with code signing only for Runner target
           /usr/bin/xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release \
-            CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE_SPECIFIER="Vuet ios_app_store 1748898756" \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/Runner.xcarchive \
             DEVELOPMENT_TEAM=36AP5U42Q4 \
-            clean archive -archivePath build/Runner.xcarchive
+            PROVISIONING_PROFILE_SPECIFIER_Runner="Vuet ios_app_store 1748898756" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            CODE_SIGN_STYLE_Runner=Manual \
+            OTHER_CODE_SIGN_FLAGS="--keychain=login" \
+            archive
           
           # Create the IPA from the archive
           /usr/bin/xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build/ios/ipa/
