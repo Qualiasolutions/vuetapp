@@ -8,6 +8,7 @@ import 'package:vuet_app/providers/auth_providers.dart';
 import 'package:vuet_app/repositories/routine_repository.dart';
 import 'package:vuet_app/repositories/base_supabase_repository.dart';
 import 'package:vuet_app/utils/logger.dart';
+import 'package:intl/intl.dart';
 
 class SupabaseRoutineRepository extends BaseSupabaseRepository implements RoutineRepository {
   final String? _userId;
@@ -20,6 +21,26 @@ class SupabaseRoutineRepository extends BaseSupabaseRepository implements Routin
       throw Exception("User ID is not available in SupabaseRoutineRepository. Ensure user is logged in.");
     }
     return _userId;
+  }
+
+  String _formatTimeForSupabase(String timeString) {
+    final now = DateTime.now();
+    final parts = timeString.split(':');
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+    final dateTime = DateTime(now.year, now.month, now.day, hour, minute);
+    return dateTime.toIso8601String();
+  }
+
+  String _parseTimeFromSupabase(String? dateTimeString) {
+    if (dateTimeString == null) return '00:00';
+    try {
+      final dateTime = DateTime.parse(dateTimeString);
+      return DateFormat('HH:mm').format(dateTime.toLocal());
+    } catch (e) {
+      log('Error parsing time from Supabase: $dateTimeString, error: $e', name: 'SupabaseRoutineRepository');
+      return '00:00';
+    }
   }
 
   @override
@@ -37,8 +58,8 @@ class SupabaseRoutineRepository extends BaseSupabaseRepository implements Routin
         'friday': routine.friday,
         'saturday': routine.saturday,
         'sunday': routine.sunday,
-        'start_time': routine.startTime,
-        'end_time': routine.endTime,
+        'start_time': _formatTimeForSupabase(routine.startTime),
+        'end_time': _formatTimeForSupabase(routine.endTime),
         'members': routine.members,
         'created_at': DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
@@ -97,8 +118,8 @@ class SupabaseRoutineRepository extends BaseSupabaseRepository implements Routin
         'friday': routine.friday,
         'saturday': routine.saturday,
         'sunday': routine.sunday,
-        'start_time': routine.startTime,
-        'end_time': routine.endTime,
+        'start_time': _formatTimeForSupabase(routine.startTime),
+        'end_time': _formatTimeForSupabase(routine.endTime),
         'members': routine.members,
         'updated_at': DateTime.now().toIso8601String(),
       };
@@ -116,8 +137,8 @@ class SupabaseRoutineRepository extends BaseSupabaseRepository implements Routin
     newJson['id'] = (json['id'] ?? _uuid.v4()) as String;
     newJson['userId'] = (json['user_id'] ?? currentUserId) as String;
     newJson['name'] = (json['name'] ?? 'Untitled Routine') as String;
-    newJson['startTime'] = (json['start_time'] ?? '00:00') as String;
-    newJson['endTime'] = (json['end_time'] ?? '23:59') as String;
+    newJson['startTime'] = _parseTimeFromSupabase(json['start_time'] as String?);
+    newJson['endTime'] = _parseTimeFromSupabase(json['end_time'] as String?);
 
     newJson['monday'] = (json['monday'] ?? false) as bool;
     newJson['tuesday'] = (json['tuesday'] ?? false) as bool;

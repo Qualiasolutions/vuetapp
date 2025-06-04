@@ -52,7 +52,6 @@ class SupabaseListRepository implements ListRepository {
             'is_completed': item.isCompleted,
             'sort_order': item.sortOrder,
             'quantity': item.quantity,
-            'brand': item.brand,
             'notes': item.notes,
             'linked_task_id': item.linkedTaskId,
             'metadata': item.metadata,
@@ -380,7 +379,6 @@ class SupabaseListRepository implements ListRepository {
             'is_completed': item.isCompleted,
             'sort_order': item.sortOrder,
             'quantity': item.quantity,
-            'brand': item.brand,
             'notes': item.notes,
             'linked_task_id': item.linkedTaskId,
             'sublist_id': item.sublistId,
@@ -533,7 +531,6 @@ class SupabaseListRepository implements ListRepository {
           'quantity': item['quantity'],
           'sort_order': item['sort_order'],
           'is_completed': false, // Reset completion status
-          'brand': item['brand'],
           'notes': item['notes'],
           'sublist_id': item['sublist_id'],
           'created_at': DateTime.now().toIso8601String(),

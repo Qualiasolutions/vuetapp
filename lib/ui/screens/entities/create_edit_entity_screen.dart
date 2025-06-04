@@ -615,7 +615,9 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
                 contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 hintText: 'Select a type',
               ),
-              items: entityFormFields.keys.map((subtype) {
+              items: entityFormFields.keys
+                  .where((subtype) => EntityTypeHelper.getCategoryId(subtype) == widget.appCategoryId)
+                  .map((subtype) {
                 return DropdownMenuItem<EntitySubtype>(
                   value: subtype,
                   child: Row(

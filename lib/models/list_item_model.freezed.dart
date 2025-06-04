@@ -39,7 +39,6 @@ mixin _$ListItemModel {
   /// Shopping-specific fields
   double? get price => throw _privateConstructorUsedError;
   String? get storeId => throw _privateConstructorUsedError;
-  String? get brand => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   Map<String, dynamic> get metadata => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -74,7 +73,6 @@ abstract class $ListItemModelCopyWith<$Res> {
       bool isConvertedFromTask,
       double? price,
       String? storeId,
-      String? brand,
       String? notes,
       Map<String, dynamic> metadata,
       DateTime createdAt,
@@ -108,7 +106,6 @@ class _$ListItemModelCopyWithImpl<$Res, $Val extends ListItemModel>
     Object? isConvertedFromTask = null,
     Object? price = freezed,
     Object? storeId = freezed,
-    Object? brand = freezed,
     Object? notes = freezed,
     Object? metadata = null,
     Object? createdAt = null,
@@ -163,10 +160,6 @@ class _$ListItemModelCopyWithImpl<$Res, $Val extends ListItemModel>
           ? _value.storeId
           : storeId // ignore: cast_nullable_to_non_nullable
               as String?,
-      brand: freezed == brand
-          ? _value.brand
-          : brand // ignore: cast_nullable_to_non_nullable
-              as String?,
       notes: freezed == notes
           ? _value.notes
           : notes // ignore: cast_nullable_to_non_nullable
@@ -208,7 +201,6 @@ abstract class _$$ListItemModelImplCopyWith<$Res>
       bool isConvertedFromTask,
       double? price,
       String? storeId,
-      String? brand,
       String? notes,
       Map<String, dynamic> metadata,
       DateTime createdAt,
@@ -240,7 +232,6 @@ class __$$ListItemModelImplCopyWithImpl<$Res>
     Object? isConvertedFromTask = null,
     Object? price = freezed,
     Object? storeId = freezed,
-    Object? brand = freezed,
     Object? notes = freezed,
     Object? metadata = null,
     Object? createdAt = null,
@@ -295,10 +286,6 @@ class __$$ListItemModelImplCopyWithImpl<$Res>
           ? _value.storeId
           : storeId // ignore: cast_nullable_to_non_nullable
               as String?,
-      brand: freezed == brand
-          ? _value.brand
-          : brand // ignore: cast_nullable_to_non_nullable
-              as String?,
       notes: freezed == notes
           ? _value.notes
           : notes // ignore: cast_nullable_to_non_nullable
@@ -335,7 +322,6 @@ class _$ListItemModelImpl implements _ListItemModel {
       this.isConvertedFromTask = false,
       this.price,
       this.storeId,
-      this.brand,
       this.notes,
       final Map<String, dynamic> metadata = const {},
       required this.createdAt,
@@ -380,8 +366,6 @@ class _$ListItemModelImpl implements _ListItemModel {
   @override
   final String? storeId;
   @override
-  final String? brand;
-  @override
   final String? notes;
   final Map<String, dynamic> _metadata;
   @override
@@ -399,7 +383,7 @@ class _$ListItemModelImpl implements _ListItemModel {
 
   @override
   String toString() {
-    return 'ListItemModel(id: $id, listId: $listId, sublistId: $sublistId, name: $name, description: $description, isCompleted: $isCompleted, quantity: $quantity, sortOrder: $sortOrder, linkedTaskId: $linkedTaskId, isConvertedFromTask: $isConvertedFromTask, price: $price, storeId: $storeId, brand: $brand, notes: $notes, metadata: $metadata, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ListItemModel(id: $id, listId: $listId, sublistId: $sublistId, name: $name, description: $description, isCompleted: $isCompleted, quantity: $quantity, sortOrder: $sortOrder, linkedTaskId: $linkedTaskId, isConvertedFromTask: $isConvertedFromTask, price: $price, storeId: $storeId, notes: $notes, metadata: $metadata, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -426,7 +410,6 @@ class _$ListItemModelImpl implements _ListItemModel {
                 other.isConvertedFromTask == isConvertedFromTask) &&
             (identical(other.price, price) || other.price == price) &&
             (identical(other.storeId, storeId) || other.storeId == storeId) &&
-            (identical(other.brand, brand) || other.brand == brand) &&
             (identical(other.notes, notes) || other.notes == notes) &&
             const DeepCollectionEquality().equals(other._metadata, _metadata) &&
             (identical(other.createdAt, createdAt) ||
@@ -451,7 +434,6 @@ class _$ListItemModelImpl implements _ListItemModel {
       isConvertedFromTask,
       price,
       storeId,
-      brand,
       notes,
       const DeepCollectionEquality().hash(_metadata),
       createdAt,
@@ -487,7 +469,6 @@ abstract class _ListItemModel implements ListItemModel {
       final bool isConvertedFromTask,
       final double? price,
       final String? storeId,
-      final String? brand,
       final String? notes,
       final Map<String, dynamic> metadata,
       required final DateTime createdAt,
@@ -526,8 +507,6 @@ abstract class _ListItemModel implements ListItemModel {
   double? get price;
   @override
   String? get storeId;
-  @override
-  String? get brand;
   @override
   String? get notes;
   @override

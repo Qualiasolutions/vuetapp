@@ -22,7 +22,6 @@ class ListItemModel with _$ListItemModel {
     /// Shopping-specific fields
     double? price,
     String? storeId,
-    String? brand,
     String? notes,
     @Default({}) Map<String, dynamic> metadata,
     required DateTime createdAt,
@@ -43,7 +42,6 @@ class ListItemModel with _$ListItemModel {
     bool isConvertedFromTask = false,
     double? price,
     String? storeId,
-    String? brand,
     String? notes,
   }) {
     final now = DateTime.now();
@@ -59,7 +57,6 @@ class ListItemModel with _$ListItemModel {
       isConvertedFromTask: isConvertedFromTask,
       price: price,
       storeId: storeId,
-      brand: brand,
       notes: notes,
       createdAt: now,
       updatedAt: now,
@@ -78,7 +75,7 @@ extension ListItemModelX on ListItemModel {
   }
 
   // Check if item has shopping-specific data
-  bool get isShoppingItem => price != null || storeId != null || brand != null;
+  bool get isShoppingItem => price != null || storeId != null;
 
   // Get display price
   String get displayPrice {

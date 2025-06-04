@@ -19,7 +19,7 @@ class TimeblockModel with _$TimeblockModel {
     String? activityType,
     String? linkedRoutineId,
     String? linkedTaskId,
-    @Default(false) bool syncWithCalendar,
+    @JsonKey(name: 'sync_with_calendar') @Default(false) bool syncWithCalendar,
     String? externalCalendarEventId,
     required DateTime createdAt,
     required DateTime updatedAt,

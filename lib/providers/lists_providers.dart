@@ -199,7 +199,6 @@ class ListService extends ChangeNotifier {
         isCompleted: item.isCompleted,
         sortOrder: item.sortOrder,
         quantity: item.quantity,
-        brand: item.brand,
         notes: item.notes,
         linkedTaskId: item.linkedTaskId,
         sublistId: item.sublistId,

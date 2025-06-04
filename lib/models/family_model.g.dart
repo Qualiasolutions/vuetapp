@@ -42,12 +42,18 @@ _$FamilyMemberModelImpl _$$FamilyMemberModelImplFromJson(
       role: $enumDecodeNullable(_$FamilyRoleEnumMap, json['role']) ??
           FamilyRole.member,
       memberColor: json['memberColor'] as String? ?? '#0066cc',
-      joinedAt: DateTime.parse(json['joinedAt'] as String),
+      joinedAt: DateTime.parse(json['joined_at'] as String),
       firstName: json['firstName'] as String?,
       lastName: json['lastName'] as String?,
       email: json['email'] as String?,
       profileImageUrl: json['profileImageUrl'] as String?,
       isActive: json['isActive'] as bool? ?? true,
+      createdAt: json['created_at'] == null
+          ? null
+          : DateTime.parse(json['created_at'] as String),
+      updatedAt: json['updated_at'] == null
+          ? null
+          : DateTime.parse(json['updated_at'] as String),
     );
 
 Map<String, dynamic> _$$FamilyMemberModelImplToJson(
@@ -57,12 +63,14 @@ Map<String, dynamic> _$$FamilyMemberModelImplToJson(
       'familyId': instance.familyId,
       'role': _$FamilyRoleEnumMap[instance.role]!,
       'memberColor': instance.memberColor,
-      'joinedAt': instance.joinedAt.toIso8601String(),
+      'joined_at': instance.joinedAt.toIso8601String(),
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'email': instance.email,
       'profileImageUrl': instance.profileImageUrl,
       'isActive': instance.isActive,
+      'created_at': instance.createdAt?.toIso8601String(),
+      'updated_at': instance.updatedAt?.toIso8601String(),
     };
 
 const _$FamilyRoleEnumMap = {

@@ -202,6 +202,7 @@ class TaskModel {
 
     return {
       'id': id,
+      'user_id': createdById,
       'title': title,
       'description': description,
       'due_date': dueDateString,

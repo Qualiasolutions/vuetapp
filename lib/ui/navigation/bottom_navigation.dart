@@ -25,12 +25,20 @@ class BottomNavigation extends ConsumerWidget {
       if (next == 1) { // Categories tab index
         // Refresh categories data when tab becomes active
         Future.microtask(() {
-          ref.invalidate(personalCategoriesProvider);
+          ref.invalidate(personalCategoryDisplayGroupsProvider);
           ref.invalidate(professionalCategoriesProvider);
           ref.invalidate(uncategorisedEntitiesCountProvider);
         });
       }
     });
+
+    // TODO: Replace with actual providers and logic
+    // final personalCategoriesCount = ref.watch(personalCategoriesProvider.select((data) => data.value?.length ?? 0));
+    // final professionalCategoriesCount = ref.watch(professionalCategoriesProvider.select((data) => data.value?.length ?? 0));
+    // final uncategorisedCount = ref.watch(uncategorisedEntitiesCountProvider.select((data) => data.value ?? 0));
+
+    // Example: Fetch categories count (replace with actual logic if needed)
+    // final categoriesCount = ref.watch(categoriesCountProvider);
 
     return Scaffold(
       body: IndexedStack(

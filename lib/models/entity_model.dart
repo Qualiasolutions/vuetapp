@@ -299,6 +299,7 @@ class EntityTypeHelper {
     EntitySubtype.microchipCompany: 1,
     EntitySubtype.insuranceCompany: 1,
     EntitySubtype.insurancePolicy: 1,
+    EntitySubtype.petBirthday: 1, // Assuming pet birthdays fall under pets category
     
     // Social (Category 2)
     EntitySubtype.anniversary: 2,
@@ -311,6 +312,7 @@ class EntityTypeHelper {
     EntitySubtype.holidayPlan: 2,
     EntitySubtype.socialMedia: 2,
     EntitySubtype.socialPlan: 2,
+    EntitySubtype.eventSubentity: 2,
     
     // Education (Category 3)
     EntitySubtype.academicPlan: 3,
@@ -321,13 +323,32 @@ class EntityTypeHelper {
     EntitySubtype.subject: 3,
     EntitySubtype.teacher: 3,
     EntitySubtype.tutor: 3,
+    EntitySubtype.schoolBreak: 3,
+    EntitySubtype.schoolTerm: 3,
+    EntitySubtype.schoolTermEnd: 3,
+    EntitySubtype.schoolTermStart: 3,
+    EntitySubtype.schoolYearEnd: 3,
+    EntitySubtype.schoolYearStart: 3,
     
     // Career (Category 4)
     EntitySubtype.colleague: 4,
     EntitySubtype.work: 4,
+    EntitySubtype.careerGoal: 4,
+    EntitySubtype.daysOff: 4,
+    EntitySubtype.employee: 4,
     
     // Travel (Category 5)
     EntitySubtype.trip: 5,
+    EntitySubtype.accommodation: 5,
+    EntitySubtype.place: 5,
+    EntitySubtype.driveTime: 5,
+    EntitySubtype.flight: 5,
+    EntitySubtype.hotelOrRental: 5,
+    EntitySubtype.rentalCar: 5,
+    EntitySubtype.stayWithFriend: 5,
+    EntitySubtype.taxiOrTransfer: 5,
+    EntitySubtype.trainBusFerry: 5,
+    EntitySubtype.travelPlan: 5,
     
     // Health (Category 6)
     EntitySubtype.beautySalon: 6,
@@ -338,6 +359,12 @@ class EntityTypeHelper {
     EntitySubtype.physiotherapist: 6,
     EntitySubtype.specialist: 6,
     EntitySubtype.surgeon: 6,
+    EntitySubtype.appointment: 6,
+    EntitySubtype.beauty: 6,
+    EntitySubtype.fitnessActivity: 6,
+    EntitySubtype.healthGoal: 6,
+    EntitySubtype.medical: 6,
+    EntitySubtype.patient: 6,
     
     // Home (Category 7)
     EntitySubtype.appliance: 7,
@@ -345,24 +372,33 @@ class EntityTypeHelper {
     EntitySubtype.furniture: 7,
     EntitySubtype.home: 7,
     EntitySubtype.room: 7,
+    EntitySubtype.cleaning: 7,
+    EntitySubtype.cooking: 7,
+    EntitySubtype.homeMaintenance: 7,
     
     // Garden (Category 8)
     EntitySubtype.tool: 8,
     EntitySubtype.plant: 8,
+    EntitySubtype.garden: 8,
+    EntitySubtype.gardening: 8,
     
     // Food (Category 9)
     EntitySubtype.foodPlan: 9,
     EntitySubtype.recipe: 9,
     EntitySubtype.restaurant: 9,
+    EntitySubtype.food: 9,
     
     // Laundry (Category 10)
     EntitySubtype.dryCleaners: 10,
     EntitySubtype.item: 10,
+    EntitySubtype.clothing: 10,
+    EntitySubtype.laundryPlan: 10,
     
     // Finance (Category 11)
     EntitySubtype.bank: 11,
     EntitySubtype.bankAccount: 11,
     EntitySubtype.creditCard: 11,
+    EntitySubtype.finance: 11,
     
     // Transport (Category 12)
     EntitySubtype.boat: 12,
@@ -400,8 +436,9 @@ class EntityTypeHelper {
     EntitySubtype.groomer: 'groomer',
     EntitySubtype.sitter: 'sitter',
     EntitySubtype.microchipCompany: 'microchip_company',
-    EntitySubtype.insuranceCompany: 'insurance_company_pet',
-    EntitySubtype.insurancePolicy: 'insurance_policy_pet',
+    EntitySubtype.insuranceCompany: 'insurance_company_pet', // Specific DB ID
+    EntitySubtype.insurancePolicy: 'insurance_policy_pet', // Specific DB ID
+    EntitySubtype.petBirthday: 'pet_birthday',
     
     // Social category
     EntitySubtype.event: 'event',
@@ -414,6 +451,7 @@ class EntityTypeHelper {
     EntitySubtype.holiday: 'holiday',
     EntitySubtype.holidayPlan: 'holiday_plan',
     EntitySubtype.guestListInvite: 'guest_list_invite',
+    EntitySubtype.eventSubentity: 'event_subentity',
     
     // Education category
     EntitySubtype.academicPlan: 'academic_plan',
@@ -424,13 +462,32 @@ class EntityTypeHelper {
     EntitySubtype.subject: 'subject',
     EntitySubtype.teacher: 'teacher',
     EntitySubtype.tutor: 'tutor',
+    EntitySubtype.schoolBreak: 'school_break',
+    EntitySubtype.schoolTerm: 'school_term',
+    EntitySubtype.schoolTermEnd: 'school_term_end',
+    EntitySubtype.schoolTermStart: 'school_term_start',
+    EntitySubtype.schoolYearEnd: 'school_year_end',
+    EntitySubtype.schoolYearStart: 'school_year_start',
     
     // Career category
     EntitySubtype.colleague: 'colleague',
     EntitySubtype.work: 'work',
-    
+    EntitySubtype.careerGoal: 'career_goal',
+    EntitySubtype.daysOff: 'days_off',
+    EntitySubtype.employee: 'employee',
+
     // Travel category
     EntitySubtype.trip: 'trip',
+    EntitySubtype.accommodation: 'accommodation',
+    EntitySubtype.place: 'place',
+    EntitySubtype.driveTime: 'drive_time',
+    EntitySubtype.flight: 'flight',
+    EntitySubtype.hotelOrRental: 'hotel_or_rental',
+    EntitySubtype.rentalCar: 'rental_car',
+    EntitySubtype.stayWithFriend: 'stay_with_friend',
+    EntitySubtype.taxiOrTransfer: 'taxi_or_transfer',
+    EntitySubtype.trainBusFerry: 'train_bus_ferry',
+    EntitySubtype.travelPlan: 'travel_plan',
     
     // Health category
     EntitySubtype.beautySalon: 'beauty_salon',
@@ -441,6 +498,12 @@ class EntityTypeHelper {
     EntitySubtype.physiotherapist: 'physiotherapist',
     EntitySubtype.specialist: 'specialist',
     EntitySubtype.surgeon: 'surgeon',
+    EntitySubtype.appointment: 'appointment',
+    EntitySubtype.beauty: 'beauty',
+    EntitySubtype.fitnessActivity: 'fitness_activity',
+    EntitySubtype.healthGoal: 'health_goal',
+    EntitySubtype.medical: 'medical',
+    EntitySubtype.patient: 'patient',
     
     // Home category
     EntitySubtype.appliance: 'appliance',
@@ -448,24 +511,33 @@ class EntityTypeHelper {
     EntitySubtype.furniture: 'furniture',
     EntitySubtype.home: 'home',
     EntitySubtype.room: 'room',
-    
+    EntitySubtype.cleaning: 'cleaning',
+    EntitySubtype.cooking: 'cooking',
+    EntitySubtype.homeMaintenance: 'home_maintenance',
+
     // Garden category
     EntitySubtype.tool: 'tool',
     EntitySubtype.plant: 'plant',
+    EntitySubtype.garden: 'garden',
+    EntitySubtype.gardening: 'gardening',
     
     // Food category
     EntitySubtype.foodPlan: 'food_plan',
     EntitySubtype.recipe: 'recipe',
     EntitySubtype.restaurant: 'restaurant',
+    EntitySubtype.food: 'food',
     
     // Laundry category
     EntitySubtype.dryCleaners: 'dry_cleaners',
-    EntitySubtype.item: 'item',
+    EntitySubtype.item: 'item',     // Note: 'Item' is generic, might need context. Doc lists under Laundry.
+    EntitySubtype.clothing: 'clothing',
+    EntitySubtype.laundryPlan: 'laundry_plan',
     
     // Finance category
     EntitySubtype.bank: 'bank',
     EntitySubtype.bankAccount: 'bank_account',
     EntitySubtype.creditCard: 'credit_card',
+    EntitySubtype.finance: 'finance',
     
     // Transport category
     EntitySubtype.boat: 'vehicle_boat',
@@ -492,6 +564,10 @@ class EntityTypeHelper {
     EntitySubtype.prescription: 'prescription',
     EntitySubtype.resume: 'resume',
     EntitySubtype.certificate: 'certificate',
+
+    // Fallback/General types
+    EntitySubtype.other: 'other',
+    EntitySubtype.general: 'general',
   };
   
   // Map from display name to EntitySubtype - useful for reverse lookup

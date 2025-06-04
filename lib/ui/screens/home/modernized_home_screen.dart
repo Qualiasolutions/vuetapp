@@ -203,16 +203,6 @@ class _ModernizedHomeScreenState extends ConsumerState<ModernizedHomeScreen>
                           ],
                         ),
                       ),
-                      PopupMenuItem<String>(
-                        value: 'settings',
-                        child: Row(
-                          children: [
-                            Icon(Icons.settings, color: Theme.of(context).colorScheme.primary),
-                            const SizedBox(width: 8),
-                            const Text('Settings'),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(width: 8),
@@ -622,14 +612,6 @@ class _ModernizedHomeScreenState extends ConsumerState<ModernizedHomeScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Account settings coming soon!'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
-        break;
-      case 'settings':
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Settings coming soon!'),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );

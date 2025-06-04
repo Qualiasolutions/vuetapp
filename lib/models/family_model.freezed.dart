@@ -401,6 +401,7 @@ mixin _$FamilyMemberModel {
   String get memberColor => throw _privateConstructorUsedError;
 
   /// When this user joined the family
+  @JsonKey(name: 'joined_at')
   DateTime get joinedAt => throw _privateConstructorUsedError;
 
   /// User details (populated when needed)
@@ -411,6 +412,14 @@ mixin _$FamilyMemberModel {
 
   /// Whether this member is currently active
   bool get isActive => throw _privateConstructorUsedError;
+
+  /// When this family member record was created
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+
+  /// When this family member record was last updated
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this FamilyMemberModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -433,12 +442,14 @@ abstract class $FamilyMemberModelCopyWith<$Res> {
       String familyId,
       FamilyRole role,
       String memberColor,
-      DateTime joinedAt,
+      @JsonKey(name: 'joined_at') DateTime joinedAt,
       String? firstName,
       String? lastName,
       String? email,
       String? profileImageUrl,
-      bool isActive});
+      bool isActive,
+      @JsonKey(name: 'created_at') DateTime? createdAt,
+      @JsonKey(name: 'updated_at') DateTime? updatedAt});
 }
 
 /// @nodoc
@@ -466,6 +477,8 @@ class _$FamilyMemberModelCopyWithImpl<$Res, $Val extends FamilyMemberModel>
     Object? email = freezed,
     Object? profileImageUrl = freezed,
     Object? isActive = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(_value.copyWith(
       userId: null == userId
@@ -508,6 +521,14 @@ class _$FamilyMemberModelCopyWithImpl<$Res, $Val extends FamilyMemberModel>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ) as $Val);
   }
 }
@@ -525,12 +546,14 @@ abstract class _$$FamilyMemberModelImplCopyWith<$Res>
       String familyId,
       FamilyRole role,
       String memberColor,
-      DateTime joinedAt,
+      @JsonKey(name: 'joined_at') DateTime joinedAt,
       String? firstName,
       String? lastName,
       String? email,
       String? profileImageUrl,
-      bool isActive});
+      bool isActive,
+      @JsonKey(name: 'created_at') DateTime? createdAt,
+      @JsonKey(name: 'updated_at') DateTime? updatedAt});
 }
 
 /// @nodoc
@@ -556,6 +579,8 @@ class __$$FamilyMemberModelImplCopyWithImpl<$Res>
     Object? email = freezed,
     Object? profileImageUrl = freezed,
     Object? isActive = null,
+    Object? createdAt = freezed,
+    Object? updatedAt = freezed,
   }) {
     return _then(_$FamilyMemberModelImpl(
       userId: null == userId
@@ -598,6 +623,14 @@ class __$$FamilyMemberModelImplCopyWithImpl<$Res>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      updatedAt: freezed == updatedAt
+          ? _value.updatedAt
+          : updatedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ));
   }
 }
@@ -610,12 +643,14 @@ class _$FamilyMemberModelImpl implements _FamilyMemberModel {
       required this.familyId,
       this.role = FamilyRole.member,
       this.memberColor = '#0066cc',
-      required this.joinedAt,
+      @JsonKey(name: 'joined_at') required this.joinedAt,
       this.firstName,
       this.lastName,
       this.email,
       this.profileImageUrl,
-      this.isActive = true});
+      this.isActive = true,
+      @JsonKey(name: 'created_at') this.createdAt,
+      @JsonKey(name: 'updated_at') this.updatedAt});
 
   factory _$FamilyMemberModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$FamilyMemberModelImplFromJson(json);
@@ -640,6 +675,7 @@ class _$FamilyMemberModelImpl implements _FamilyMemberModel {
 
   /// When this user joined the family
   @override
+  @JsonKey(name: 'joined_at')
   final DateTime joinedAt;
 
   /// User details (populated when needed)
@@ -657,9 +693,19 @@ class _$FamilyMemberModelImpl implements _FamilyMemberModel {
   @JsonKey()
   final bool isActive;
 
+  /// When this family member record was created
+  @override
+  @JsonKey(name: 'created_at')
+  final DateTime? createdAt;
+
+  /// When this family member record was last updated
+  @override
+  @JsonKey(name: 'updated_at')
+  final DateTime? updatedAt;
+
   @override
   String toString() {
-    return 'FamilyMemberModel(userId: $userId, familyId: $familyId, role: $role, memberColor: $memberColor, joinedAt: $joinedAt, firstName: $firstName, lastName: $lastName, email: $email, profileImageUrl: $profileImageUrl, isActive: $isActive)';
+    return 'FamilyMemberModel(userId: $userId, familyId: $familyId, role: $role, memberColor: $memberColor, joinedAt: $joinedAt, firstName: $firstName, lastName: $lastName, email: $email, profileImageUrl: $profileImageUrl, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -683,7 +729,11 @@ class _$FamilyMemberModelImpl implements _FamilyMemberModel {
             (identical(other.profileImageUrl, profileImageUrl) ||
                 other.profileImageUrl == profileImageUrl) &&
             (identical(other.isActive, isActive) ||
-                other.isActive == isActive));
+                other.isActive == isActive) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -699,7 +749,9 @@ class _$FamilyMemberModelImpl implements _FamilyMemberModel {
       lastName,
       email,
       profileImageUrl,
-      isActive);
+      isActive,
+      createdAt,
+      updatedAt);
 
   /// Create a copy of FamilyMemberModel
   /// with the given fields replaced by the non-null parameter values.
@@ -720,16 +772,19 @@ class _$FamilyMemberModelImpl implements _FamilyMemberModel {
 
 abstract class _FamilyMemberModel implements FamilyMemberModel {
   const factory _FamilyMemberModel(
-      {required final String userId,
-      required final String familyId,
-      final FamilyRole role,
-      final String memberColor,
-      required final DateTime joinedAt,
-      final String? firstName,
-      final String? lastName,
-      final String? email,
-      final String? profileImageUrl,
-      final bool isActive}) = _$FamilyMemberModelImpl;
+          {required final String userId,
+          required final String familyId,
+          final FamilyRole role,
+          final String memberColor,
+          @JsonKey(name: 'joined_at') required final DateTime joinedAt,
+          final String? firstName,
+          final String? lastName,
+          final String? email,
+          final String? profileImageUrl,
+          final bool isActive,
+          @JsonKey(name: 'created_at') final DateTime? createdAt,
+          @JsonKey(name: 'updated_at') final DateTime? updatedAt}) =
+      _$FamilyMemberModelImpl;
 
   factory _FamilyMemberModel.fromJson(Map<String, dynamic> json) =
       _$FamilyMemberModelImpl.fromJson;
@@ -752,6 +807,7 @@ abstract class _FamilyMemberModel implements FamilyMemberModel {
 
   /// When this user joined the family
   @override
+  @JsonKey(name: 'joined_at')
   DateTime get joinedAt;
 
   /// User details (populated when needed)
@@ -767,6 +823,16 @@ abstract class _FamilyMemberModel implements FamilyMemberModel {
   /// Whether this member is currently active
   @override
   bool get isActive;
+
+  /// When this family member record was created
+  @override
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt;
+
+  /// When this family member record was last updated
+  @override
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt;
 
   /// Create a copy of FamilyMemberModel
   /// with the given fields replaced by the non-null parameter values.

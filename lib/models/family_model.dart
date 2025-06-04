@@ -53,7 +53,7 @@ class FamilyMemberModel with _$FamilyMemberModel {
     @Default('#0066cc') String memberColor,
     
     /// When this user joined the family
-    required DateTime joinedAt,
+    @JsonKey(name: 'joined_at') required DateTime joinedAt,
     
     /// User details (populated when needed)
     String? firstName,
@@ -63,6 +63,12 @@ class FamilyMemberModel with _$FamilyMemberModel {
     
     /// Whether this member is currently active
     @Default(true) bool isActive,
+
+    /// When this family member record was created
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+
+    /// When this family member record was last updated
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
   }) = _FamilyMemberModel;
 
   factory FamilyMemberModel.fromJson(Map<String, dynamic> json) =>

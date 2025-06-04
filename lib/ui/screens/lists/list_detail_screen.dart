@@ -4,6 +4,7 @@ import 'package:vuet_app/models/list_model.dart';
 import 'package:vuet_app/models/list_item_model.dart';
 import 'package:vuet_app/providers/modernized_list_providers.dart';
 import 'package:vuet_app/ui/widgets/modern_components.dart';
+import 'package:intl/intl.dart';
 
 class ListDetailScreen extends ConsumerStatefulWidget {
   final String listId;
@@ -59,10 +60,14 @@ class _ListDetailScreenState extends ConsumerState<ListDetailScreen>
       appBar: AppBar(
         title: Text(
           widget.listName ?? 'List Details',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         actions: [
           IconButton(
             icon: Icon(_showCompleted ? Icons.visibility : Icons.visibility_off),
@@ -301,6 +306,15 @@ class _ListDetailScreenState extends ConsumerState<ListDetailScreen>
                       ),
                     ),
                   ],
+                  Text(
+                    'Item added: ${DateFormat.yMd().add_jm().format(item.createdAt)}',
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface),
+                  ),
+                  if (item.updatedAt != item.createdAt)
+                    Text(
+                      'Last updated: ${DateFormat.yMd().add_jm().format(item.updatedAt)}',
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface),
+                    ),
                 ],
               ),
             ),

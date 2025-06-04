@@ -35,6 +35,7 @@ mixin _$TimeblockModel {
   String? get activityType => throw _privateConstructorUsedError;
   String? get linkedRoutineId => throw _privateConstructorUsedError;
   String? get linkedTaskId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'sync_with_calendar')
   bool get syncWithCalendar => throw _privateConstructorUsedError;
   String? get externalCalendarEventId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -68,7 +69,7 @@ abstract class $TimeblockModelCopyWith<$Res> {
       String? activityType,
       String? linkedRoutineId,
       String? linkedTaskId,
-      bool syncWithCalendar,
+      @JsonKey(name: 'sync_with_calendar') bool syncWithCalendar,
       String? externalCalendarEventId,
       DateTime createdAt,
       DateTime updatedAt});
@@ -190,7 +191,7 @@ abstract class _$$TimeblockModelImplCopyWith<$Res>
       String? activityType,
       String? linkedRoutineId,
       String? linkedTaskId,
-      bool syncWithCalendar,
+      @JsonKey(name: 'sync_with_calendar') bool syncWithCalendar,
       String? externalCalendarEventId,
       DateTime createdAt,
       DateTime updatedAt});
@@ -305,7 +306,7 @@ class _$TimeblockModelImpl implements _TimeblockModel {
       this.activityType,
       this.linkedRoutineId,
       this.linkedTaskId,
-      this.syncWithCalendar = false,
+      @JsonKey(name: 'sync_with_calendar') this.syncWithCalendar = false,
       this.externalCalendarEventId,
       required this.createdAt,
       required this.updatedAt});
@@ -340,7 +341,7 @@ class _$TimeblockModelImpl implements _TimeblockModel {
   @override
   final String? linkedTaskId;
   @override
-  @JsonKey()
+  @JsonKey(name: 'sync_with_calendar')
   final bool syncWithCalendar;
   @override
   final String? externalCalendarEventId;
@@ -437,7 +438,7 @@ abstract class _TimeblockModel implements TimeblockModel {
       final String? activityType,
       final String? linkedRoutineId,
       final String? linkedTaskId,
-      final bool syncWithCalendar,
+      @JsonKey(name: 'sync_with_calendar') final bool syncWithCalendar,
       final String? externalCalendarEventId,
       required final DateTime createdAt,
       required final DateTime updatedAt}) = _$TimeblockModelImpl;
@@ -468,6 +469,7 @@ abstract class _TimeblockModel implements TimeblockModel {
   @override
   String? get linkedTaskId;
   @override
+  @JsonKey(name: 'sync_with_calendar')
   bool get syncWithCalendar;
   @override
   String? get externalCalendarEventId;

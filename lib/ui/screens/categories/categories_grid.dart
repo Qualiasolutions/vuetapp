@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vuet_app/models/entity_category_model.dart'; // Using EntityCategoryModel
+import 'package:vuet_app/config/app_categories.dart'; // Import the new category configuration
 import 'package:vuet_app/ui/widgets/premium_tag.dart';
-import 'package:vuet_app/providers/category_screen_providers.dart'; // Import centralized providers
-import 'package:vuet_app/ui/screens/categories/category_introduction_screen.dart'; // Import the introduction screen
+import 'package:vuet_app/providers/category_screen_providers.dart';
+import 'package:vuet_app/ui/screens/categories/category_introduction_screen.dart';
 
 class CategoriesGrid extends ConsumerWidget {
   final String searchQuery;
@@ -13,111 +13,42 @@ class CategoriesGrid extends ConsumerWidget {
     this.searchQuery = '',
   });
 
-  // Define the 9 main category groups based on documentation
-  static final List<Map<String, dynamic>> categoryGroups = [
-    {
-      'id': 'pets',
-      'name': 'Pets',
-      'color': '#8B4513', // Brown
-      'categoryIds': <String>['pets'], 
-      'isPremium': false,
-    },
-    {
-      'id': 'social_interests',
-      'name': 'Social & Interests',
-      'color': '#4682B4', // Steel Blue
-      'categoryIds': <String>['social_interests'], 
-      'isPremium': false,
-    },
-    {
-      'id': 'education_career',
-      'name': 'Education & Career',
-      'color': '#2E8B57', // Sea Green
-      'categoryIds': <String>['education', 'career'], // Split into two base categories
-      'isPremium': false,
-    },
-    {
-      'id': 'travel',
-      'name': 'Travel',
-      'color': '#FF8C00', // Dark Orange
-      'categoryIds': <String>['travel'], 
-      'isPremium': false,
-    },
-    {
-      'id': 'health_beauty',
-      'name': 'Health & Beauty',
-      'color': '#9370DB', // Medium Purple
-      'categoryIds': <String>['health_beauty'], 
-      'isPremium': true,
-    },
-    {
-      'id': 'home_garden',
-      'name': 'Home & Garden',
-      'color': '#3CB371', // Medium Sea Green
-      'categoryIds': <String>['home', 'garden', 'food', 'laundry'], // Combines four base categories
-      'isPremium': false,
-    },
-    {
-      'id': 'finance',
-      'name': 'Finance',
-      'color': '#6A5ACD', // Slate Blue
-      'categoryIds': <String>['finance'], 
-      'isPremium': false,
-    },
-    {
-      'id': 'transport',
-      'name': 'Transport',
-      'color': '#CD5C5C', // Indian Red
-      'categoryIds': <String>['transport'], 
-      'isPremium': false,
-    },
-    {
-      'id': 'references',
-      'name': 'References',
-      'color': '#808080', // Grey
-      'categoryIds': <String>['references'], // Special premium feature
-      'isPremium': true,
-    },
-  ];
+  // Helper to convert display name to a switch-case friendly ID
+  String _getGroupId(String displayName) {
+    return displayName.toLowerCase().replaceAll(' & ', '_and_').replaceAll(' ', '_');
+  }
+
+  String _getCategoryImageName(String groupId) {
+    // This function might need more robust logic if image names don't directly match group IDs
+    // For now, assume direct mapping or a simple lookup
+    // Example: 'pets.png', 'social_interests.png'
+    if (groupId == 'social_interests') return 'social.png'; // Example specific mapping if names differ
+    if (groupId == 'health_and_beauty') return 'health.png';
+    if (groupId == 'home_and_garden') return 'home.png'; // Assuming a generic home image
+    if (groupId == 'education_and_career') return 'education.png'; // Added mapping
+    if (groupId == 'references') return 'charity.png'; // Added mapping, though References is special
+    return '\${groupId}.png';
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // We still watch the categories provider to ensure we have the latest data
-    // This will be used for subcategories when we navigate
-    final categoriesAsyncValue = ref.watch(personalCategoriesProvider);
+    // Directly watch the provider which now returns List<CategoryDisplayGroup>
+    final List<CategoryDisplayGroup> allDisplayGroups = ref.watch(personalCategoryDisplayGroupsProvider);
 
-    // Create EntityCategoryModel objects from our defined groups
-    final allGridItems = categoryGroups.map((group) => EntityCategoryModel(
-      id: group['id'],
-      name: group['name'],
-      color: group['color'],
-      ownerId: 'system',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      isProfessional: false,
-      // Store the categoryIds as a comma-separated string
-      // Cast to List<String> to ensure correct type
-      description: (group['categoryIds'] as List<String>).join(','),
-    )).toList();
-    
-    // Filter grid items based on search query if provided
-    final filteredGridItems = searchQuery.isEmpty
-        ? allGridItems
-        : allGridItems.where((category) => 
-            category.name.toLowerCase().contains(searchQuery.toLowerCase())).toList();
+    final filteredDisplayGroups = searchQuery.isEmpty
+        ? allDisplayGroups
+        : allDisplayGroups.where((group) => 
+            group.displayName.toLowerCase().contains(searchQuery.toLowerCase())).toList();
 
     return RefreshIndicator(
       onRefresh: () async {
-        // Refresh categories by invalidating the provider
-        ref.invalidate(personalCategoriesProvider);
-        await Future.delayed(const Duration(milliseconds: 500));
+        ref.invalidate(personalCategoryDisplayGroupsProvider);
+        // Even though it's sync, a small delay might be perceived as a refresh action if desired
+        await Future.delayed(const Duration(milliseconds: 50)); 
       },
-      child: categoriesAsyncValue.when(
-        data: (fetchedCategories) {
-          // We use the hardcoded grid items but we've still loaded the actual
-          // categories for when we navigate to subcategories
-          
-          if (filteredGridItems.isEmpty && searchQuery.isNotEmpty) {
+      child: Builder( // Added Builder to ensure context for ScaffoldMessenger is correct if needed immediately
+        builder: (context) {
+          if (filteredDisplayGroups.isEmpty && searchQuery.isNotEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -127,6 +58,23 @@ class CategoriesGrid extends ConsumerWidget {
                   Text(
                     'No categories matching "$searchQuery"',
                     style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+          }
+          if (filteredDisplayGroups.isEmpty && searchQuery.isEmpty && allDisplayGroups.isEmpty) {
+             // Handles the case where allDisplayGroups itself is empty initially (e.g. error in config)
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+                  SizedBox(height: 16),
+                  Text(
+                    'No categories available.',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -143,16 +91,12 @@ class CategoriesGrid extends ConsumerWidget {
               mainAxisSpacing: 10.0,
               childAspectRatio: 1.0,
             ),
-            itemCount: filteredGridItems.length,
+            itemCount: filteredDisplayGroups.length,
             itemBuilder: (context, index) {
-              final category = filteredGridItems[index];
-              final isReferences = category.id == 'references';
-              
-              // Find the original index to get isPremium value
-              final originalIndex = allGridItems.indexWhere((item) => item.id == category.id);
-              final isPremium = categoryGroups[originalIndex]['isPremium'] as bool;
+              final group = filteredDisplayGroups[index];
+              final groupId = _getGroupId(group.displayName);
+              final isReferences = group.displayName == 'References';
 
-              // Use FutureBuilder for staggered animation effect
               return FutureBuilder(
                 future: Future.delayed(Duration(milliseconds: 50 * index)),
                 builder: (context, snapshot) {
@@ -168,68 +112,49 @@ class CategoriesGrid extends ConsumerWidget {
                       child: InkWell(
                         onTap: () {
                           if (isReferences) {
-                            // References screen not implemented yet
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('References is a premium feature that will be available soon.')),
                             );
                           } else {
-                            // For category groups, we need to pass the subcategory key directly
-                            final subCategoryKeys = (categoryGroups[originalIndex]['categoryIds'] as List<String>);
-                            
-                            // Navigate to introduction screen based on category
+                            final List<AppCategory> actualCategoriesInGroup = getCategoriesInGroup(group.displayName);
+                            final List<String> subCategoryKeys = actualCategoriesInGroup.map((c) => c.name).toList();
+
                             Widget introScreen;
-                            
-                            switch (category.id) {
+                            // Ensure CategoryIntroFactory is correctly implemented and available in the project scope
+                            switch (groupId) {
                               case 'pets':
-                                introScreen = CategoryIntroFactory.createPetsIntro(
-                                  onComplete: () {},
-                                );
+                                introScreen = CategoryIntroFactory.createPetsIntro(onComplete: () {});
                                 break;
                               case 'social_interests':
-                                introScreen = CategoryIntroFactory.createSocialIntro(
-                                  onComplete: () {},
-                                );
+                                introScreen = CategoryIntroFactory.createSocialIntro(onComplete: () {});
                                 break;
-                              case 'education_career':
-                                introScreen = CategoryIntroFactory.createEducationIntro(
-                                  onComplete: () {},
-                                );
+                              case 'education_and_career':
+                                introScreen = CategoryIntroFactory.createEducationIntro(onComplete: () {});
                                 break;
                               case 'travel':
-                                introScreen = CategoryIntroFactory.createTravelIntro(
-                                  onComplete: () {},
-                                );
+                                introScreen = CategoryIntroFactory.createTravelIntro(onComplete: () {});
                                 break;
-                              case 'health_beauty':
-                                introScreen = CategoryIntroFactory.createHealthBeautyIntro(
-                                  onComplete: () {},
-                                );
+                              case 'health_and_beauty':
+                                introScreen = CategoryIntroFactory.createHealthBeautyIntro(onComplete: () {});
                                 break;
-                              case 'home_garden':
-                                introScreen = CategoryIntroFactory.createHomeGardenIntro(
-                                  onComplete: () {},
-                                );
+                              case 'home_and_garden':
+                                introScreen = CategoryIntroFactory.createHomeGardenIntro(onComplete: () {});
                                 break;
                               case 'finance':
-                                introScreen = CategoryIntroFactory.createFinanceIntro(
-                                  onComplete: () {},
-                                );
+                                introScreen = CategoryIntroFactory.createFinanceIntro(onComplete: () {});
                                 break;
                               case 'transport':
-                                introScreen = CategoryIntroFactory.createTransportIntro(
-                                  onComplete: () {},
-                                );
+                                introScreen = CategoryIntroFactory.createTransportIntro(onComplete: () {});
                                 break;
                               default:
-                                // For other categories, create a generic intro
                                 introScreen = CategoryIntroductionScreen(
-                                  categoryId: category.id,
-                                  categoryName: category.name,
+                                  categoryId: actualCategoriesInGroup.isNotEmpty ? actualCategoriesInGroup.first.id.toString() : group.displayName,
+                                  categoryName: group.displayName,
                                   subCategoryKeys: subCategoryKeys,
                                   introPages: [
                                     CategoryIntroPage(
-                                      content: "Welcome to the ${category.name} category. Here you can manage all your ${category.name.toLowerCase()} related items.",
-                                      backgroundImage: 'assets/images/categories/${_getCategoryImageName(category.id)}.png',
+                                      content: "Welcome to the \${group.displayName} category. Here you can manage all your \${group.displayName.toLowerCase()} related items.",
+                                      backgroundImage: 'assets/images/categories/${_getCategoryImageName(groupId)}',
                                     ),
                                   ],
                                 );
@@ -248,49 +173,64 @@ class CategoriesGrid extends ConsumerWidget {
                           clipBehavior: Clip.antiAlias,
                           elevation: 4.0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.0),
+                            borderRadius: BorderRadius.circular(15.0),
                           ),
                           child: Stack(
-                            fit: StackFit.expand,
                             children: [
-                              // Use a placeholder color until we have proper images
-                              Container(
-                                color: Color(int.parse(category.color?.substring(1, 7) ?? '808080', radix: 16) + 0xFF000000).withAlpha((0.9 * 255).round()),
+                              Positioned.fill(
+                                child: Image.asset(
+                                  'assets/images/categories/${_getCategoryImageName(groupId)}',
+                                  fit: BoxFit.cover,
+                                  // Optional: Add error builder for image loading
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: Colors.grey[300],
+                                      child: Icon(Icons.category, size: 50, color: Colors.grey[600]),
+                                    );
+                                  },
+                                ),
                               ),
-                              
-                              // Try to load category image but use color background if not found
-                              Image.asset(
-                                'assets/images/categories/${_getCategoryImageName(category.id)}.png',
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const SizedBox(); // Return empty widget, we already have the color background
-                                },
-                              ),
-                              
-                              // Category name overlay
-                              Container(
-                                color: Color(int.parse(category.color?.substring(1, 7) ?? '808080', radix: 16) + 0xFF000000).withAlpha((0.6 * 255).round()),
-                                padding: const EdgeInsets.all(10.0),
-                                child: Center(
-                                  child: Text(
-                                    category.name,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18.0,
+                              Positioned.fill(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    gradient: LinearGradient(
+                                      colors: [Colors.black.withAlpha((0.7 * 255).round()), Colors.transparent],
+                                      begin: Alignment.bottomCenter,
+                                      end: Alignment.center,
                                     ),
-                                    textAlign: TextAlign.center,
                                   ),
                                 ),
                               ),
-                              
-                              // Premium tag
-                              if (isPremium)
+                              if (group.isPremium)
                                 const Positioned(
-                                  bottom: 5,
-                                  right: 5,
+                                  top: 8,
+                                  right: 8,
                                   child: PremiumTag(),
                                 ),
+                              Positioned(
+                                bottom: 10,
+                                left: 10,
+                                right: 10,
+                                child: Text(
+                                  group.displayName,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16.0, // Increased font size
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 2.0,
+                                        color: Colors.black54,
+                                        offset: Offset(1.0, 1.0),
+                                      ),
+                                    ],
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -301,64 +241,51 @@ class CategoriesGrid extends ConsumerWidget {
               );
             },
           );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(personalCategoriesProvider);
-            await Future.delayed(const Duration(milliseconds: 500));
-          },
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.5,
-              child: Center(child: Text('Error: $error\n\nPull to refresh')),
-            ),
-          ),
+        }
+      ),
+    );
+  }
+}
+
+// Ensure CategoryIntroFactory is defined and implemented elsewhere in your project.
+// Example (remove if actual factory exists):
+/* 
+class CategoryIntroFactory {
+  static Widget createPetsIntro({required VoidCallback onComplete}) => _DummyIntro('Pets Intro', onComplete);
+  static Widget createSocialIntro({required VoidCallback onComplete}) => _DummyIntro('Social Intro', onComplete);
+  static Widget createEducationIntro({required VoidCallback onComplete}) => _DummyIntro('Education Intro', onComplete);
+  static Widget createTravelIntro({required VoidCallback onComplete}) => _DummyIntro('Travel Intro', onComplete);
+  static Widget createHealthBeautyIntro({required VoidCallback onComplete}) => _DummyIntro('Health & Beauty Intro', onComplete);
+  static Widget createHomeGardenIntro({required VoidCallback onComplete}) => _DummyIntro('Home & Garden Intro', onComplete);
+  static Widget createFinanceIntro({required VoidCallback onComplete}) => _DummyIntro('Finance Intro', onComplete);
+  static Widget createTransportIntro({required VoidCallback onComplete}) => _DummyIntro('Transport Intro', onComplete);
+}
+
+class _DummyIntro extends StatelessWidget {
+  final String title;
+  final VoidCallback onComplete;
+  const _DummyIntro(this.title, this.onComplete);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('This is the $title screen.'),
+            ElevatedButton(
+              onPressed: () {
+                onComplete();
+                if (Navigator.canPop(context)) Navigator.pop(context);
+              },
+              child: const Text('Done'),
+            )
+          ],
         ),
       ),
     );
   }
-
-  // Helper method to map category IDs to image names
-  String _getCategoryImageName(String categoryId) {
-    switch (categoryId) {
-      case 'pets':
-        return 'pets';
-      case 'social_interests':
-        return 'social';
-      case 'education_career':
-        return 'education';
-      case 'travel':
-        return 'travel';
-      case 'health_beauty':
-        return 'health';
-      case 'home_garden':
-        return 'home';
-      case 'finance':
-        return 'finance';
-      case 'transport':
-        return 'transport';
-      case 'references':
-        return 'charity';
-      default:
-        return categoryId;
-    }
-  }
 }
-
-// Extension to add delay to animations
-extension AnimationDelay on Widget {
-  Widget delay(Duration delay) {
-    return FutureBuilder(
-      future: Future.delayed(delay),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return this;
-        } else {
-          return const SizedBox.shrink();
-        }
-      },
-    );
-  }
-}
+*/
