@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/ui/screens/categories/categories_grid.dart';
 import 'package:vuet_app/ui/screens/categories/professional_categories_list.dart';
 import 'package:vuet_app/providers/category_screen_providers.dart';
-import 'package:flutter/foundation.dart';
 
 class CategoriesScreen extends ConsumerStatefulWidget {
   const CategoriesScreen({super.key});
@@ -15,7 +14,6 @@ class CategoriesScreen extends ConsumerStatefulWidget {
 class _CategoriesScreenState extends ConsumerState<CategoriesScreen> 
     with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   bool _isProfessionalMode = false;
-  bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -55,16 +53,6 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen>
     } else {
       ref.invalidate(personalCategoryDisplayGroupsProvider);
     }
-  }
-
-  void _onSearchChanged(String query) {
-    // Implement search logic based on the query
-    // This might involve filtering the displayed categories or entities
-    // For now, just printing the query
-    if (kDebugMode) {
-      print("Search query: $query");
-    }
-    // Example: ref.read(categorySearchProvider.notifier).setSearchQuery(query);
   }
 
   @override

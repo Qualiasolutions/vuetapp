@@ -4,6 +4,7 @@ import 'package:vuet_app/models/routine_model.dart';
 import 'package:vuet_app/providers/routine_providers.dart';
 import 'package:vuet_app/providers/auth_providers.dart';
 import 'package:vuet_app/widgets/modern_components.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateEditRoutineScreen extends ConsumerStatefulWidget {
   final RoutineModel? routine;
@@ -453,7 +454,7 @@ class _CreateEditRoutineScreenState extends ConsumerState<CreateEditRoutineScree
     });
   }
 
-  void _saveRoutine() async {
+  Future<void> _saveRoutine() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -463,45 +464,50 @@ class _CreateEditRoutineScreenState extends ConsumerState<CreateEditRoutineScree
       _errorMessage = null;
     });
 
-    try {
-      final routineData = RoutineModel(
-        id: widget.routine?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-        userId: ref.read(authServiceProvider).currentUser?.id ?? 'default-user-id',
-        name: _nameController.text.trim(),
-        description: _descriptionController.text.trim().isNotEmpty ? _descriptionController.text.trim() : null,
-        startTime: _formatTimeOfDay(_startTime),
-        endTime: _formatTimeOfDay(_endTime),
-        monday: _monday,
-        tuesday: _tuesday,
-        wednesday: _wednesday,
-        thursday: _thursday,
-        friday: _friday,
-        saturday: _saturday,
-        sunday: _sunday,
-        members: _members,
-        createdAt: widget.routine?.createdAt ?? DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
+    final user = ref.read(currentUserProvider);
+    if (user == null) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'You must be logged in to save routines.';
+      });
+      return;
+    }
 
+    final routineDetails = RoutineModel(
+      id: widget.routine?.id ?? const Uuid().v4(),
+      name: _nameController.text.trim(),
+      description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
+      userId: user.id,
+      startTime: _formatTimeOfDay(_startTime),
+      endTime: _formatTimeOfDay(_endTime),
+      monday: _monday,
+      tuesday: _tuesday,
+      wednesday: _wednesday,
+      thursday: _thursday,
+      friday: _friday,
+      saturday: _saturday,
+      sunday: _sunday,
+      members: _members,
+      createdAt: widget.routine?.createdAt,
+      updatedAt: null,
+    );
+
+    try {
+      final routineNotifier = ref.read(routinesNotifierProvider.notifier);
       if (widget.routine == null) {
-        // Create new routine
-        await ref.read(routinesNotifierProvider.notifier).createRoutine(routineData);
+        await routineNotifier.createRoutine(routineDetails);
       } else {
-        // Update existing routine
-        await ref.read(routinesNotifierProvider.notifier).updateRoutine(routineData);
+        await routineNotifier.updateRoutine(routineDetails.copyWith(createdAt: widget.routine!.createdAt));
       }
 
       if (mounted) {
-        Navigator.of(context).pop(true);
+        Navigator.pop(context);
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Failed to save routine: ${e.toString()}';
-      });
-    } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _errorMessage = 'Failed to save routine: ${e.toString()}';
         });
       }
     }

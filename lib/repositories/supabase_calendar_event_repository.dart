@@ -19,12 +19,12 @@ class SupabaseCalendarEventRepository implements CalendarEventRepository {
       : _supabaseClient = supabaseClient;
 
   @override
-  Future<List<CalendarEventModel>> getUserEvents(String userId) async {
+  Future<List<CalendarEventModel>> getUserEvents(String ownerId) async {
     try {
       final response = await _supabaseClient
           .from(_tableName)
           .select()
-          .eq('user_id', userId)
+          .eq('owner_id', ownerId)
           .order('start_time', ascending: true);
 
       return response
@@ -37,12 +37,12 @@ class SupabaseCalendarEventRepository implements CalendarEventRepository {
 
   @override
   Future<List<CalendarEventModel>> getEventsByDateRange(
-      String userId, DateTime startDate, DateTime endDate) async {
+      String ownerId, DateTime startDate, DateTime endDate) async {
     try {
       final response = await _supabaseClient
           .from(_tableName)
           .select()
-          .eq('user_id', userId)
+          .eq('owner_id', ownerId)
           .gte('start_time', startDate.toIso8601String())
           .lte('end_time', endDate.toIso8601String())
           .order('start_time', ascending: true);
@@ -118,8 +118,8 @@ class SupabaseCalendarEventRepository implements CalendarEventRepository {
   }
 
   @override
-  Stream<List<CalendarEventModel>> streamUserEvents(String userId) {
-    final cacheKey = 'user_events_$userId';
+  Stream<List<CalendarEventModel>> streamUserEvents(String ownerId) {
+    final cacheKey = 'user_events_$ownerId';
     
     if (_streamsCache.containsKey(cacheKey)) {
       return _streamsCache[cacheKey]!;
@@ -129,7 +129,7 @@ class SupabaseCalendarEventRepository implements CalendarEventRepository {
       final stream = _supabaseClient
           .from(_tableName)
           .stream(primaryKey: ['id'])
-          .eq('user_id', userId)
+          .eq('owner_id', ownerId)
           .order('start_time')
           .map((events) => events
               .map((json) => CalendarEventModel.fromJson(json))
@@ -144,8 +144,8 @@ class SupabaseCalendarEventRepository implements CalendarEventRepository {
 
   @override
   Stream<List<CalendarEventModel>> streamEventsByDateRange(
-      String userId, DateTime startDate, DateTime endDate) {
-    final cacheKey = 'date_range_${userId}_${startDate.toIso8601String()}_${endDate.toIso8601String()}';
+      String ownerId, DateTime startDate, DateTime endDate) {
+    final cacheKey = 'date_range_${ownerId}_${startDate.toIso8601String()}_${endDate.toIso8601String()}';
     
     if (_streamsCache.containsKey(cacheKey)) {
       return _streamsCache[cacheKey]!;
@@ -157,7 +157,7 @@ class SupabaseCalendarEventRepository implements CalendarEventRepository {
       final stream = _supabaseClient
           .from(_tableName)
           .stream(primaryKey: ['id'])
-          .eq('user_id', userId)
+          .eq('owner_id', ownerId)
           .map((events) => events
               .map((json) => CalendarEventModel.fromJson(json))
               .where((event) => 

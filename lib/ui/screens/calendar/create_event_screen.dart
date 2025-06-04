@@ -405,7 +405,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         endTime: endDateTime,
         allDay: _isAllDay,
         location: _locationController.text.isEmpty ? null : _locationController.text,
-        userId: userId,
+        ownerId: userId,
         isRecurring: _isRecurring,
         recurrencePattern: _isRecurring ? _recurrencePattern : null,
         entityId: _selectedEntityId,

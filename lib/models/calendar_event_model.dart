@@ -26,7 +26,7 @@ class CalendarEventModel {
   final String? location;
   
   /// ID of the user who owns this event
-  final String userId;
+  final String ownerId;
   
   /// Whether this is a recurring event
   final bool isRecurring;
@@ -55,7 +55,7 @@ class CalendarEventModel {
     required this.endTime,
     this.allDay = false,
     this.location,
-    required this.userId,
+    required this.ownerId,
     this.isRecurring = false,
     this.recurrencePattern,
     DateTime? createdAt,
@@ -77,7 +77,7 @@ class CalendarEventModel {
       endTime: DateTime.parse(json['end_time']),
       allDay: json['all_day'] ?? false,
       location: json['location'],
-      userId: json['user_id'],
+      ownerId: json['owner_id'],
       isRecurring: json['is_recurring'] ?? false,
       recurrencePattern: json['recurrence_pattern'],
       createdAt: json['created_at'] != null 
@@ -101,7 +101,7 @@ class CalendarEventModel {
       'end_time': endTime.toIso8601String(),
       'all_day': allDay,
       'location': location,
-      'user_id': userId,
+      'owner_id': ownerId,
       'is_recurring': isRecurring,
       'recurrence_pattern': recurrencePattern,
       'created_at': createdAt.toIso8601String(),
@@ -120,7 +120,7 @@ class CalendarEventModel {
     DateTime? endTime,
     bool? allDay,
     String? location,
-    String? userId,
+    String? ownerId,
     bool? isRecurring,
     String? recurrencePattern,
     DateTime? createdAt,
@@ -136,7 +136,7 @@ class CalendarEventModel {
       endTime: endTime ?? this.endTime,
       allDay: allDay ?? this.allDay,
       location: location ?? this.location,
-      userId: userId ?? this.userId,
+      ownerId: ownerId ?? this.ownerId,
       isRecurring: isRecurring ?? this.isRecurring,
       recurrencePattern: recurrencePattern ?? this.recurrencePattern,
       createdAt: createdAt ?? this.createdAt,
@@ -155,7 +155,7 @@ class CalendarEventModel {
   factory CalendarEventModel.fromEntity({
     required String entityId,
     required String title,
-    required String userId,
+    required String ownerId,
     String? description,
     DateTime? startTime,
     DateTime? endTime,
@@ -172,7 +172,7 @@ class CalendarEventModel {
       description: description,
       startTime: startTime ?? defaultStartTime,
       endTime: endTime ?? defaultEndTime,
-      userId: userId,
+      ownerId: ownerId,
       entityId: entityId,
       eventType: eventType ?? 'entity_event',
     );

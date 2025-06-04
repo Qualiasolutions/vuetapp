@@ -318,11 +318,11 @@ class EntityCard extends StatelessWidget {
                         subtitle,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Color.fromRGBO(Theme.of(context).colorScheme.onSurface.red, Theme.of(context).colorScheme.onSurface.green, Theme.of(context).colorScheme.onSurface.blue, 0.7),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                     const Spacer(),
                     if (entity.customFields != null && entity.customFields!.isNotEmpty)
@@ -330,7 +330,7 @@ class EntityCard extends StatelessWidget {
                         '${entity.customFields!.length} detail${entity.customFields!.length != 1 ? 's' : ''}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Color.fromRGBO(Theme.of(context).colorScheme.onSurface.red, Theme.of(context).colorScheme.onSurface.green, Theme.of(context).colorScheme.onSurface.blue, 0.7),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                       ),
                   ],

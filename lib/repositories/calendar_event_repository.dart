@@ -3,12 +3,12 @@ import 'package:vuet_app/models/calendar_event_model.dart';
 /// Repository interface for calendar events
 abstract class CalendarEventRepository {
   /// Get all events for a user
-  Future<List<CalendarEventModel>> getUserEvents(String userId);
+  Future<List<CalendarEventModel>> getUserEvents(String ownerId);
   
   /// Get events for a user within a date range
   /// Used for efficient calendar view loading
   Future<List<CalendarEventModel>> getEventsByDateRange(
-    String userId, 
+    String ownerId, 
     DateTime startDate, 
     DateTime endDate
   );
@@ -26,11 +26,11 @@ abstract class CalendarEventRepository {
   Future<CalendarEventModel?> getEventById(String eventId);
   
   /// Get a stream of calendar events for real-time updates
-  Stream<List<CalendarEventModel>> streamUserEvents(String userId);
+  Stream<List<CalendarEventModel>> streamUserEvents(String ownerId);
   
   /// Get a stream of calendar events within a date range for real-time updates
   Stream<List<CalendarEventModel>> streamEventsByDateRange(
-    String userId, 
+    String ownerId, 
     DateTime startDate, 
     DateTime endDate
   );

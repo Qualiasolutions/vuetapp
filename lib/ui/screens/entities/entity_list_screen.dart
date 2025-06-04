@@ -5,6 +5,7 @@ import 'package:vuet_app/providers/entity_providers.dart';
 import 'package:vuet_app/ui/screens/entities/create_entity_screen.dart';
 import 'package:vuet_app/ui/screens/entities/entity_detail_screen.dart';
 import 'package:vuet_app/ui/widgets/entity_card.dart';
+import 'package:vuet_app/config/app_categories.dart';
 
 class EntityListScreen extends ConsumerStatefulWidget {
   final int? appCategoryId;
@@ -93,7 +94,6 @@ class _EntityListScreenState extends ConsumerState<EntityListScreen> {
           setState(() {
             _loadEntities();
           });
-          // Don't return the future directly, just wait for it to complete
           await _entitiesFuture;
         },
         child: FutureBuilder<List<BaseEntityModel>>(
@@ -102,7 +102,6 @@ class _EntityListScreenState extends ConsumerState<EntityListScreen> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-            
             if (snapshot.hasError) {
               return Center(
                 child: Column(
@@ -111,7 +110,7 @@ class _EntityListScreenState extends ConsumerState<EntityListScreen> {
                     const Icon(Icons.error_outline, size: 48, color: Colors.red),
                     const SizedBox(height: 16),
                     Text(
-                      'Error loading entities: ${snapshot.error}',
+                      'Error loading entities: ${snapshot.error}',
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
@@ -127,16 +126,11 @@ class _EntityListScreenState extends ConsumerState<EntityListScreen> {
                 ),
               );
             }
-
             final entities = snapshot.data ?? [];
-            
             if (entities.isEmpty) {
-              // Use the custom empty state builder if provided
               if (widget.emptyStateBuilder != null) {
                 return widget.emptyStateBuilder!();
               }
-              
-              // Default empty state
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -160,121 +154,88 @@ class _EntityListScreenState extends ConsumerState<EntityListScreen> {
                 ),
               );
             }
-            
-            // Show the list of entities
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.85,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                ),
-                itemCount: entities.length,
-                itemBuilder: (context, index) {
-                  final entity = entities[index];
-                  return EntityCard(
-                    entity: entity,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EntityDetailScreen(entityId: entity.id!),
+
+            // Group entities by appCategoryId
+            final Map<int, List<BaseEntityModel>> grouped = {};
+            for (final entity in entities) {
+              final catId = entity.appCategoryId;
+              if (catId != null) {
+                grouped.putIfAbsent(catId, () => []).add(entity);
+              }
+            }
+
+            // Build the grouped list
+            return ListView(
+              children: [
+                for (final category in appCategories)
+                  if (grouped[category.id]?.isNotEmpty ?? false) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      child: Text(
+                        category.readableName,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.85,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
                         ),
-                      ).then((_) {
-                        // Refresh when returning from details
-                        setState(() {
-                          _loadEntities();
-                        });
-                      });
-                    },
-                    onEdit: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CreateEntityScreen(
-                            entityId: entity.id,
-                            initialSubtype: entity.subtype,
-                            initialCategoryId: widget.categoryId,
-                            initialSubcategoryId: widget.subcategoryId,
-                            appCategoryId: widget.appCategoryId,
-                          ),
-                        ),
-                      ).then((_) {
-                        // Refresh when returning from edit
-                        setState(() {
-                          _loadEntities();
-                        });
-                      });
-                    },
-                    onDelete: () {
-                      _showDeleteConfirmation(context, entity);
-                    },
-                  );
-                },
-              ),
+                        itemCount: grouped[category.id]!.length,
+                        itemBuilder: (context, index) {
+                          final entity = grouped[category.id]![index];
+                          return EntityCard(
+                            entity: entity,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EntityDetailScreen(entityId: entity.id!),
+                                ),
+                              ).then((_) {
+                                setState(() {
+                                  _loadEntities();
+                                });
+                              });
+                            },
+                            onEdit: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CreateEntityScreen(
+                                    entityId: entity.id,
+                                    initialSubtype: entity.subtype,
+                                    initialCategoryId: widget.categoryId,
+                                    initialSubcategoryId: widget.subcategoryId,
+                                    appCategoryId: widget.appCategoryId,
+                                  ),
+                                ),
+                              ).then((_) {
+                                setState(() {
+                                  _loadEntities();
+                                });
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+              ],
             );
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToCreateEntity,
-        tooltip: 'Add ${widget.categoryName ?? 'Entity'}',
         child: const Icon(Icons.add),
       ),
-    );
-  }
-
-  Future<void> _showDeleteConfirmation(BuildContext context, BaseEntityModel entity) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirm Delete'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Are you sure you want to delete ${entity.name}?'),
-                const Text('This action cannot be undone.'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Delete'),
-              onPressed: () async {
-                Navigator.of(context).pop();
-                try {
-                  await ref.read(entityServiceProvider).deleteEntity(entity.id!);
-                  // Refresh the list
-                  setState(() {
-                    _loadEntities();
-                  });
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${entity.name} has been deleted')),
-                    );
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error deleting entity: $e')),
-                    );
-                  }
-                }
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }

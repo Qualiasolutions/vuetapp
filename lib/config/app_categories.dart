@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-
 /// Defines the main application categories based on the legacy system.
 /// Source: memory-bank/Categories-Entities-Tasks-Connection/Categories-Entities-Tasks-Connection.md
+library;
 
 class AppCategory {
   final int id;

@@ -43,7 +43,7 @@ CalendarEventModel _timeblockToCalendarEvent(TimeblockModel timeblock, DateTime 
       
   return CalendarEventModel(
     id: 'timeblock-${timeblock.id}-${date.year}${date.month}${date.day}',
-    userId: timeblock.userId,
+    ownerId: timeblock.userId,
     title: title,
     description: description,
     startTime: startDateTime,

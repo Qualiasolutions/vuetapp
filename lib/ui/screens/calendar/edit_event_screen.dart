@@ -369,7 +369,7 @@ class _EditEventScreenState extends ConsumerState<EditEventScreen> {
         endTime: endDateTime,
         allDay: _isAllDay,
         location: _locationController.text.isEmpty ? null : _locationController.text,
-        userId: widget.event.userId,
+        ownerId: widget.event.ownerId,
         isRecurring: _isRecurring,
         recurrencePattern: _isRecurring ? _recurrencePattern : null,
         createdAt: widget.event.createdAt,

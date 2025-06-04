@@ -38,56 +38,39 @@ CalendarEventModel _taskToCalendarEvent(TaskModel task) {
   }
 
   return CalendarEventModel(
-    // Assuming CalendarEventModel has an 'id' that can accommodate task IDs,
-    // or we generate a unique one if tasks and events can have overlapping IDs.
-    // For simplicity, prefixing task ID. This might need a more robust solution
-    // if CalendarEventModel's ID has specific format or uniqueness constraints
-    // across both actual events and task-derived events.
-    id: 'task-${task.id}', 
-    userId: task.createdById ?? '', // Or assignedToId, depending on context
+    id: 'task-${task.id}',
+    ownerId: task.createdById ?? '', // Or assignedToId, depending on context
     title: '$displayPrefix: ${task.title}',
     description: task.description,
-    startTime: task.dueDate!, // Task due date becomes start time
-    endTime: task.dueDate!,   // Task due date also becomes end time (all-day event)
+    startTime: task.dueDate!,
+    endTime: task.dueDate!,
     allDay: true,
-    // categoryId: task.categoryId, // If CalendarEventModel has categoryId
-    // color: some_default_task_color, // If you want to color tasks differently
-    // recurringRule: task.isRecurring ? task.recurrencePattern.toString() : null, // Simplified
-    // location: null, // Tasks don't typically have locations in this model
     createdAt: task.createdAt,
     updatedAt: task.updatedAt,
-    // Add a field to distinguish it, or handle in UI based on ID prefix or title
-    // For example, could add `String? eventType;` to CalendarEventModel
   );
 }
 
 /// Provider for getting all calendar events for the current user
 final userEventsProvider = StreamProvider<List<CalendarEventModel>>((ref) {
   final calendarService = ref.watch(calendarEventServiceProvider);
-final authService = ref.watch(authServiceProvider);
-  final userId = authService.currentUser?.id;
-  
-  if (userId == null) {
-    // Return empty list if not logged in
+  final authService = ref.watch(authServiceProvider);
+  final ownerId = authService.currentUser?.id;
+  if (ownerId == null) {
     return Stream.value([]);
   }
-  
-  return calendarService.getUserEventsStream(userId);
+  return calendarService.getUserEventsStream(ownerId);
 });
 
 /// Provider for calendar events within a specified date range
 final dateRangeEventsProvider = StreamProvider.family<List<CalendarEventModel>, DateTimeRange>((ref, dateRange) {
   final calendarService = ref.watch(calendarEventServiceProvider);
   final authService = ref.watch(authServiceProvider);
-  final userId = authService.currentUser?.id;
-  
-  if (userId == null) {
-    // Return empty list if not logged in
+  final ownerId = authService.currentUser?.id;
+  if (ownerId == null) {
     return Stream.value([]);
   }
-  
   return calendarService.getEventsForDateRangeStream(
-    userId: userId,
+    ownerId: ownerId,
     startDate: dateRange.start,
     endDate: dateRange.end,
   );
@@ -98,9 +81,9 @@ final dayEventsProvider = StreamProvider.family<List<CalendarEventModel>, DateTi
   final calendarService = ref.watch(calendarEventServiceProvider);
   final taskService = ref.watch(taskServiceProvider);
   final authService = ref.watch(authServiceProvider);
-  final userId = authService.currentUser?.id;
+  final ownerId = authService.currentUser?.id;
 
-  if (userId == null) {
+  if (ownerId == null) {
     return Stream.value([]);
   }
 
@@ -108,7 +91,7 @@ final dayEventsProvider = StreamProvider.family<List<CalendarEventModel>, DateTi
   final endDate = DateTime(date.year, date.month, date.day, 23, 59, 59);
 
   final eventsStream = calendarService.getEventsForDateRangeStream(
-    userId: userId,
+    ownerId: ownerId,
     startDate: startDate,
     endDate: endDate,
   );
@@ -176,9 +159,9 @@ final dayEventsProvider = StreamProvider.family<List<CalendarEventModel>, DateTi
 final weekEventsProvider = StreamProvider.family<List<CalendarEventModel>, DateTime>((ref, date) {
   final calendarService = ref.watch(calendarEventServiceProvider);
   final authService = ref.watch(authServiceProvider);
-  final userId = authService.currentUser?.id;
+  final ownerId = authService.currentUser?.id;
   
-  if (userId == null) {
+  if (ownerId == null) {
     // Return empty list if not logged in
     return Stream.value([]);
   }
@@ -191,7 +174,7 @@ final weekEventsProvider = StreamProvider.family<List<CalendarEventModel>, DateT
   final endOfWeek = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
   
   return calendarService.getEventsForDateRangeStream(
-    userId: userId,
+    ownerId: ownerId,
     startDate: startOfWeek,
     endDate: endOfWeek,
   );
@@ -202,9 +185,9 @@ final monthEventsProvider = StreamProvider.family<List<CalendarEventModel>, Date
   final calendarService = ref.watch(calendarEventServiceProvider);
   final taskService = ref.watch(taskServiceProvider);
   final authService = ref.watch(authServiceProvider);
-  final userId = authService.currentUser?.id;
+  final ownerId = authService.currentUser?.id;
 
-  if (userId == null) {
+  if (ownerId == null) {
     return Stream.value([]);
   }
 
@@ -213,7 +196,7 @@ final monthEventsProvider = StreamProvider.family<List<CalendarEventModel>, Date
   final endOfMonth = DateTime(date.year, date.month, lastDay, 23, 59, 59);
 
   final eventsStream = calendarService.getEventsForDateRangeStream(
-    userId: userId,
+    ownerId: ownerId,
     startDate: startOfMonth,
     endDate: endOfMonth,
   );

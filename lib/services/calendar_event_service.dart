@@ -31,9 +31,9 @@ class CalendarEventService {
         // _notificationService = notificationService; // Removed
 
   /// Get all events for the current user
-  Future<List<CalendarEventModel>> getUserEvents(String userId) async {
+  Future<List<CalendarEventModel>> getUserEvents(String ownerId) async {
     try {
-      return await _repository.getUserEvents(userId);
+      return await _repository.getUserEvents(ownerId);
     } catch (e) {
       _handleError('Failed to get user events', e);
       rethrow;
@@ -42,12 +42,12 @@ class CalendarEventService {
 
   /// Get events for a user within a date range
   Future<List<CalendarEventModel>> getEventsByDateRange(
-    String userId, 
+    String ownerId, 
     DateTime startDate, 
     DateTime endDate
   ) async {
     try {
-      return await _repository.getEventsByDateRange(userId, startDate, endDate);
+      return await _repository.getEventsByDateRange(ownerId, startDate, endDate);
     } catch (e) {
       _handleError('Failed to get events by date range', e);
       rethrow;
@@ -103,9 +103,9 @@ class CalendarEventService {
   }
 
   /// Get a stream of calendar events for real-time updates
-  Stream<List<CalendarEventModel>> streamUserEvents(String userId) {
+  Stream<List<CalendarEventModel>> streamUserEvents(String ownerId) {
     try {
-      return _repository.streamUserEvents(userId);
+      return _repository.streamUserEvents(ownerId);
     } catch (e) {
       _handleError('Failed to stream user events', e);
       rethrow;
@@ -113,18 +113,18 @@ class CalendarEventService {
   }
 
   /// Get user events as a stream (alias for streamUserEvents for API consistency)
-  Stream<List<CalendarEventModel>> getUserEventsStream(String userId) {
-    return streamUserEvents(userId);
+  Stream<List<CalendarEventModel>> getUserEventsStream(String ownerId) {
+    return streamUserEvents(ownerId);
   }
 
   /// Get a stream of calendar events within a date range for real-time updates
   Stream<List<CalendarEventModel>> streamEventsByDateRange(
-    String userId, 
+    String ownerId, 
     DateTime startDate, 
     DateTime endDate
   ) {
     try {
-      return _repository.streamEventsByDateRange(userId, startDate, endDate);
+      return _repository.streamEventsByDateRange(ownerId, startDate, endDate);
     } catch (e) {
       _handleError('Failed to stream events by date range', e);
       rethrow;
@@ -133,11 +133,11 @@ class CalendarEventService {
 
   /// Get events for date range as a stream (alias for streamEventsByDateRange for API consistency)
   Stream<List<CalendarEventModel>> getEventsForDateRangeStream({
-    required String userId,
+    required String ownerId,
     required DateTime startDate,
     required DateTime endDate,
   }) {
-    return streamEventsByDateRange(userId, startDate, endDate);
+    return streamEventsByDateRange(ownerId, startDate, endDate);
   }
 
   /// Create a calendar event from an entity
@@ -156,7 +156,7 @@ class CalendarEventService {
     final event = CalendarEventModel.fromEntity(
       entityId: entity.id!,
       title: entity.name,
-      userId: entity.userId,
+      ownerId: entity.userId,
       description: description ?? entity.description,
       startTime: startTime,
       endTime: endTime,

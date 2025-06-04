@@ -660,16 +660,22 @@ final List<EntitySubcategoryModel> allDefaultSubcategories = [
 
 // Map of all subcategories by category ID for easy access
 final Map<String, List<EntitySubcategoryModel>> allSubcategories = {
-  'pets': petSubcategories,
-  'social_interests': socialInterestsSubcategories,
-  'education': educationSubcategories,
-  'career': careerSubcategories,
-  'travel': travelSubcategories,
-  'health_beauty': healthBeautySubcategories,
-  'home': homeSubcategories,
-  'garden': gardenSubcategories,
-  'food': foodSubcategories,
-  'laundry': laundrySubcategories,
-  'finance': financeSubcategories,
-  'transport': transportSubcategories,
+  'PETS': petSubcategories,
+  'SOCIAL_INTERESTS': socialInterestsSubcategories,
+  'EDUCATION': educationSubcategories,
+  'CAREER': careerSubcategories,
+  'TRAVEL': travelSubcategories,
+  'HEALTH_BEAUTY': healthBeautySubcategories,
+  'HOME': homeSubcategories,
+  'GARDEN': gardenSubcategories,
+  'FOOD': foodSubcategories,
+  'LAUNDRY': laundrySubcategories,
+  'FINANCE': financeSubcategories,
+  'TRANSPORT': transportSubcategories,
+  // For combined categories (if SubCategoryScreen is ever called with them directly as categoryId)
+  // These might not be strictly necessary if SubCategoryScreen always receives the individual keys
+  // in widget.subCategoryKeys and iterates as per its current logic.
+  // However, including them for robustness if widget.categoryId could be a combined key.
+  'EDUCATION_CAREER': [...educationSubcategories, ...careerSubcategories],
+  'HOME_GARDEN_FOOD_LAUNDRY': [...homeSubcategories, ...gardenSubcategories, ...foodSubcategories, ...laundrySubcategories],
 };
