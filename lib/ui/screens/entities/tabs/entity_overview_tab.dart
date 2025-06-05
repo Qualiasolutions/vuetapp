@@ -345,12 +345,7 @@ class EntityOverviewTab extends ConsumerWidget {
       case EntitySubtype.car:
       case EntitySubtype.publicTransport:
       case EntitySubtype.motorcycle:
-      case EntitySubtype.bicycle:
-      case EntitySubtype.truck:
-      case EntitySubtype.van:
-      case EntitySubtype.rv:
-      case EntitySubtype.atv:
-      case EntitySubtype.jetSki:
+      case EntitySubtype.other:
         return const Color(0xFF607D8B);
         
       // Document entities and other cases

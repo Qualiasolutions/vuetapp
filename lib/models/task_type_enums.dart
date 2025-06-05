@@ -1,189 +1,60 @@
-
-
-// Enums for task types and subtypes
-// These enums match exactly the 7 types from the old React app
-
-/// Main task type enum - matches exactly the 7 types from the old React app
 enum TaskType {
-  /// Regular task (can be fixed or flexible, dynamic when flexible)
-  task,
-  
-  /// Appointment (meeting, doctor, etc.) - static/fixed
-  appointment,
-  
-  /// Due date (deadline, submission, etc.) - static/fixed
-  dueDate,
-  
-  /// Activity (going out, entertainment, etc.) - static/fixed
-  activity,
-  
-  /// Transport (getting there - flight, train, etc.) - static/fixed
-  transport,
-  
-  /// Accommodation (staying overnight - hotel, etc.) - static/fixed
-  accommodation,
-  
-  /// Anniversary (birthday, anniversary, etc.) - static/fixed
-  anniversary,
+  task('task', 'Tasks', true),
+  appointment('appointment', 'Appointment', false),
+  dueDate('due_date', 'Due date', false),
+  activity('activity', 'Going out', false),
+  transport('transport', 'Getting there', false),
+  accommodation('accommodation', 'Staying overnight', false),
+  anniversary('anniversary', 'Birthday/anniversary', false);
+
+  const TaskType(this.name, this.displayName, this.isDynamic);
+
+  final String name;
+  final String displayName;
+  final bool isDynamic;
 }
 
-/// Extension on TaskType to provide a displayName getter
-extension TaskTypeExtension on TaskType {
-  /// Get a user-friendly display name for the task type
-  String get displayName {
-    switch (this) {
-      case TaskType.task:
-        return 'Task';
-      case TaskType.appointment:
-        return 'Appointment';
-      case TaskType.dueDate:
-        return 'Due Date';
-      case TaskType.activity:
-        return 'Going Out';
-      case TaskType.transport:
-        return 'Getting There';
-      case TaskType.accommodation:
-        return 'Staying Overnight';
-      case TaskType.anniversary:
-        return 'Birthday / Anniversary';
-    }
-  }
-}
-
-/// Transport subtypes for transport tasks (from old React app)
-enum TransportSubtype {
-  /// Flight
-  flight,
-  
-  /// Train or public transport
-  train,
-  
-  /// Rental car
-  rentalCar,
-  
-  /// Taxi
-  taxi,
-  
-  /// Drive time
-  driveTime,
-}
-
-/// Activity subtypes for activity tasks (from old React app)
-enum ActivitySubtype {
-  /// General activity
-  activity,
-  
-  /// Food activity
-  foodActivity,
-  
-  /// Other activity
-  otherActivity,
-}
-
-/// Accommodation subtypes for accommodation tasks (from old React app)
-enum AccommodationSubtype {
-  /// Hotel
-  hotel,
-  
-  /// Stay with friend
-  stayWithFriend,
-}
-
-/// Anniversary subtypes for anniversary tasks (from old React app)
-enum AnniversarySubtype {
-  /// Birthday
-  birthday,
-  
-  /// Anniversary
-  anniversary,
-}
-
-/// Priority levels for tasks
 enum TaskPriority {
-  /// Low priority
-  low,
-  
-  /// Medium priority
-  medium,
-  
-  /// High priority
-  high,
+  low('low', 'Low'),
+  medium('medium', 'Medium'),
+  high('high', 'High');
+
+  const TaskPriority(this.value, this.label);
+
+  final String value;
+  final String label;
 }
 
-/// Status options for tasks
+enum TaskUrgency {
+  low('LOW', 'Low'),
+  medium('MEDIUM', 'Medium'),
+  high('HIGH', 'High'),
+  urgent('URGENT', 'Urgent');
+
+  const TaskUrgency(this.value, this.label);
+
+  final String value;
+  final String label;
+}
+
+enum SchedulingType {
+  flexible('FLEXIBLE', 'Flexible'),
+  fixed('FIXED', 'Fixed');
+
+  const SchedulingType(this.value, this.label);
+
+  final String value;
+  final String label;
+}
+
 enum TaskStatus {
-  /// Pending (not started)
-  pending,
-  
-  /// In progress
-  inProgress,
-  
-  /// Completed
-  completed,
-  
-  /// Cancelled
-  cancelled,
-  
-  /// Delayed
-  delayed,
-}
+  pending('pending', 'Pending'),
+  inProgress('in_progress', 'In Progress'),
+  completed('completed', 'Completed'),
+  cancelled('cancelled', 'Cancelled');
 
-/// Extension on TransportSubtype to provide a displayName getter
-extension TransportSubtypeExtension on TransportSubtype {
-  /// Get a user-friendly display name for the transport subtype
-  String get displayName {
-    switch (this) {
-      case TransportSubtype.flight:
-        return 'Flight';
-      case TransportSubtype.train:
-        return 'Train / Public Transport';
-      case TransportSubtype.rentalCar:
-        return 'Rental Car';
-      case TransportSubtype.taxi:
-        return 'Taxi';
-      case TransportSubtype.driveTime:
-        return 'Drive Time';
-    }
-  }
-}
+  const TaskStatus(this.value, this.label);
 
-/// Extension on ActivitySubtype to provide a displayName getter
-extension ActivitySubtypeExtension on ActivitySubtype {
-  /// Get a user-friendly display name for the activity subtype
-  String get displayName {
-    switch (this) {
-      case ActivitySubtype.activity:
-        return 'Activity';
-      case ActivitySubtype.foodActivity:
-        return 'Food';
-      case ActivitySubtype.otherActivity:
-        return 'Other';
-    }
-  }
-}
-
-/// Extension on AccommodationSubtype to provide a displayName getter
-extension AccommodationSubtypeExtension on AccommodationSubtype {
-  /// Get a user-friendly display name for the accommodation subtype
-  String get displayName {
-    switch (this) {
-      case AccommodationSubtype.hotel:
-        return 'Hotel';
-      case AccommodationSubtype.stayWithFriend:
-        return 'Stay With Friend';
-    }
-  }
-}
-
-/// Extension on AnniversarySubtype to provide a displayName getter
-extension AnniversarySubtypeExtension on AnniversarySubtype {
-  /// Get a user-friendly display name for the anniversary subtype
-  String get displayName {
-    switch (this) {
-      case AnniversarySubtype.birthday:
-        return 'Birthday';
-      case AnniversarySubtype.anniversary:
-        return 'Anniversary';
-    }
-  }
+  final String value;
+  final String label;
 }

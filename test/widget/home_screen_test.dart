@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vuet_app/ui/screens/home/home_screen.dart';
+import 'package:vuet_app/ui/screens/home/modernized_home_screen.dart';
 
 void main() {
   group('HomeScreen Widget Tests', () {
@@ -9,7 +9,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: HomeScreen(),
+            home: ModernizedHomeScreen(),
           ),
         ),
       );
@@ -35,7 +35,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: HomeScreen(),
+            home: ModernizedHomeScreen(),
           ),
         ),
       );
@@ -58,7 +58,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: HomeScreen(),
+            home: ModernizedHomeScreen(),
           ),
         ),
       );
@@ -74,7 +74,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: HomeScreen(),
+            home: ModernizedHomeScreen(),
           ),
         ),
       );
@@ -99,7 +99,7 @@ void main() {
         ProviderScope(
           child: MaterialApp(
             theme: ThemeData.light(),
-            home: HomeScreen(),
+            home: ModernizedHomeScreen(),
           ),
         ),
       );
@@ -112,7 +112,7 @@ void main() {
         ProviderScope(
           child: MaterialApp(
             theme: ThemeData.dark(),
-            home: HomeScreen(),
+            home: ModernizedHomeScreen(),
           ),
         ),
       );

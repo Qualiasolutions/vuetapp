@@ -14,7 +14,6 @@ import 'package:vuet_app/services/task_comment_service.dart';
 import 'package:vuet_app/ui/screens/tasks/edit_task_screen.dart';
 
 /// Brand color palette constants
-/// Duplicated from main_categories_screen.dart for consistency
 class VuetColors {
   // Primary brand colors
   static const primaryDark = Color(0xFF1C2827); // Dark Jungle Green

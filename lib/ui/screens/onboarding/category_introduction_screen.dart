@@ -4,6 +4,7 @@ import 'package:vuet_app/constants/setup_content.dart';
 import 'package:vuet_app/services/setup_service.dart';
 import 'package:vuet_app/ui/theme/app_theme.dart';
 import 'package:vuet_app/providers/family_providers.dart';
+import 'package:vuet_app/ui/screens/categories/sub_category_screen.dart';
 
 /// Modern, interactive category introduction screen with beautiful animations
 class CategoryIntroductionScreen extends ConsumerStatefulWidget {
@@ -150,7 +151,9 @@ class _CategoryIntroductionScreenState extends ConsumerState<CategoryIntroductio
         );
 
         widget.onComplete?.call();
-        Navigator.of(context).pop(true);
+        
+        // Navigate to the appropriate subcategory screen
+        _navigateToSubcategoryScreen();
       }
     } catch (e) {
       if (mounted) {
@@ -169,6 +172,102 @@ class _CategoryIntroductionScreenState extends ConsumerState<CategoryIntroductio
         });
       }
     }
+  }
+
+  void _navigateToSubcategoryScreen() {
+    // Import required for navigation
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => _buildSubcategoryScreen(),
+      ),
+    );
+  }
+
+  Widget _buildSubcategoryScreen() {
+    // Import the SubCategoryScreen and related classes
+    final subCategoryScreen = (() {
+      // Import statement will be needed at the top
+      switch (widget.categoryId.toLowerCase()) {
+        case 'transport':
+          return const SubCategoryScreen(
+            categoryId: 'transport',
+            categoryName: 'Transport',
+            subCategoryKeys: ['transport'], // Will load transport subcategories
+          );
+        case 'pets':
+          return const SubCategoryScreen(
+            categoryId: 'pets',
+            categoryName: 'Pets',
+            subCategoryKeys: ['pets'],
+          );
+        case 'social_interests':
+          return const SubCategoryScreen(
+            categoryId: 'social_interests',
+            categoryName: 'Social Interests', 
+            subCategoryKeys: ['social_interests'],
+          );
+        case 'education':
+          return const SubCategoryScreen(
+            categoryId: 'education',
+            categoryName: 'Education',
+            subCategoryKeys: ['education'],
+          );
+        case 'career':
+          return const SubCategoryScreen(
+            categoryId: 'career',
+            categoryName: 'Career',
+            subCategoryKeys: ['career'],
+          );
+        case 'travel':
+          return const SubCategoryScreen(
+            categoryId: 'travel',
+            categoryName: 'Travel',
+            subCategoryKeys: ['travel'],
+          );
+        case 'health_beauty':
+          return const SubCategoryScreen(
+            categoryId: 'health_beauty',
+            categoryName: 'Health & Beauty',
+            subCategoryKeys: ['health_beauty'],
+          );
+        case 'home':
+          return const SubCategoryScreen(
+            categoryId: 'home',
+            categoryName: 'Home',
+            subCategoryKeys: ['home'],
+          );
+        case 'garden':
+          return const SubCategoryScreen(
+            categoryId: 'garden',
+            categoryName: 'Garden',
+            subCategoryKeys: ['garden'],
+          );
+        case 'food':
+          return const SubCategoryScreen(
+            categoryId: 'food',
+            categoryName: 'Food',
+            subCategoryKeys: ['food'],
+          );
+        case 'laundry':
+          return const SubCategoryScreen(
+            categoryId: 'laundry',
+            categoryName: 'Laundry',
+            subCategoryKeys: ['laundry'],
+          );
+        case 'finance':
+          return const SubCategoryScreen(
+            categoryId: 'finance',
+            categoryName: 'Finance',
+            subCategoryKeys: ['finance'],
+          );
+        default:
+          // Fallback - just pop the current screen
+          Navigator.of(context).pop(true);
+          return Container(); // This won't be used due to the pop
+      }
+    })();
+    
+    return subCategoryScreen;
   }
 
   void _nextPage() {
@@ -928,4 +1027,4 @@ class _CategoryIntroductionScreenState extends ConsumerState<CategoryIntroductio
         ];
     }
   }
-} 
+}

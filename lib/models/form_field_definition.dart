@@ -11,6 +11,8 @@ enum FormFieldType {
   email,
   phone,
   url,
+  imagePicker, // Added for image upload
+  memberPicker, // Added for member selection
   // Potentially add more specific types like imagePicker etc.
 }
 

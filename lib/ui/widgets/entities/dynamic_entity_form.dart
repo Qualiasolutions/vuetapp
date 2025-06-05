@@ -3,16 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/entity_model.dart';
 import 'package:vuet_app/models/form_field_definition.dart';
 import 'package:vuet_app/config/entity_form_fields.dart';
-import 'package:vuet_app/models/entity_category_model.dart';
-import 'package:vuet_app/models/hierarchical_category_display_model.dart';
 import 'package:vuet_app/providers/category_providers.dart'; // To fetch categories for dropdown
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class DynamicEntityForm extends ConsumerStatefulWidget {
   final EntitySubtype entitySubtype;
   final BaseEntityModel? initialEntity; // For editing
   final GlobalKey<FormState> formKey;
-  final Function(Map<String, dynamic> customFieldsData, int? appCategoryId, String name, String description) onSave;
-  final int? selectedCategoryId; // To pre-select category if available
+  final Function(Map<String, dynamic> customFieldsData, String name, String description) onSave;
+  final int appCategoryId; // Fixed category ID - no selection needed
 
   const DynamicEntityForm({
     super.key,
@@ -20,7 +20,7 @@ class DynamicEntityForm extends ConsumerStatefulWidget {
     this.initialEntity,
     required this.formKey,
     required this.onSave,
-    this.selectedCategoryId,
+    required this.appCategoryId,
   });
 
   @override
@@ -31,8 +31,9 @@ class _DynamicEntityFormState extends ConsumerState<DynamicEntityForm> {
   late Map<String, dynamic> _customFieldsData;
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
-  String? _selectedCategoryId; // This is EntityCategoryModel.id (String UUID)
-  List<EntityCategoryModel> _displayCategories = []; // To store categories for lookup
+  final Map<String, File?> _imageFiles = {};
+  final Map<String, List<String>> _selectedMembers = {};
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -40,29 +41,7 @@ class _DynamicEntityFormState extends ConsumerState<DynamicEntityForm> {
     _nameController = TextEditingController(text: widget.initialEntity?.name ?? '');
     _descriptionController = TextEditingController(text: widget.initialEntity?.description ?? '');
     _customFieldsData = Map<String, dynamic>.from(widget.initialEntity?.customFields ?? {});
-    // widget.selectedCategoryId is int?, initialEntity.appCategoryId is int?
-    // _selectedCategoryId (state) is String? for the dropdown (EntityCategoryModel.id)
-    // This pre-selection logic is tricky. If widget.selectedCategoryId (int) is provided,
-    // we'd need to find the EntityCategoryModel with a matching conceptual app_category_id.
-    // For now, if initialEntity has an appCategoryId, we can't directly use it for a String dropdown.
-    // Let's try to use initialEntity.categoryId (old field) if it exists and matches a current category.id for basic prefill.
-    // This is a temporary patch for pre-selection.
-    if (widget.initialEntity?.appCategoryId != null) {
-        // If we have an appCategoryId (int), we ideally need to find the corresponding EntityCategoryModel.id (String)
-        // This mapping is not directly available here.
-        // For now, we can't reliably pre-select based on widget.selectedCategoryId (int) or initialEntity.appCategoryId (int)
-        // without fetching all categories and finding a match, or having app_category_id on EntityCategoryModel.
-        // So, _selectedCategoryId might remain null if pre-selection based on int ID is needed.
-    }
-    // The previous logic for `_selectedCategoryId = widget.selectedCategoryId ?? widget.initialEntity?.categoryId;`
-    // was trying to assign String? to String? (if _selectedCategoryId was String?)
-    // or int? to int? (if _selectedCategoryId was int?).
-    // Since BaseEntityModel.categoryId was removed, initialEntity.categoryId won't exist.
-    // We use initialEntity.appCategoryId (int?) or widget.selectedCategoryId (int?) for pre-selection logic if possible.
-    // However, the dropdown expects a String value.
-    // For now, let's clear _selectedCategoryId and rely on the dropdown's default/hint.
-    // Proper pre-selection based on int appCategoryId will be handled when categories load.
-    _selectedCategoryId = null; 
+    // Category is now fixed via appCategoryId parameter - no selection needed
 
     // Initialize custom fields with default values if creating a new entity
     if (widget.initialEntity == null) {
@@ -82,6 +61,112 @@ class _DynamicEntityFormState extends ConsumerState<DynamicEntityForm> {
     _nameController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage(String fieldName, ImageSource source) async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+      
+      if (image != null && mounted) {
+        setState(() {
+          _imageFiles[fieldName] = File(image.path);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to pick image: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+  Future<void> _showMemberPicker(String fieldName) async {
+    // For now, show a placeholder dialog with mock family members
+    // TODO: Implement actual family member selection with invitations
+    final List<String> availableMembers = [
+      'John Doe',
+      'Jane Smith',
+      'Alice Johnson',
+      'Bob Wilson'
+    ];
+    
+    final List<String> currentlySelected = _selectedMembers[fieldName] ?? [];
+    final List<String> tempSelected = List.from(currentlySelected);
+    
+    final result = await showDialog<List<String>>(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Select Members'),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Family Members:'),
+                    const SizedBox(height: 8),
+                    ...availableMembers.map((member) => CheckboxListTile(
+                      title: Text(member),
+                      value: tempSelected.contains(member),
+                      onChanged: (bool? selected) {
+                        setDialogState(() {
+                          if (selected == true) {
+                            if (!tempSelected.contains(member)) {
+                              tempSelected.add(member);
+                            }
+                          } else {
+                            tempSelected.remove(member);
+                          }
+                        });
+                      },
+                    )),
+                    const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        // TODO: Implement email invitation feature
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Email invitation feature coming soon')),
+                        );
+                      },
+                      icon: const Icon(Icons.email),
+                      label: const Text('Invite by Email'),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(tempSelected),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFB23B00),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Done'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+    
+    if (result != null && mounted) {
+      setState(() {
+        _selectedMembers[fieldName] = result;
+      });
+    }
   }
 
   Widget _buildFormField(FormFieldDefinition fieldDef) {
@@ -228,13 +313,160 @@ class _DynamicEntityFormState extends ConsumerState<DynamicEntityForm> {
              _customFieldsData[fieldDef.name] = value;
           },
         );
+
+      case FormFieldType.imagePicker:
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(fieldDef.label, style: const TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              if (_imageFiles[fieldDef.name] != null) ...[
+                Container(
+                  height: 200,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: DecorationImage(
+                      image: FileImage(_imageFiles[fieldDef.name]!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+              Row(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => _pickImage(fieldDef.name, ImageSource.camera),
+                    icon: const Icon(Icons.camera_alt),
+                    label: const Text('Camera'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFB23B00),
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton.icon(
+                    onPressed: () => _pickImage(fieldDef.name, ImageSource.gallery),
+                    icon: const Icon(Icons.photo),
+                    label: const Text('Gallery'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFB23B00),
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                  if (_imageFiles[fieldDef.name] != null) ...[
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _imageFiles[fieldDef.name] = null;
+                        });
+                      },
+                      icon: const Icon(Icons.delete),
+                      label: const Text('Remove'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              if (fieldDef.hintText != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    fieldDef.hintText!,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                ),
+            ],
+          ),
+        );
+
+      case FormFieldType.memberPicker:
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(fieldDef.label, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  const Spacer(),
+                  ElevatedButton.icon(
+                    onPressed: () => _showMemberPicker(fieldDef.name),
+                    icon: const Icon(Icons.people),
+                    label: const Text('Select Members'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFB23B00),
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              if (_selectedMembers[fieldDef.name]?.isNotEmpty ?? false) ...[
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: _selectedMembers[fieldDef.name]!.map((member) => Chip(
+                    label: Text(member),
+                    onDeleted: () {
+                      setState(() {
+                        _selectedMembers[fieldDef.name]?.remove(member);
+                      });
+                    },
+                  )).toList(),
+                ),
+              ] else ...[
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.person, color: Colors.grey[600]),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Current user only',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              if (fieldDef.hintText != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    fieldDef.hintText!,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                ),
+            ],
+          ),
+        );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final List<FormFieldDefinition> subtypeFields = entityFormFields[widget.entitySubtype] ?? [];
-    final categoriesAsyncValue = ref.watch(hierarchicalCategoriesProvider);
+    ref.watch(hierarchicalCategoriesProvider);
 
     return Form(
       key: widget.formKey,
@@ -265,82 +497,7 @@ class _DynamicEntityFormState extends ConsumerState<DynamicEntityForm> {
             ),
             maxLines: 3,
           ),
-          const SizedBox(height: 16),
-          categoriesAsyncValue.when(
-            data: (hierarchicalCategories) {
-              // Flatten the hierarchy for a single dropdown.
-              // A more complex UI might use a hierarchical selector.
-              List<EntityCategoryModel> flatCategories = [];
-              void flatten(List<HierarchicalCategoryDisplayModel> items) {
-                for (var item in items) {
-                  flatCategories.add(item.category);
-                  flatten(item.children);
-                }
-              }
-              flatten(hierarchicalCategories);
-              
-              // Ensure unique categories by ID, preferring user-owned if names clash (though IDs should be unique)
-              final uniqueCategoriesMap = <String, EntityCategoryModel>{};
-              for (var cat in flatCategories) {
-                uniqueCategoriesMap[cat.id] = cat;
-              }
-              final localDisplayCategories = uniqueCategoriesMap.values.toList();
-
-              // Update state with fetched categories and attempt pre-selection
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) {
-                  setState(() {
-                    _displayCategories = localDisplayCategories;
-                    // Attempt pre-selection if not already selected and initial entity has appCategoryId
-                    if (_selectedCategoryId == null && widget.initialEntity?.appCategoryId != null) {
-                      final initialAppCatId = widget.initialEntity!.appCategoryId;
-                      final matchingCategory = _displayCategories.firstWhere(
-                        (cat) => cat.appCategoryId == initialAppCatId,
-                        orElse: () => _displayCategories.firstWhere((cat) => cat.id == 'never_found_dummy_id'), // Ensure a non-null orElse that won't match
-                      );
-                      if (matchingCategory.id != 'never_found_dummy_id') {
-                         _selectedCategoryId = matchingCategory.id;
-                      }
-                    } else if (_selectedCategoryId == null && widget.selectedCategoryId != null) {
-                      // Pre-selection based on widget.selectedCategoryId (int)
-                       final initialAppCatId = widget.selectedCategoryId;
-                       final matchingCategory = _displayCategories.firstWhere(
-                        (cat) => cat.appCategoryId == initialAppCatId,
-                        orElse: () => _displayCategories.firstWhere((cat) => cat.id == 'never_found_dummy_id'),
-                      );
-                      if (matchingCategory.id != 'never_found_dummy_id') {
-                         _selectedCategoryId = matchingCategory.id;
-                      }
-                    }
-                  });
-                }
-              });
-
-              return DropdownButtonFormField<String>(
-                value: _selectedCategoryId, // This is String? (EntityCategoryModel.id)
-                decoration: const InputDecoration(
-                  labelText: 'Category',
-                  border: OutlineInputBorder(),
-                ),
-                hint: const Text('Select a category (optional)'),
-                isExpanded: true,
-                items: _displayCategories.map((category) { // Use state variable _displayCategories
-                  return DropdownMenuItem<String>(
-                    value: category.id, // Value is String (EntityCategoryModel.id)
-                    child: Text(category.name),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedCategoryId = newValue; // _selectedCategoryId is String? (EntityCategoryModel.id)
-                  });
-                },
-                // No validator needed for optional category
-              );
-            },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Text('Error loading categories: $err'),
-          ),
+          // Category is fixed - no selection needed
           const SizedBox(height: 24),
           if (subtypeFields.isNotEmpty)
             Padding(
@@ -361,18 +518,8 @@ class _DynamicEntityFormState extends ConsumerState<DynamicEntityForm> {
             onPressed: () {
               if (widget.formKey.currentState!.validate()) {
                 widget.formKey.currentState!.save();
-                
-                int? appCategoryIdToSave;
-                if (_selectedCategoryId != null && _displayCategories.isNotEmpty) {
-                  final selectedModel = _displayCategories.firstWhere(
-                    (cat) => cat.id == _selectedCategoryId,
-                    // orElse: () => null, // Should ideally not be null if _selectedCategoryId is valid and from _displayCategories
-                  );
-                  // if (selectedModel != null) { // selectedModel will not be null if firstWhere doesn't have orElse and finds a match
-                    appCategoryIdToSave = selectedModel.appCategoryId;
-                  // }
-                }
-                widget.onSave(_customFieldsData, appCategoryIdToSave, _nameController.text, _descriptionController.text);
+                // Use the fixed appCategoryId from widget
+                widget.onSave(_customFieldsData, _nameController.text, _descriptionController.text);
               }
             },
             style: ElevatedButton.styleFrom(

@@ -2,6 +2,21 @@
 
 This guide explains how to set up environment variables for the Vuet Flutter app.
 
+## 📱 Flutter Environment Requirements
+
+**Current Verified Environment** ✅
+- **Flutter**: 3.32.1 (stable channel, released 2025-05-29)
+- **Dart**: 3.8.1  
+- **DevTools**: 2.45.1
+- **SDK Constraint**: `'>=3.2.3 <4.0.0'` (verified compatible)
+
+### Verify Your Flutter Installation
+```bash
+flutter --version
+flutter doctor
+```
+Your Flutter version should match or be newer than the verified version above.
+
 ## 📋 Required Environment Files
 
 You need to create these files from the provided templates:
@@ -68,4 +83,4 @@ You'll need to obtain and configure these services:
 
 - Check the [main README](README.md) for general setup
 - Review [deployment documentation](README-DEPLOYMENT.md) for TestFlight setup
-- Ensure all required services are properly configured 
+- Ensure all required services are properly configured

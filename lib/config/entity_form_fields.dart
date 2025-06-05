@@ -362,78 +362,74 @@ final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
     const FormFieldDefinition(name: 'expiry_date', label: 'Expiry Date', type: FormFieldType.date, isRequired: false),
   ],
 
-  // ========== TRANSPORT CATEGORY (Category 12) - 3 entity types ==========
-  EntitySubtype.boat: [
-    const FormFieldDefinition(name: 'boat_type', label: 'Boat Type', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'registration_number', label: 'Registration Number', type: FormFieldType.text, isRequired: false),
-    const FormFieldDefinition(name: 'length', label: 'Length', type: FormFieldType.text, isRequired: false),
+  // ========== TRANSPORT CATEGORY (Category 12) - Enhanced with user invitations & photo upload ==========
+  EntitySubtype.car: [
+    const FormFieldDefinition(name: 'photo', label: 'Vehicle Photo', type: FormFieldType.imagePicker, isRequired: false, hintText: '1- TAKE PHOTO  2- CHOOSE PHOTO'),
+    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true, hintText: 'e.g., Toyota, Honda'),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true, hintText: 'e.g., Camry, Accord'),
+    const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'registration', label: 'Registration/License Plate', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'color', label: 'Color', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'vin', label: 'VIN Number', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'insurance_expiry', label: 'Insurance Expiry', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'registration_expiry', label: 'Registration Expiry', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'members', label: 'Invite Users', type: FormFieldType.memberPicker, isRequired: false, hintText: 'Share this car with family members'),
   ],
 
-  EntitySubtype.car: [
+  EntitySubtype.motorcycle: [
+    const FormFieldDefinition(name: 'photo', label: 'Vehicle Photo', type: FormFieldType.imagePicker, isRequired: false, hintText: '1- TAKE PHOTO  2- CHOOSE PHOTO'),
     const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
     const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
     const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'registration', label: 'Registration/License Plate', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'engine_size', label: 'Engine Size (cc)', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'insurance_expiry', label: 'Insurance Expiry', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'members', label: 'Invite Users', type: FormFieldType.memberPicker, isRequired: false, hintText: 'Share this motorcycle with family members'),
+  ],
+
+  EntitySubtype.boat: [
+    const FormFieldDefinition(name: 'photo', label: 'Boat Photo', type: FormFieldType.imagePicker, isRequired: false, hintText: '1- TAKE PHOTO  2- CHOOSE PHOTO'),
+    const FormFieldDefinition(name: 'boat_type', label: 'Boat Type', type: FormFieldType.text, isRequired: true, hintText: 'e.g., Sailboat, Speedboat'),
+    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'length', label: 'Length (ft)', type: FormFieldType.number, isRequired: false),
+    const FormFieldDefinition(name: 'registration_number', label: 'Registration Number', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'hull_id', label: 'Hull ID', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'dock_location', label: 'Dock/Storage Location', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'insurance_expiry', label: 'Insurance Expiry', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'members', label: 'Invite Users', type: FormFieldType.memberPicker, isRequired: false, hintText: 'Share this boat with family members'),
   ],
 
   EntitySubtype.publicTransport: [
+    const FormFieldDefinition(name: 'photo', label: 'Transport Photo', type: FormFieldType.imagePicker, isRequired: false, hintText: '1- TAKE PHOTO  2- CHOOSE PHOTO'),
     const FormFieldDefinition(name: 'transport_type', label: 'Transport Type', type: FormFieldType.dropdown, isRequired: true, options: [
       FormFieldOption(value: 'bus', label: 'Bus'),
       FormFieldOption(value: 'train', label: 'Train'),
       FormFieldOption(value: 'subway', label: 'Subway/Metro'),
+      FormFieldOption(value: 'tram', label: 'Tram'),
+      FormFieldOption(value: 'taxi', label: 'Taxi'),
+      FormFieldOption(value: 'rideshare', label: 'Rideshare'),
+      FormFieldOption(value: 'other', label: 'Other'),
     ]),
-    const FormFieldDefinition(name: 'route_number', label: 'Route Number/Line', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'route_number', label: 'Route/Line Number', type: FormFieldType.text, isRequired: false, hintText: 'e.g., Route 42, Line A'),
+    const FormFieldDefinition(name: 'operator', label: 'Operator/Company', type: FormFieldType.text, isRequired: false, hintText: 'e.g., Metro Transit, Uber'),
+    const FormFieldDefinition(name: 'description', label: 'Description', type: FormFieldType.multilineText, isRequired: false, hintText: 'Describe your public transport details'),
+    const FormFieldDefinition(name: 'members', label: 'Invite Users', type: FormFieldType.memberPicker, isRequired: false, hintText: 'Share this transport info with family members'),
   ],
 
-  EntitySubtype.motorcycle: [
-    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
+  EntitySubtype.other: [
+    const FormFieldDefinition(name: 'photo', label: 'Vehicle Photo', type: FormFieldType.imagePicker, isRequired: false, hintText: '1- TAKE PHOTO  2- CHOOSE PHOTO'),
+    const FormFieldDefinition(name: 'vehicle_type', label: 'Vehicle Type', type: FormFieldType.dropdown, isRequired: true, options: [
+      FormFieldOption(value: 'other', label: 'Other Vehicle'),
+    ]),
+    const FormFieldDefinition(name: 'make', label: 'Make/Brand', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: false),
     const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
-    const FormFieldDefinition(name: 'registration', label: 'Registration', type: FormFieldType.text, isRequired: false),
-  ],
-
-  EntitySubtype.bicycle: [
-    const FormFieldDefinition(name: 'bike_type', label: 'Bicycle Type', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'brand', label: 'Brand', type: FormFieldType.text, isRequired: false),
-    const FormFieldDefinition(name: 'frame_size', label: 'Frame Size', type: FormFieldType.text, isRequired: false),
-    const FormFieldDefinition(name: 'serial_number', label: 'Serial Number', type: FormFieldType.text, isRequired: false),
-  ],
-
-  EntitySubtype.truck: [
-    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
-    const FormFieldDefinition(name: 'registration', label: 'Registration', type: FormFieldType.text, isRequired: false),
-    const FormFieldDefinition(name: 'cargo_capacity', label: 'Cargo Capacity', type: FormFieldType.text, isRequired: false),
-  ],
-
-  EntitySubtype.van: [
-    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
-    const FormFieldDefinition(name: 'registration', label: 'Registration', type: FormFieldType.text, isRequired: false),
-    const FormFieldDefinition(name: 'seating_capacity', label: 'Seating Capacity', type: FormFieldType.number, isRequired: false),
-  ],
-
-  EntitySubtype.rv: [
-    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'year', label: 'Year', type: FormFieldType.number, isRequired: false),
-    const FormFieldDefinition(name: 'length', label: 'Length', type: FormFieldType.text, isRequired: false),
-    const FormFieldDefinition(name: 'sleeping_capacity', label: 'Sleeping Capacity', type: FormFieldType.number, isRequired: false),
-  ],
-
-  EntitySubtype.atv: [
-    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'engine_size', label: 'Engine Size (cc)', type: FormFieldType.number, isRequired: false),
-    const FormFieldDefinition(name: 'vin', label: 'VIN/Serial Number', type: FormFieldType.text, isRequired: false),
-  ],
-
-  EntitySubtype.jetSki: [
-    const FormFieldDefinition(name: 'make', label: 'Make', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'model', label: 'Model', type: FormFieldType.text, isRequired: true),
-    const FormFieldDefinition(name: 'engine_size', label: 'Engine Size (cc)', type: FormFieldType.number, isRequired: false),
-    const FormFieldDefinition(name: 'hull_id', label: 'Hull ID Number', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'registration', label: 'Registration/License Plate', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'serial_number', label: 'Serial/VIN Number', type: FormFieldType.text, isRequired: false),
+    const FormFieldDefinition(name: 'specifications', label: 'Specifications', type: FormFieldType.multilineText, isRequired: false, hintText: 'Engine size, capacity, dimensions, etc.'),
+    const FormFieldDefinition(name: 'insurance_expiry', label: 'Insurance Expiry', type: FormFieldType.date, isRequired: false),
+    const FormFieldDefinition(name: 'members', label: 'Invite Users', type: FormFieldType.memberPicker, isRequired: false, hintText: 'Share this vehicle with family members'),
   ],
 
   // ========== DOCUMENTS CATEGORY (Category 14) - 11 entity types ==========
@@ -516,5 +512,14 @@ final Map<EntitySubtype, List<FormFieldDefinition>> entityFormFields = {
     const FormFieldDefinition(name: 'issue_date', label: 'Issue Date', type: FormFieldType.date, isRequired: true),
     const FormFieldDefinition(name: 'expiry_date', label: 'Expiry Date', type: FormFieldType.date, isRequired: false),
     const FormFieldDefinition(name: 'credential_id', label: 'Credential ID', type: FormFieldType.text, isRequired: false),
+  ],
+
+  // ========== GENERAL ENTITY TYPE ==========
+  EntitySubtype.general: [
+    const FormFieldDefinition(name: 'photo', label: 'Photo', type: FormFieldType.imagePicker, isRequired: false, hintText: '1- Take Photo  2- Choose Photo'),
+    const FormFieldDefinition(name: 'category', label: 'Category', type: FormFieldType.text, isRequired: false, hintText: 'What type of item is this?'),
+    const FormFieldDefinition(name: 'location', label: 'Location', type: FormFieldType.text, isRequired: false, hintText: 'Where is this stored or located?'),
+    const FormFieldDefinition(name: 'notes', label: 'Notes', type: FormFieldType.multilineText, isRequired: false, hintText: 'Additional details or information'),
+    const FormFieldDefinition(name: 'members', label: 'Invite Users', type: FormFieldType.memberPicker, isRequired: false, hintText: 'Share this item with family members'),
   ],
 };

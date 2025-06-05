@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/entity_model.dart';
 import 'package:vuet_app/models/entity_subcategory_model.dart';
-import 'package:vuet_app/ui/screens/entities/create_entity_screen.dart';
+import 'package:vuet_app/ui/screens/entities/create_edit_entity_screen.dart';
 import 'package:vuet_app/ui/screens/entities/entity_list_screen.dart';
 import 'package:vuet_app/constants/default_subcategories.dart';
 import 'package:vuet_app/utils/logger.dart';
+import 'package:vuet_app/utils/entity_type_helper.dart' as helper_util;
 
 class SubCategoryScreen extends ConsumerStatefulWidget {
   final String categoryId;
@@ -24,28 +25,49 @@ class SubCategoryScreen extends ConsumerStatefulWidget {
 }
 
 class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  TabController? _tabController;
   bool _isLoading = true;
-  int _selectedTabIndex = 0;
   List<EntitySubcategoryModel> _subcategories = [];
+
+  // Placeholder for dropdown values
+  String? _quickNavValue;
+  String? _iWantToValue;
+
+  // Define transport specific sections
+  final List<String> _transportSections = [
+    'Cars & Motorcycles',
+    'Boats & Other',
+    'Public Transport',
+    'My Transport Information',
+    'Transport Preferences',
+  ];
 
   @override
   void initState() {
     super.initState();
-    _loadSubcategories();
+    if (widget.categoryName != 'Transport') {
+      _loadSubcategoriesForTabs();
+    } else {
+      // For Transport, we don't need to load subcategories for tabs
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
-  Future<void> _loadSubcategories() async {
+  Future<void> _loadSubcategoriesForTabs() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
       // Get subcategories from the default categories or from the repository
+      _subcategories = [];
       if (allSubcategories.containsKey(widget.categoryId)) {
         _subcategories = allSubcategories[widget.categoryId]!;
+      } else if (widget.subCategoryKeys.isNotEmpty && allSubcategories.containsKey(widget.subCategoryKeys.first)) {
+        _subcategories = allSubcategories[widget.subCategoryKeys.first]!;
       } else {
-        // Combine subcategories for all relevant category keys
         for (final key in widget.subCategoryKeys) {
           if (allSubcategories.containsKey(key)) {
             _subcategories.addAll(allSubcategories[key]!);
@@ -53,26 +75,27 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
         }
       }
 
-      // Initialize tab controller
+      if (_subcategories.isNotEmpty) {
       _tabController = TabController(
         length: _subcategories.length,
         vsync: this,
       );
 
-      _tabController.addListener(() {
-        if (!_tabController.indexIsChanging) {
-          setState(() {
-            _selectedTabIndex = _tabController.index;
-          });
-        }
-      });
-    } catch (e) {
-      // Handle errors
+        _tabController!.addListener(() {
+          if (!mounted) return;
+        });
+      } else {
+        log('No subcategories found for tabbing for category: ${widget.categoryName}', name: 'SubCategoryScreen');
+      }
+    } catch (e, s) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading subcategories: $e')),
       );
-      log('Error loading subcategories: $e');
+      log('Error loading subcategories: $e', name: 'SubCategoryScreen', stackTrace: s);
     } finally {
+      // ignore: control_flow_in_finally
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -81,35 +104,37 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _tabController?.dispose();
     super.dispose();
   }
 
-  // Convert subcategory to entity subtype if needed
   EntitySubtype? _getEntitySubtypeForSubcategory(EntitySubcategoryModel subcategory) {
+    if (widget.categoryName == 'Transport') {
+      return null;
+    }
+
     if (subcategory.entityTypeIds.isEmpty) {
-      // Fallback if entityTypeIds is empty, though this shouldn't happen with new setup
+      log('Warning: entityTypeIds is empty for subcategory ${subcategory.name}', name: 'SubCategoryScreen');
       switch (widget.categoryId) {
         case 'pets': return EntitySubtype.pet;
         case 'social_interests': return EntitySubtype.event;
         case 'education': return EntitySubtype.academicPlan;
         case 'career': return EntitySubtype.work;
         case 'travel': return EntitySubtype.trip;
-        case 'health_beauty': return EntitySubtype.appointment; // Or a more generic health type
+        case 'health_beauty': return EntitySubtype.appointment;
         case 'home': return EntitySubtype.home;
         case 'garden': return EntitySubtype.plant;
         case 'food': return EntitySubtype.foodPlan;
-        case 'laundry': return EntitySubtype.item; // Was laundryItem, now item
+        case 'laundry': return EntitySubtype.item;
         case 'finance': return EntitySubtype.bankAccount;
         case 'transport': return EntitySubtype.car;
-        default: return null;
+        default: return EntitySubtype.general;
       }
     }
 
     final String entityTypeString = subcategory.entityTypeIds[0];
 
     switch (entityTypeString) {
-      // Pets
       case 'Pet': return EntitySubtype.pet;
       case 'Vet': return EntitySubtype.vet;
       case 'Walker': return EntitySubtype.walker;
@@ -119,8 +144,6 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
       case 'InsuranceCompany': return EntitySubtype.insuranceCompany;
       case 'InsurancePolicy': return EntitySubtype.insurancePolicy;
       case 'PetBirthday': return EntitySubtype.petBirthday;
-
-      // Social Interests
       case 'Event': return EntitySubtype.event;
       case 'Hobby': return EntitySubtype.hobby;
       case 'Holiday': return EntitySubtype.holiday;
@@ -132,8 +155,6 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
       case 'Anniversary': return EntitySubtype.anniversary;
       case 'EventSubentity': return EntitySubtype.eventSubentity;
       case 'GuestListInvite': return EntitySubtype.guestListInvite;
-
-      // Education
       case 'School': return EntitySubtype.school;
       case 'Subject': return EntitySubtype.subject;
       case 'CourseWork': return EntitySubtype.courseWork;
@@ -148,15 +169,11 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
       case 'SchoolTermStart': return EntitySubtype.schoolTermStart;
       case 'SchoolYearEnd': return EntitySubtype.schoolYearEnd;
       case 'SchoolYearStart': return EntitySubtype.schoolYearStart;
-
-      // Career
       case 'Work': return EntitySubtype.work;
       case 'Colleague': return EntitySubtype.colleague;
       case 'CareerGoal': return EntitySubtype.careerGoal;
       case 'DaysOff': return EntitySubtype.daysOff;
       case 'Employee': return EntitySubtype.employee;
-
-      // Travel
       case 'Trip': return EntitySubtype.trip;
       case 'ACCOMMODATION': return EntitySubtype.accommodation;
       case 'PLACE': return EntitySubtype.place;
@@ -168,8 +185,6 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
       case 'TaxiOrTransfer': return EntitySubtype.taxiOrTransfer;
       case 'TrainBusFerry': return EntitySubtype.trainBusFerry;
       case 'TravelPlan': return EntitySubtype.travelPlan;
-
-      // Health & Beauty
       case 'Doctor': return EntitySubtype.doctor;
       case 'Dentist': return EntitySubtype.dentist;
       case 'BeautySalon': return EntitySubtype.beautySalon;
@@ -180,8 +195,6 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
       case 'HealthGoal': return EntitySubtype.healthGoal;
       case 'MEDICAL': return EntitySubtype.medical;
       case 'Patient': return EntitySubtype.patient;
-
-      // Home
       case 'Home': return EntitySubtype.home;
       case 'Room': return EntitySubtype.room;
       case 'Furniture': return EntitySubtype.furniture;
@@ -190,39 +203,33 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
       case 'CLEANING': return EntitySubtype.cleaning;
       case 'COOKING': return EntitySubtype.cooking;
       case 'HOME_MAINTENANCE': return EntitySubtype.homeMaintenance;
-
-      // Garden
       case 'Plant': return EntitySubtype.plant;
       case 'Tool': return EntitySubtype.tool;
       case 'Garden': return EntitySubtype.garden;
       case 'GARDENING': return EntitySubtype.gardening;
-
-      // Food
       case 'FoodPlan': return EntitySubtype.foodPlan;
       case 'Recipe': return EntitySubtype.recipe;
       case 'Restaurant': return EntitySubtype.restaurant;
       case 'Food': return EntitySubtype.food;
-
-      // Laundry
       case 'Item': return EntitySubtype.item;
       case 'DryCleaners': return EntitySubtype.dryCleaners;
       case 'Clothing': return EntitySubtype.clothing;
       case 'LaundryPlan': return EntitySubtype.laundryPlan;
-
-      // Finance
       case 'Bank': return EntitySubtype.bank;
       case 'CreditCard': return EntitySubtype.creditCard;
       case 'BankAccount': return EntitySubtype.bankAccount;
       case 'Finance': return EntitySubtype.finance;
-
-      // Transport
       case 'Car': return EntitySubtype.car;
       case 'Boat': return EntitySubtype.boat;
       case 'PublicTransport': return EntitySubtype.publicTransport;
-
+      case 'Motorcycle': return EntitySubtype.motorcycle;
+      case 'Bicycle': return EntitySubtype.other;
+      case 'Truck': return EntitySubtype.other;
+      case 'Van': return EntitySubtype.other;
+      case 'RV': return EntitySubtype.other;
+      case 'ATV': return EntitySubtype.other;
+      case 'JetSki': return EntitySubtype.other;
       default:
-        // Fallback for any unmapped entityTypeString to category-based default
-        // This could log an error/warning in a real app for unmapped types
         log('Warning: Unmapped entityTypeString: $entityTypeString for subcategory ${subcategory.name}', name: 'SubCategoryScreen');
         switch (widget.categoryId) {
           case 'pets': return EntitySubtype.pet;
@@ -237,178 +244,238 @@ class _SubCategoryScreenState extends ConsumerState<SubCategoryScreen> with Sing
           case 'laundry': return EntitySubtype.item;
           case 'finance': return EntitySubtype.bankAccount;
           case 'transport': return EntitySubtype.car;
-          default: return EntitySubtype.general; // A very generic fallback
+          default: return EntitySubtype.general;
         }
     }
   }
 
-  void _onCreateEntity() {
-    if (_subcategories.isEmpty || _selectedTabIndex >= _subcategories.length) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to create entity: no subcategory selected')),
-      );
-      return;
-    }
+  Widget _buildTransportUI(BuildContext context) {
+    List<String> quickNavItems = ['Quick Nav Option 1', 'Quick Nav Option 2'];
+    List<String> iWantToItems = [
+      'Be reminded of due dates for MOT, Service, Warranty, Insurance, Lease Expiration',
+      'Schedule a monthly wash',
+      'Schedule a repair',
+      'Be reminded to decide if trading',
+      'Keep up with driving license numbers, contact information, warranty, insurance logins',
+      'Be reminded when driving license(s) will expire',
+      'Remember to buy train tickets for commute'
+    ];
 
-    final subcategory = _subcategories[_selectedTabIndex];
-    final entitySubtype = _getEntitySubtypeForSubcategory(subcategory);
-    
-    if (entitySubtype == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Unable to determine entity type for this subcategory')),
-      );
-      return;
-    }
-
-    // Get appCategoryId based on entity subtype
-    int? appCategoryId = EntityTypeHelper.categoryMapping[entitySubtype];
-    
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CreateEntityScreen(
-          initialSubtype: entitySubtype,
-          initialCategoryId: widget.categoryId,
-          initialSubcategoryId: subcategory.id,
-          appCategoryId: appCategoryId,
-        ),
-      ),
-    ).then((_) {
-      // Refresh the view when returning from create screen
-      setState(() {});
-    });
-  }
-  
-  // Widget to show when there are no entities
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Icon matching the category
-            Icon(
-              _getCategoryIcon(widget.categoryId),
-              size: 80,
-              color: Colors.grey[400],
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                isExpanded: true,
+                hint: const Text('Quick Nav'),
+                value: _quickNavValue,
+                icon: const Icon(Icons.arrow_drop_down),
+                items: quickNavItems.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _quickNavValue = newValue;
+                  });
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                isExpanded: true,
+                hint: const Text('I Want To'),
+                value: _iWantToValue,
+                icon: const Icon(Icons.arrow_drop_down),
+                items: iWantToItems.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value, overflow: TextOverflow.ellipsis),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _iWantToValue = newValue;
+                  });
+                  if (newValue != null) {
+                    log("Selected 'I Want To': $newValue", name: "SubCategoryScreen");
+                  }
+                },
+              ),
+            ),
             ),
             const SizedBox(height: 24),
-            Text(
-              'You don\'t currently have any ${widget.categoryName} entities',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey,
-              ),
-              textAlign: TextAlign.center,
+          Expanded(
+            child: ListView.separated(
+              itemCount: _transportSections.length,
+              separatorBuilder: (context, index) => const Divider(),
+              itemBuilder: (context, index) {
+                final section = _transportSections[index];
+                return ListTile(
+                  title: Text(section),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    log('Tapped on Transport Section: $section', name: "SubCategoryScreen");
+                    if (section == 'Cars & Motorcycles' || section == 'Boats & Other' || section == 'Public Transport') {
+                      EntitySubcategoryModel? navSubcategory;
+                      if (section == 'Cars & Motorcycles') {
+                        try {
+                          navSubcategory = allSubcategories['transport']?.firstWhere((s) => s.id == 'cars_motorcycles');
+                        } catch (e) {
+                          navSubcategory = null;
+                        }
+                      } else if (section == 'Boats & Other') {
+                        try {
+                          navSubcategory = allSubcategories['transport']?.firstWhere((s) => s.id == 'boats_and_others');
+                        } catch (e) {
+                          navSubcategory = null;
+                        }
+                      } else if (section == 'Public Transport') {
+                        try {
+                          navSubcategory = allSubcategories['transport']?.firstWhere((s) => s.id == 'public_transport_cat');
+                        } catch (e) {
+                          navSubcategory = null;
+                        }
+                      }
+
+                      if (navSubcategory != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EntityListScreen(
+                              categoryId: widget.categoryId,
+                              subcategoryId: navSubcategory!.id,
+                              categoryName: widget.categoryName,
+                              screenTitle: navSubcategory.displayName,
+                              currentSubcategory: navSubcategory,
+                            ),
+                          ),
+                        );
+                      } else {
+                        log('Could not find subcategory model for $section', name: "SubCategoryScreen");
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Navigation for $section not yet implemented.')),
+                      );
+                    }
+                  },
+                );
+              },
             ),
-            const SizedBox(height: 12),
-            Text(
-              'Add your first ${widget.categoryName} entity to get started',
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _onCreateEntity,
-              icon: const Icon(Icons.add),
-              label: Text('Add ${widget.categoryName} Entity'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-  }
-  
-  // Helper method to get icon for category
-  IconData _getCategoryIcon(String categoryId) {
-    switch (categoryId) {
-      case 'pets':
-        return Icons.pets;
-      case 'social_interests':
-        return Icons.people;
-      case 'education_career':
-        return Icons.school;
-      case 'travel':
-        return Icons.flight;
-      case 'health_beauty':
-        return Icons.spa;
-      case 'home_garden':
-        return Icons.home;
-      case 'finance':
-        return Icons.account_balance;
-      case 'transport':
-        return Icons.directions_car;
-      default:
-        return Icons.category;
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Loading Subcategories...')),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_subcategories.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: Text(widget.categoryName)),
-        body: _buildEmptyState(context),
-      );
-    }
+    final bool isTransportCategory = widget.categoryName == 'Transport';
+    final Color appBarTextColor = isTransportCategory ? Colors.white : (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black);
+    final Color appBarIconColor = isTransportCategory ? Colors.white : Theme.of(context).iconTheme.color ?? (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.categoryName),
-        bottom: TabBar(
+        title: Text(
+          widget.categoryName,
+          style: TextStyle(color: appBarTextColor),
+        ),
+        iconTheme: IconThemeData(color: appBarIconColor),
+        backgroundColor: isTransportCategory ? Theme.of(context).primaryColor : Theme.of(context).appBarTheme.backgroundColor,
+        bottom: (isTransportCategory || _isLoading || _subcategories.isEmpty || _tabController == null)
+            ? null
+            : TabBar(
           controller: _tabController,
           isScrollable: true,
-          tabs: _subcategories.map((subcategory) {
-            Widget iconWidget;
-            if (subcategory.icon != null && subcategory.icon!.isNotEmpty) {
-              iconWidget = Image.asset(
-                subcategory.icon!,
-                width: 24, // Example size, adjust as needed
-                height: 24, // Example size, adjust as needed
-                errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                  log('Failed to load subcategory icon: ${subcategory.icon}, Error: $error', name: 'SubCategoryScreen');
-                  return const Icon(Icons.category, size: 24); // Default icon on error
-                },
-              );
-            } else {
-              iconWidget = const Icon(Icons.category, size: 24); // Default icon if path is null or empty
-            }
-            return Tab(
-              icon: iconWidget,
-              text: subcategory.displayName,
-            );
-          }).toList(),
-        ),
+                tabs: _subcategories.map((sub) => Tab(text: sub.displayName)).toList(),
+              ),
       ),
-      body: TabBarView(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : isTransportCategory
+              ? _buildTransportUI(context)
+              : (_subcategories.isEmpty || _tabController == null
+                  ? Center(child: Text('No subcategories available for ${widget.categoryName}.'))
+                  : TabBarView(
         controller: _tabController,
-        children: _subcategories.map((subcategory) {
-          final entitySubtype = _getEntitySubtypeForSubcategory(subcategory);
-          final int? appCategoryIdForEntityList = entitySubtype != null ? EntityTypeHelper.categoryMapping[entitySubtype] : null;
+                      children: _subcategories.map((sub) {
+                        final entitySubtype = _getEntitySubtypeForSubcategory(sub);
+                        int? appCategoryIdForTab;
+                        if (entitySubtype != null) {
+                           try {
+                            appCategoryIdForTab = helper_util.EntityTypeHelper.categoryMapping[entitySubtype];
+                           } catch (e) {
+                             log('Could not find appCategoryId for subtype: $entitySubtype in SubCategoryScreen tab view', name: 'SubCategoryScreen');
+                           }
+                        }
 
           return EntityListScreen(
             categoryId: widget.categoryId,
-            subcategoryId: subcategory.id,
-            categoryName: widget.categoryName, // Main category name for EntityListScreen
-            appCategoryId: appCategoryIdForEntityList,
+                          subcategoryId: sub.id,
+                          categoryName: widget.categoryName,
+                          screenTitle: sub.displayName,
+                          appCategoryId: appCategoryIdForTab, 
+                          defaultEntityType: entitySubtype,
+                          currentSubcategory: sub, 
           );
         }).toList(),
-      ),
+                    )),
       floatingActionButton: FloatingActionButton(
-        onPressed: _onCreateEntity,
-        tooltip: 'Add New ${widget.categoryName} Entity',
+        onPressed: () {
+          EntitySubtype? currentSubtype;
+          String? subcategoryIdForCreation;
+          String? subcategoryNameForCreation;
+
+          if (isTransportCategory) {
+            log('FAB pressed on Transport screen. Needs context for specific creation.', name: "SubCategoryScreen");
+            ScaffoldMessenger.of(context).showSnackBar(
+               const SnackBar(content: Text('Add button functionality for Transport sections to be defined.')),
+             );
+             return;
+
+          } else if (_tabController != null && _subcategories.isNotEmpty) {
+            final selectedSubcategory = _subcategories[_tabController!.index];
+            currentSubtype = _getEntitySubtypeForSubcategory(selectedSubcategory);
+            subcategoryIdForCreation = selectedSubcategory.id;
+            subcategoryNameForCreation = selectedSubcategory.displayName;
+          }
+
+          if (subcategoryIdForCreation != null && subcategoryNameForCreation != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CreateEditEntityScreen(
+                  appCategoryId: helper_util.EntityTypeHelper.categoryMapping[currentSubtype ?? EntitySubtype.general] ?? 1,
+                  initialSubtype: currentSubtype ?? EntitySubtype.general,
+                ),
+              ),
+            );
+          } else if (!isTransportCategory) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Cannot determine subcategory to add an item.')),
+            );
+             log('FAB pressed, but subcategory context unclear for non-Transport.', name: "SubCategoryScreen");
+          }
+        },
         child: const Icon(Icons.add),
       ),
     );

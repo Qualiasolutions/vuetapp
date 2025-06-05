@@ -7,6 +7,8 @@ import 'package:vuet_app/providers/entity_providers.dart';
 import 'package:vuet_app/providers/auth_providers.dart';
 import 'package:vuet_app/providers/entity_actions_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class CreateEditEntityScreen extends ConsumerStatefulWidget {
   final int appCategoryId;
@@ -36,6 +38,9 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
   final Map<String, TextEditingController> _textControllers = {};
   final Map<String, dynamic> _dropdownSelectedValues = {};
   final Map<String, bool> _booleanValues = {};
+  final Map<String, File?> _imageValues = {};
+  final Map<String, List<String>> _memberValues = {};
+  final ImagePicker _imagePicker = ImagePicker();
 
   bool get _isEditMode => widget.entityId != null;
 
@@ -185,6 +190,210 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
         _errorMessage = e.toString();
       });
     }
+  }
+
+  // Image picker methods
+  Future<void> _takePhoto(String fieldName) async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+        maxWidth: 1920,
+        maxHeight: 1080,
+      );
+      if (image != null && mounted) {
+        setState(() {
+          _imageValues[fieldName] = File(image.path);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to take photo: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _choosePhoto(String fieldName) async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxWidth: 1920,
+        maxHeight: 1080,
+      );
+      if (image != null && mounted) {
+        setState(() {
+          _imageValues[fieldName] = File(image.path);
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to choose photo: $e')),
+        );
+      }
+    }
+  }
+
+  void _removeImage(String fieldName) {
+    setState(() {
+      _imageValues[fieldName] = null;
+    });
+  }
+
+  void _showImageSourceDialog(String fieldName) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Change Photo'),
+          content: const Text('How would you like to change the photo?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _takePhoto(fieldName);
+              },
+              child: const Text('Take Photo'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _choosePhoto(fieldName);
+              },
+              child: const Text('Choose from Gallery'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Member picker methods
+  void _inviteByPhone() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String phoneNumber = '';
+        return AlertDialog(
+          title: const Text('Invite by Phone'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Enter phone number to send an invitation:'),
+              const SizedBox(height: 16),
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Phone Number',
+                  hintText: '+1234567890',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.phone,
+                onChanged: (value) => phoneNumber = value,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (phoneNumber.isNotEmpty) {
+                  Navigator.of(context).pop();
+                  _sendPhoneInvitation(phoneNumber);
+                }
+              },
+              child: const Text('Send Invitation'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _inviteInApp() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String email = '';
+        return AlertDialog(
+          title: const Text('Invite in App'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Enter email address to send an app invitation:'),
+              const SizedBox(height: 16),
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Email Address',
+                  hintText: 'user@example.com',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+                onChanged: (value) => email = value,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (email.isNotEmpty) {
+                  Navigator.of(context).pop();
+                  _sendAppInvitation(email);
+                }
+              },
+              child: const Text('Send Invitation'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _sendPhoneInvitation(String phoneNumber) {
+    // For now, add to member list - in the future this will send SMS
+    final fieldName = 'members'; // This should be dynamic based on context
+    final currentMembers = _memberValues[fieldName] ?? [];
+    if (!currentMembers.contains(phoneNumber)) {
+      setState(() {
+        _memberValues[fieldName] = [...currentMembers, phoneNumber];
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Phone invitation sent to $phoneNumber')),
+      );
+    }
+  }
+
+  void _sendAppInvitation(String email) {
+    // For now, add to member list - in the future this will send app invitation
+    final fieldName = 'members'; // This should be dynamic based on context
+    final currentMembers = _memberValues[fieldName] ?? [];
+    if (!currentMembers.contains(email)) {
+      setState(() {
+        _memberValues[fieldName] = [...currentMembers, email];
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('App invitation sent to $email')),
+      );
+    }
+  }
+
+  void _removeMember(String fieldName, String member) {
+    setState(() {
+      _memberValues[fieldName]?.remove(member);
+    });
   }
 
   Future<void> _selectDateTime(BuildContext context, TextEditingController controller, FormFieldDefinition fieldDef) async {
@@ -427,6 +636,254 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
         },
         activeColor: _getEntityTypeColor(_selectedSubtype),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+      ),
+    );
+  }
+
+  Widget _buildImagePickerField(FormFieldDefinition fieldDef) {
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade300),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              fieldDef.label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: _getEntityTypeColor(_selectedSubtype),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (_imageValues[fieldDef.name] != null) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.file(
+                  _imageValues[fieldDef.name]!,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _removeImage(fieldDef.name),
+                      icon: const Icon(Icons.delete),
+                      label: const Text('Remove Photo'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade100,
+                        foregroundColor: Colors.red.shade700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showImageSourceDialog(fieldDef.name),
+                      icon: const Icon(Icons.edit),
+                      label: const Text('Change Photo'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _getEntityTypeColor(_selectedSubtype).withAlpha(51),
+                        foregroundColor: _getEntityTypeColor(_selectedSubtype),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ] else ...[
+              Container(
+                height: 120,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add_a_photo,
+                      size: 32,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Add Photo',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (fieldDef.hintText != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        fieldDef.hintText!,
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _takePhoto(fieldDef.name),
+                      icon: const Icon(Icons.camera_alt),
+                      label: const Text('Take Photo'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _getEntityTypeColor(_selectedSubtype),
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _choosePhoto(fieldDef.name),
+                      icon: const Icon(Icons.photo_library),
+                      label: const Text('Choose Photo'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _getEntityTypeColor(_selectedSubtype).withAlpha(51),
+                        foregroundColor: _getEntityTypeColor(_selectedSubtype),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMemberPickerField(FormFieldDefinition fieldDef) {
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade300),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              fieldDef.label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: _getEntityTypeColor(_selectedSubtype),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (fieldDef.hintText != null) ...[
+              Text(
+                fieldDef.hintText!,
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _inviteByPhone(),
+                    icon: const Icon(Icons.phone),
+                    label: const Text('Invite by Phone'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _getEntityTypeColor(_selectedSubtype),
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _inviteInApp(),
+                    icon: const Icon(Icons.person_add),
+                    label: const Text('Invite in App'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _getEntityTypeColor(_selectedSubtype).withAlpha(51),
+                      foregroundColor: _getEntityTypeColor(_selectedSubtype),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (_memberValues[fieldDef.name]?.isNotEmpty == true) ...[
+              const SizedBox(height: 12),
+              const Divider(),
+              const SizedBox(height: 8),
+              Text(
+                'Invited Members:',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ...(_memberValues[fieldDef.name]!.map((member) => 
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: _getEntityTypeColor(_selectedSubtype).withAlpha(25),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.person,
+                        size: 16,
+                        color: _getEntityTypeColor(_selectedSubtype),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          member,
+                          style: TextStyle(
+                            color: _getEntityTypeColor(_selectedSubtype),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 16),
+                        onPressed: () => _removeMember(fieldDef.name, member),
+                        color: Colors.grey.shade600,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                ),
+              )),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -747,6 +1204,10 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
         fields.add(_buildDropdownFormField(fieldDef));
       } else if (fieldDef.type == FormFieldType.boolean) {
         fields.add(_buildSwitchListTile(fieldDef));
+      } else if (fieldDef.type == FormFieldType.imagePicker) {
+        fields.add(_buildImagePickerField(fieldDef));
+      } else if (fieldDef.type == FormFieldType.memberPicker) {
+        fields.add(_buildMemberPickerField(fieldDef));
       }
     }
     

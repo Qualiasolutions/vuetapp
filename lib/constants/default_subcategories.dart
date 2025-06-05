@@ -608,38 +608,36 @@ final List<EntitySubcategoryModel> financeSubcategories = [
 
 // --- TRANSPORT ---
 final List<EntitySubcategoryModel> transportSubcategories = [
-  EntitySubcategoryModel( // 'Vehicle' is abstract in docs, so we use concrete types
-    id: 'car',
+  EntitySubcategoryModel(
+    id: 'cars_motorcycles',
     categoryId: 'transport',
-    name: 'car',
-    displayName: 'Car',
-    icon: _iconPath('car'),
+    name: 'cars_motorcycles',
+    displayName: 'Cars & Motorcycles',
+    icon: _iconPath('car'), // Using car as representative icon
     color: '#607D8B',
-    entityTypeIds: ['Car'],
-    tagName: 'car',
+    entityTypeIds: ['Car', 'Motorcycle'],
+    tagName: 'cars_motorcycles',
   ),
   EntitySubcategoryModel(
-    id: 'boat',
+    id: 'boats_and_others',
     categoryId: 'transport',
-    name: 'boat',
-    displayName: 'Boat',
+    name: 'boats_and_others',
+    displayName: 'Boats & Other',
     icon: _iconPath('boat'),
     color: '#607D8B',
-    entityTypeIds: ['Boat'],
-    tagName: 'boat',
+    entityTypeIds: ['Boat', 'JetSki', 'RV', 'ATV', 'Truck', 'Van', 'Bicycle'],
+    tagName: 'boats_and_others',
   ),
   EntitySubcategoryModel(
-    id: 'public_transport',
+    id: 'public_transport_cat', // Changed id to avoid conflict if 'public_transport' is also an EntitySubtype
     categoryId: 'transport',
-    name: 'public_transport',
+    name: 'public_transport_cat',
     displayName: 'Public Transport',
     icon: _iconPath('public_transport'),
     color: '#607D8B',
-    entityTypeIds: ['PublicTransport'],
-    tagName: 'public_transport',
+    entityTypeIds: ['PublicTransport'], // Corrected to match EntitySubtype.publicTransport JsonValue
+    tagName: 'public_transport_cat',
   ),
-  // Consider adding Motorcycle, Bicycle if they were distinct entity types in React
-  // For now, sticking to vuet-complete-model's explicit list under Transport.
 ];
 
 // Aggregated list of all default subcategories
@@ -660,22 +658,22 @@ final List<EntitySubcategoryModel> allDefaultSubcategories = [
 
 // Map of all subcategories by category ID for easy access
 final Map<String, List<EntitySubcategoryModel>> allSubcategories = {
-  'PETS': petSubcategories,
-  'SOCIAL_INTERESTS': socialInterestsSubcategories,
-  'EDUCATION': educationSubcategories,
-  'CAREER': careerSubcategories,
-  'TRAVEL': travelSubcategories,
-  'HEALTH_BEAUTY': healthBeautySubcategories,
-  'HOME': homeSubcategories,
-  'GARDEN': gardenSubcategories,
-  'FOOD': foodSubcategories,
-  'LAUNDRY': laundrySubcategories,
-  'FINANCE': financeSubcategories,
-  'TRANSPORT': transportSubcategories,
+  'pets': petSubcategories,
+  'social_interests': socialInterestsSubcategories,
+  'education': educationSubcategories,
+  'career': careerSubcategories,
+  'travel': travelSubcategories,
+  'health_beauty': healthBeautySubcategories,
+  'home': homeSubcategories,
+  'garden': gardenSubcategories,
+  'food': foodSubcategories,
+  'laundry': laundrySubcategories,
+  'finance': financeSubcategories,
+  'transport': transportSubcategories,
   // For combined categories (if SubCategoryScreen is ever called with them directly as categoryId)
   // These might not be strictly necessary if SubCategoryScreen always receives the individual keys
   // in widget.subCategoryKeys and iterates as per its current logic.
   // However, including them for robustness if widget.categoryId could be a combined key.
-  'EDUCATION_CAREER': [...educationSubcategories, ...careerSubcategories],
-  'HOME_GARDEN_FOOD_LAUNDRY': [...homeSubcategories, ...gardenSubcategories, ...foodSubcategories, ...laundrySubcategories],
+  'education_career': [...educationSubcategories, ...careerSubcategories],
+  'home_garden_food_laundry': [...homeSubcategories, ...gardenSubcategories, ...foodSubcategories, ...laundrySubcategories],
 };

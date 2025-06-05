@@ -37,7 +37,8 @@ class SetupService {
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) throw Exception('User not authenticated');
 
-    await _supabase.from('category_setup_completions').insert({
+    // Use upsert to handle cases where the record already exists
+    await _supabase.from('category_setup_completions').upsert({
       'user_id': userId,
       'category_id': categoryId,
       'is_completed': true,

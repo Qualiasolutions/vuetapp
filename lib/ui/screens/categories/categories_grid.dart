@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/config/app_categories.dart'; // Import the new category configuration
 import 'package:vuet_app/ui/widgets/premium_tag.dart';
 import 'package:vuet_app/providers/category_screen_providers.dart';
-import 'package:vuet_app/ui/screens/categories/category_introduction_screen.dart';
+import 'package:vuet_app/providers/setup_service_provider.dart';
+import 'package:vuet_app/ui/screens/onboarding/category_introduction_screen.dart';
+import 'package:vuet_app/ui/screens/categories/sub_category_screen.dart';
 
 class CategoriesGrid extends ConsumerWidget {
   final String searchQuery;
@@ -28,6 +30,30 @@ class CategoriesGrid extends ConsumerWidget {
     if (groupId == 'education_and_career') return 'education.png'; // Added mapping
     if (groupId == 'references') return 'charity.png'; // Added mapping, though References is special
     return '\${groupId}.png';
+  }
+
+  String _getCategorySetupKey(String displayName) {
+    // Map display names to setup content keys
+    switch (displayName.toLowerCase()) {
+      case 'pets':
+        return 'pets';
+      case 'social interests':
+        return 'social_interests';
+      case 'education & career':
+        return 'education'; // Use education as primary for the combined group
+      case 'travel':
+        return 'travel';
+      case 'health & beauty':
+        return 'health_beauty';
+      case 'home & garden':
+        return 'home'; // Use home as primary for the combined group
+      case 'finance':
+        return 'finance';
+      case 'transport':
+        return 'transport';
+      default:
+        return displayName.toLowerCase().replaceAll(' & ', '_').replaceAll(' ', '_');
+    }
   }
 
   @override
@@ -86,7 +112,7 @@ class CategoriesGrid extends ConsumerWidget {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(10.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
+              crossAxisCount: 3,
               crossAxisSpacing: 10.0,
               mainAxisSpacing: 10.0,
               childAspectRatio: 1.0,
@@ -110,63 +136,51 @@ class CategoriesGrid extends ConsumerWidget {
                       duration: const Duration(milliseconds: 500),
                       curve: Curves.easeInOut,
                       child: InkWell(
-                        onTap: () {
+                        onTap: () async {
                           if (isReferences) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('References is a premium feature that will be available soon.')),
                             );
                           } else {
                             final List<AppCategory> actualCategoriesInGroup = getCategoriesInGroup(group.displayName);
-                            final List<String> subCategoryKeys = actualCategoriesInGroup.map((c) => c.name).toList();
-
-                            Widget introScreen;
-                            // Ensure CategoryIntroFactory is correctly implemented and available in the project scope
-                            switch (groupId) {
-                              case 'pets':
-                                introScreen = CategoryIntroFactory.createPetsIntro(onComplete: () {});
-                                break;
-                              case 'social_interests':
-                                introScreen = CategoryIntroFactory.createSocialIntro(onComplete: () {});
-                                break;
-                              case 'education_and_career':
-                                introScreen = CategoryIntroFactory.createEducationIntro(onComplete: () {});
-                                break;
-                              case 'travel':
-                                introScreen = CategoryIntroFactory.createTravelIntro(onComplete: () {});
-                                break;
-                              case 'health_and_beauty':
-                                introScreen = CategoryIntroFactory.createHealthBeautyIntro(onComplete: () {});
-                                break;
-                              case 'home_and_garden':
-                                introScreen = CategoryIntroFactory.createHomeGardenIntro(onComplete: () {});
-                                break;
-                              case 'finance':
-                                introScreen = CategoryIntroFactory.createFinanceIntro(onComplete: () {});
-                                break;
-                              case 'transport':
-                                introScreen = CategoryIntroFactory.createTransportIntro(onComplete: () {});
-                                break;
-                              default:
-                                introScreen = CategoryIntroductionScreen(
-                                  categoryId: actualCategoriesInGroup.isNotEmpty ? actualCategoriesInGroup.first.id.toString() : group.displayName,
-                                  categoryName: group.displayName,
-                                  subCategoryKeys: subCategoryKeys,
-                                  introPages: [
-                                    CategoryIntroPage(
-                                      content: "Welcome to the \${group.displayName} category. Here you can manage all your \${group.displayName.toLowerCase()} related items.",
-                                      backgroundImage: 'assets/images/categories/${_getCategoryImageName(groupId)}',
-                                    ),
-                                  ],
-                                );
-                                break;
-                            }
+                            String categorySetupKey = _getCategorySetupKey(group.displayName);
                             
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => introScreen,
-                              ),
-                            );
+                            // Check if setup is already completed
+                            final setupService = ref.read(setupServiceProvider);
+                            final isCompleted = await setupService.isCategorySetupCompleted(categorySetupKey);
+                            
+                            if (!context.mounted) return;
+                            
+                            if (isCompleted) {
+                              // Navigate directly to subcategory screen
+                              final subCategoryKeys = actualCategoriesInGroup.map((cat) => cat.id.toString()).toList();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SubCategoryScreen(
+                                    categoryId: categorySetupKey,
+                                    categoryName: group.displayName,
+                                    subCategoryKeys: subCategoryKeys,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              // Show introduction screen
+                              final introScreen = CategoryIntroductionScreen(
+                                categoryId: categorySetupKey,
+                                categoryName: group.displayName,
+                                onComplete: () {
+                                  // Optional completion callback
+                                },
+                              );
+                              
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => introScreen,
+                                ),
+                              );
+                            }
                           }
                         },
                         child: Card(

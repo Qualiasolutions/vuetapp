@@ -15,7 +15,7 @@ import 'package:vuet_app/ui/screens/tasks/task_detail_screen.dart';
 import 'package:vuet_app/ui/screens/auth/auth_wrapper.dart';
 import 'package:vuet_app/ui/screens/auth/update_password_screen.dart';
 import 'package:vuet_app/ui/screens/notifications/notifications_screen.dart';
-import 'package:vuet_app/ui/screens/home/home_screen.dart'; // Added HomeScreen
+import 'package:vuet_app/ui/screens/home/modernized_home_screen.dart'; // Added ModernizedHomeScreen
 import 'package:vuet_app/ui/screens/calendar/calendar_screen.dart'; // Added CalendarScreen
 import 'package:vuet_app/widgets/notification_badge.dart';
 import 'package:vuet_app/widgets/tab_notification_badge.dart';
@@ -165,7 +165,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.initState();
      _widgetOptions = <Widget>[
       const CalendarScreen(),
-      const HomeScreen(), 
+      const ModernizedHomeScreen(), 
       const RedesignedListsScreen(),
       const TaskListScreen(),
       const LanaAiAssistantScreen(),

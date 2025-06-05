@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/services/auth_service.dart';
-import 'package:vuet_app/ui/screens/settings/my_account_screen.dart';
+import 'package:vuet_app/ui/screens/account/my_account_screen.dart';
 import 'package:vuet_app/ui/screens/settings/settings_screen.dart';
 
 class AppDrawer extends ConsumerWidget {

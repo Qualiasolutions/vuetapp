@@ -192,18 +192,6 @@ enum EntitySubtype {
   publicTransport,
   @JsonValue('Motorcycle')
   motorcycle,
-  @JsonValue('Bicycle')
-  bicycle,
-  @JsonValue('Truck')
-  truck,
-  @JsonValue('Van')
-  van,
-  @JsonValue('RV')
-  rv,
-  @JsonValue('ATV')
-  atv,
-  @JsonValue('JetSki')
-  jetSki,
   
   // Travel entities (Category 5)
   @JsonValue('Trip')
@@ -406,12 +394,7 @@ class EntityTypeHelper {
     EntitySubtype.vehicleCar: 12,
     EntitySubtype.publicTransport: 12,
     EntitySubtype.motorcycle: 12,
-    EntitySubtype.bicycle: 12,
-    EntitySubtype.truck: 12,
-    EntitySubtype.van: 12,
-    EntitySubtype.rv: 12,
-    EntitySubtype.atv: 12,
-    EntitySubtype.jetSki: 12,
+    EntitySubtype.other: 12,
     
     // Documents (Category 14)
     EntitySubtype.document: 14,
@@ -545,12 +528,7 @@ class EntityTypeHelper {
     EntitySubtype.vehicleCar: 'vehicle_car',
     EntitySubtype.publicTransport: 'public_transport',
     EntitySubtype.motorcycle: 'motorcycle',
-    EntitySubtype.bicycle: 'bicycle',
-    EntitySubtype.truck: 'truck',
-    EntitySubtype.van: 'van',
-    EntitySubtype.rv: 'rv',
-    EntitySubtype.atv: 'atv',
-    EntitySubtype.jetSki: 'jet_ski',
+    EntitySubtype.other: 'other',
     
     // Documents category
     EntitySubtype.document: 'document',
@@ -566,7 +544,6 @@ class EntityTypeHelper {
     EntitySubtype.certificate: 'certificate',
 
     // Fallback/General types
-    EntitySubtype.other: 'other',
     EntitySubtype.general: 'general',
   };
   

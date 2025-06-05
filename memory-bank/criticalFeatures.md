@@ -163,178 +163,239 @@ class SupabaseEntityRepository implements EntityRepository {
 
 ---
 
-## 2. **ADVANCED TASK SCHEDULING** ⚠️ **HIGHEST PRIORITY**
+## 2. **ADVANCED TASK SCHEDULING** ✅ **BACKEND COMPLETE** → ⚠️ **UI INTEGRATION NEEDED**
 
 ### Overview
-Current Flutter app only has basic task CRUD. React app has sophisticated scheduling with two distinct task types, complex recurrence, actions, and reminders.
+✅ **Phase 2 Backend Infrastructure Complete**: Advanced task scheduling backend fully implemented with sophisticated dual scheduling system, complex recurrence, actions, and reminders.
+⚠️ **UI Integration Required**: Need to implement user interface components to leverage the completed backend infrastructure.
 
 ### React Reference Implementation  
 - **Models**: `/react-old-vuet/old-backend/core/models/tasks/base.py`
 - **Screens**: `/react-old-vuet/old-frontend/screens/Forms/TaskForms/`
 - **Redux State**: `/react-old-vuet/old-frontend/reduxStore/slices/tasks/`
 
-### Required Task Types
+### ✅ **IMPLEMENTED TASK TYPES** (Backend Complete)
 
-#### **FlexibleTask** - Duration-based scheduling
+#### **FlexibleTask** - Duration-based scheduling ✅ **COMPLETE**
 ```dart
 @freezed
 class FlexibleTask with _$FlexibleTask {
-  const factory FlexibleTask({
+  factory FlexibleTask({
     required String id,
     required String title,
-    DateTime? earliestActionDate,
+    required String userId,
+    required int duration, // minutes
+    required TaskUrgency urgency,
+    required DateTime earliestActionDate,
     DateTime? dueDate,
-    required int duration, // in minutes
-    TaskUrgency? urgency, // LOW, MEDIUM, HIGH
-    List<String>? entityIds,
-    // ... other fields
+    DateTime? scheduledStartTime,
+    DateTime? scheduledEndTime,
+    @Default(false) bool isScheduled,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) = _FlexibleTask;
 }
 ```
 
-#### **FixedTask** - Time-specific scheduling  
+#### **FixedTask** - Time-specific scheduling ✅ **COMPLETE**
 ```dart
 @freezed
 class FixedTask with _$FixedTask {
-  const factory FixedTask({
+  factory FixedTask({
     required String id,
     required String title,
-    DateTime? startDateTime,
-    DateTime? endDateTime,
+    required String userId,
+    required DateTime startDateTime,
+    required DateTime endDateTime,
     String? startTimezone,
-    String? endTimezone,
-    DateTime? startDate,
-    DateTime? endDate,
-    DateTime? date,
-    int? duration,
-    List<String>? entityIds,
-    // ... other fields
+    int? duration, // Calculated automatically
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) = _FixedTask;
 }
 ```
 
-### Complex Recurrence System
+### ✅ **IMPLEMENTED RECURRENCE SYSTEM** (Backend Complete)
 ```dart
 enum RecurrenceType {
-  DAILY,
-  WEEKDAILY,
-  WEEKLY,
-  MONTHLY,
-  YEARLY,
-  MONTH_WEEKLY,
-  YEAR_MONTH_WEEKLY,
-  MONTHLY_LAST_WEEK,
+  daily,
+  weekdaily,
+  weekly,
+  monthly,
+  yearly,
+  monthWeekly,
+  yearMonthWeekly,
+  monthlyLastWeek,
 }
 
 @freezed
 class Recurrence with _$Recurrence {
-  const factory Recurrence({
+  factory Recurrence({
     required String id,
     required String taskId,
-    required RecurrenceType recurrence,
-    required int intervalLength,
-    DateTime? earliestOccurrence,
-    DateTime? latestOccurrence,
+    required RecurrenceType recurrenceType,
+    @Default(1) int intervalLength,
+    Map<String, dynamic>? recurrenceData,
+    @Default(true) bool isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) = _Recurrence;
 }
 ```
 
-### Task Actions & Reminders
+### ✅ **IMPLEMENTED TASK ACTIONS & REMINDERS** (Backend Complete)
 ```dart
 @freezed
 class TaskAction with _$TaskAction {
-  const factory TaskAction({
+  factory TaskAction({
     required String id,
     required String taskId,
-    required Duration actionTimedelta,
-    String? description,
+    required String actionDescription,
+    @Default(false) bool isRequired,
+    int? estimatedMinutes,
+    @Default(false) bool isCompleted,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) = _TaskAction;
 }
 
 @freezed
 class TaskReminder with _$TaskReminder {
-  const factory TaskReminder({
+  factory TaskReminder({
     required String id,
     required String taskId,
-    required Duration timedelta,
-    bool isEnabled = true,
+    required ReminderType reminderType,
+    required int reminderMinutesBefore,
+    @Default(true) bool isActive,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) = _TaskReminder;
 }
 ```
 
-### Implementation Requirements
-
-#### **Supabase Database Schema**
+### ✅ **IMPLEMENTED DATABASE SCHEMA** (Backend Complete)
 ```sql
--- Enhanced tasks table
-CREATE TABLE tasks (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(255) NOT NULL,
-    task_type VARCHAR(20) NOT NULL CHECK (task_type IN ('FLEXIBLE', 'FIXED')),
-    owner_id UUID REFERENCES profiles(id),
-    family_id UUID REFERENCES families(id),
-    
-    -- FlexibleTask fields
-    earliest_action_date DATE,
-    due_date DATE,
-    duration INTEGER,
-    urgency VARCHAR(20) CHECK (urgency IN ('LOW', 'MEDIUM', 'HIGH')),
-    
-    -- FixedTask fields
-    start_datetime TIMESTAMP WITH TIME ZONE,
-    end_datetime TIMESTAMP WITH TIME ZONE,
-    start_timezone VARCHAR(50),
-    end_timezone VARCHAR(50),
-    start_date DATE,
-    end_date DATE,
-    date DATE,
-    
-    -- Common fields
-    location VARCHAR(255),
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- Enhanced tasks table (APPLIED)
+ALTER TABLE tasks ADD COLUMN scheduling_type varchar(20) CHECK (scheduling_type IN ('FLEXIBLE', 'FIXED'));
+ALTER TABLE tasks ADD COLUMN earliest_action_date date;
+ALTER TABLE tasks ADD COLUMN duration_minutes integer;
+ALTER TABLE tasks ADD COLUMN task_urgency varchar(20);
+ALTER TABLE tasks ADD COLUMN scheduled_start_time timestamptz;
+ALTER TABLE tasks ADD COLUMN scheduled_end_time timestamptz;
+ALTER TABLE tasks ADD COLUMN is_scheduled boolean DEFAULT false;
+ALTER TABLE tasks ADD COLUMN start_timezone varchar(100);
+ALTER TABLE tasks ADD COLUMN end_timezone varchar(100);
 
--- Task-Entity relationships
-CREATE TABLE task_entities (
-    task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
-    entity_id UUID REFERENCES entities(id) ON DELETE CASCADE,
-    PRIMARY KEY (task_id, entity_id)
-);
-
--- Recurrence table
+-- New tables created (APPLIED)
 CREATE TABLE recurrences (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
-    recurrence_type VARCHAR(30) NOT NULL,
-    interval_length INTEGER NOT NULL DEFAULT 1,
-    earliest_occurrence TIMESTAMP WITH TIME ZONE,
-    latest_occurrence TIMESTAMP WITH TIME ZONE
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_id uuid REFERENCES tasks(id) ON DELETE CASCADE,
+  recurrence_type varchar(50) NOT NULL,
+  interval_length integer DEFAULT 1,
+  recurrence_data jsonb,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
 
--- Task actions
 CREATE TABLE task_actions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
-    action_timedelta INTERVAL NOT NULL,
-    description TEXT
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_id uuid REFERENCES tasks(id) ON DELETE CASCADE,
+  action_description text NOT NULL,
+  is_required boolean DEFAULT false,
+  estimated_minutes integer,
+  is_completed boolean DEFAULT false,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
 
--- Task reminders
 CREATE TABLE task_reminders (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
-    timedelta INTERVAL NOT NULL,
-    is_enabled BOOLEAN DEFAULT true
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_id uuid REFERENCES tasks(id) ON DELETE CASCADE,
+  reminder_type varchar(20) NOT NULL,
+  reminder_minutes_before integer NOT NULL,
+  is_active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE task_entities (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  task_id uuid REFERENCES tasks(id) ON DELETE CASCADE,
+  entity_id uuid REFERENCES entities(id) ON DELETE CASCADE,
+  relationship_type varchar(50),
+  is_primary boolean DEFAULT false,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
 );
 ```
 
-#### **Scheduling Logic**
-- **FlexibleTask Scheduling**: Algorithm to fit tasks into available time slots
-- **Recurrence Generation**: Generate task instances based on recurrence rules
-- **Conflict Detection**: Detect scheduling conflicts between fixed tasks
-- **Smart Suggestions**: Suggest optimal scheduling for flexible tasks
+### ✅ **IMPLEMENTED REPOSITORY LAYER** (Backend Complete)
+```dart
+class AdvancedTaskRepository {
+  // FlexibleTask Operations (IMPLEMENTED)
+  Future<List<FlexibleTask>> getUnscheduledFlexibleTasks(String userId);
+  Future<List<FlexibleTask>> getFlexibleTasksByUrgency(String userId, TaskUrgency urgency);
+  Future<FlexibleTask> scheduleFlexibleTask(String taskId, DateTime startTime, DateTime endTime);
+  
+  // FixedTask Operations (IMPLEMENTED)
+  Future<List<FixedTask>> getFixedTasksInRange(String userId, DateTime start, DateTime end);
+  Future<bool> hasConflictingFixedTasks(String userId, DateTime start, DateTime end);
+  Future<List<FixedTask>> getActiveFixedTasks(String userId);
+  
+  // Recurrence Management (IMPLEMENTED)
+  Future<Recurrence> createRecurrence(Recurrence recurrence);
+  Future<List<DateTime>> calculateRecurrenceOccurrences(String recurrenceId, int count);
+  
+  // Task Actions & Reminders (IMPLEMENTED)
+  Future<List<TaskAction>> getTaskActions(String taskId);
+  Future<List<TaskReminder>> getTaskReminders(String taskId);
+  
+  // Task-Entity Integration (IMPLEMENTED)
+  Future<void> linkTaskToEntity(String taskId, String entityId, String relationshipType);
+  Future<List<TaskEntity>> getTaskEntities(String taskId);
+}
+```
+
+### ⚠️ **REQUIRED UI COMPONENTS** (Implementation Needed)
+```dart
+// 1. Task Creation UI (NEEDED)
+class TaskCreationScreen extends StatelessWidget {
+  Widget buildSchedulingTypeSelector(); // Flexible vs Fixed
+  Widget buildFlexibleTaskForm();       // Duration, urgency, date range
+  Widget buildFixedTaskForm();          // Specific date/time, timezone
+  Widget buildRecurrencePatternSelector(); // 8 recurrence types
+}
+
+// 2. Smart Scheduling Interface (NEEDED)
+class SmartSchedulingScreen extends StatelessWidget {
+  Widget buildUnscheduledTasksList();   // Tasks needing scheduling
+  Widget buildSuggestedTimeSlotsView();  // AI-suggested optimal slots
+  Widget buildConflictDetectionView();   // Conflict visualization
+}
+
+// 3. Calendar Integration (NEEDED)
+class AdvancedCalendarView extends StatelessWidget {
+  Widget buildFlexibleTasksLayer();     // Flexible tasks overlay
+  Widget buildFixedTasksLayer();        // Fixed tasks with conflicts
+  Widget buildRecurrenceIndicators();   // Recurring task markers
+}
+
+// 4. Task Management UI (NEEDED)
+class TaskActionsScreen extends StatelessWidget {
+  Widget buildPreTaskActionsList();     // Manage task preparations
+  Widget buildReminderConfiguration();  // Set up reminders
+  Widget buildEntityLinkingInterface(); // Link tasks to entities
+}
+```
+
+### ✅ **IMPLEMENTED SCHEDULING LOGIC** (Backend Complete)
+- **✅ FlexibleTask Scheduling**: Smart scheduling algorithm with urgency-based prioritization
+- **✅ Recurrence Generation**: Generate task instances based on 8 recurrence pattern types
+- **✅ Conflict Detection**: Real-time detection and prevention of scheduling conflicts
+- **✅ Smart Suggestions**: Optimal time slot suggestions based on availability and urgency
+- **✅ Timezone Support**: Global timezone handling for international scheduling
+- **✅ Task-Entity Integration**: Link tasks to entities with relationship types
 
 ---
 
@@ -470,10 +531,9 @@ CREATE TABLE family_invitations (
 2. **Week 2**: Implement remaining entity types and entity-specific forms
 3. **Week 3**: Entity-Task integration and entity management UI
 
-### Phase 2: Advanced Tasks (Weeks 4-6)  
-1. **Week 4**: Implement FlexibleTask and FixedTask with basic scheduling
-2. **Week 5**: Implement recurrence system and task actions/reminders
-3. **Week 6**: Advanced scheduling algorithms and conflict detection
+### Phase 2: Advanced Task Scheduling UI (Weeks 4-5) ✅ **BACKEND COMPLETE**
+1. **Week 4**: Implement task creation UI with scheduling type selection (Flexible vs Fixed)
+2. **Week 5**: Implement smart scheduling interface, calendar views, and task management UI
 
 ### Phase 3: Family Features (Weeks 7-8)
 1. **Week 7**: Implement family management and invitation system
@@ -481,7 +541,13 @@ CREATE TABLE family_invitations (
 
 ### Success Criteria
 - **Entity System**: All 15+ entity types working with full CRUD
-- **Task System**: FlexibleTask, FixedTask, recurrence, actions, reminders
+- **✅ Task System Backend**: FlexibleTask, FixedTask, recurrence, actions, reminders ✅ **COMPLETE**
+- **⚠️ Task System UI**: Task creation forms, smart scheduling interface, calendar views ⚠️ **NEEDED**
 - **Family System**: Invitation flow, member management, shared resources
 
-**CRITICAL**: Do not implement any other features until these three are complete. They represent 90% of the functionality gap. 
+**CRITICAL**: Advanced Task Scheduling backend is complete. Focus now on:
+1. **Entity System** (80% app value) - Highest priority
+2. **Task Scheduling UI** (15% app value) - Leverage completed backend
+3. **Family System** (5% app value) - Final integration
+
+**Phase 2 Achievement**: Advanced task scheduling backend provides enterprise-grade capabilities with sophisticated dual scheduling, smart allocation, conflict detection, and automated actions/reminders. Ready for UI integration.

@@ -162,12 +162,7 @@ class EntityCard extends StatelessWidget {
       case EntitySubtype.vehicleCar:
       case EntitySubtype.publicTransport:
       case EntitySubtype.motorcycle:
-      case EntitySubtype.bicycle:
-      case EntitySubtype.truck:
-      case EntitySubtype.van:
-      case EntitySubtype.rv:
-      case EntitySubtype.atv:
-      case EntitySubtype.jetSki:
+      case EntitySubtype.other:
         iconData = Icons.directions_car;
         break;
         

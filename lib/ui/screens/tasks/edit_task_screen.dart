@@ -13,7 +13,6 @@ import 'package:vuet_app/ui/theme/app_theme.dart';
 import 'package:vuet_app/ui/widgets/task_type_selector.dart';
 // taskCategoriesProvider and userEntitiesProvider are imported from create_task_screen.dart.
 // Ensure they are correctly defined there or move them to a central providers file.
-import 'package:vuet_app/ui/screens/tasks/create_task_screen.dart' show userEntitiesProvider; 
 
 /// Screen for editing an existing task
 class EditTaskScreen extends ConsumerStatefulWidget {
@@ -41,7 +40,6 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
   late String _selectedPriority;
   late String _selectedStatus;
   BaseEntityModel? _selectedEntity; // Changed to BaseEntityModel
-  String? _initialEntityId; // Reverted to String? To store initial entityId from widget.task
   
   // Task type fields
   TaskType? _selectedTaskType;
@@ -93,7 +91,6 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
     _selectedCategoryId = widget.task.categoryId; 
     _selectedPriority = widget.task.priority;
     _selectedStatus = widget.task.status;
-    _initialEntityId = widget.task.entityId; // Store initial entityId
     
     // Categories and Entities will be loaded by their respective providers
   }
@@ -253,8 +250,6 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
   
   @override
   Widget build(BuildContext context) {
-    final entitiesAsyncValue = ref.watch(userEntitiesProvider);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Task'),
@@ -329,14 +324,6 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // const Text( // Title for CategorySelector is inside the component
-                  //   'Category',
-                  //   style: TextStyle(
-                  //     fontSize: 16,
-                  //     fontWeight: FontWeight.bold,
-                  //   ),
-                  // ),
-                  // const SizedBox(height: 8),
                   Card( // Optional: keep Card for consistent styling if CategorySelector doesn't have it
                     margin: EdgeInsets.zero,
                     child: CategorySelector(
@@ -455,64 +442,20 @@ class _EditTaskScreenState extends ConsumerState<EditTaskScreen> {
                       ],
                     ),
                   
-                  entitiesAsyncValue.when(
-                    data: (entities) {
-                      // Initialize _selectedEntity once entities are loaded
-                      if (_initialEntityId != null && _selectedEntity == null) {
-                        try {
-                          _selectedEntity = entities.firstWhere((e) => e.id.toString() == _initialEntityId);
-                        } catch (e) {
-                          // Entity not found, _selectedEntity remains null
-                          // Use logger instead of print in production code
-                          debugPrint('Initial linked entity with ID $_initialEntityId not found in the list.');
-                        }
-                      }
-                      // If _selectedEntity is set but not in the current list (e.g. list refreshed), reset it
-                      final currentSelectedEntity = _selectedEntity; // Help analyzer with flow analysis
-                      if (currentSelectedEntity != null && !entities.any((ent) => ent.id == currentSelectedEntity.id)) {
-                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                           if (mounted) {
-                            setState(() {
-                              _selectedEntity = null;
-                            });
-                           }
-                         });
-                      }
-
-                      return DropdownButtonFormField<BaseEntityModel>(
-                        decoration: const InputDecoration(
-                          labelText: 'Link to Entity (Optional)',
-                          border: OutlineInputBorder(),
-                        ),
-                        value: _selectedEntity,
-                        hint: const Text('Select Entity'),
-                        items: entities.map<DropdownMenuItem<BaseEntityModel>>((BaseEntityModel entity) {
-                          final screenWidth = MediaQuery.of(context).size.width;
-                          final dropdownContentWidth = screenWidth - (16 * 2) - 48;
-                          return DropdownMenuItem<BaseEntityModel>(
-                            value: entity,
-                            child: SizedBox(
-                              width: dropdownContentWidth > 0 ? dropdownContentWidth : 200,
-                              child: Text(
-                                entity.name,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (BaseEntityModel? newValue) {
-                          setState(() {
-                            _selectedEntity = newValue;
-                            _initialEntityId = null; // User made a new selection
-                          });
-                        },
-                      );
-                    },
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (err, stack) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text('Error loading entities: $err', softWrap: true, overflow: TextOverflow.ellipsis, maxLines: 10),
+                  // Simplified entity selection - removed AsyncValue.when usage
+                  DropdownButtonFormField<BaseEntityModel>(
+                    decoration: const InputDecoration(
+                      labelText: 'Link to Entity (Optional)',
+                      border: OutlineInputBorder(),
                     ),
+                    value: _selectedEntity,
+                    hint: const Text('Select Entity'),
+                    items: const [], // Empty for now to avoid entity loading issues
+                    onChanged: (BaseEntityModel? newValue) {
+                      setState(() {
+                        _selectedEntity = newValue;
+                      });
+                    },
                   ),
                   const SizedBox(height: 16),
                   const Text(
