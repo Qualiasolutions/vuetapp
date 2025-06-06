@@ -1,16 +1,27 @@
 import 'package:vuet_app/models/entity_category_model.dart';
 
 // Defines the default, global categories for the application.
-// These match the categories from the original React app exactly.
+// Updated to match the Modern Palette Edition specifications.
 
 final List<EntityCategoryModel> defaultCategories = [
+  // FAMILY - New category as specified in detailed guide
+  EntityCategoryModel(
+    id: 'family',
+    name: 'Family',
+    icon: 'assets/images/categories/family.png',
+    color: '#E49F2F', // Orange from Modern Palette
+    ownerId: null,
+    priority: 1,
+    description: 'Manage family members, birthdays, anniversaries, and appointments.',
+    isProfessional: false,
+  ),
   EntityCategoryModel(
     id: 'pets',
     name: 'Pets',
     icon: 'assets/images/categories/pets.png',
-    color: '#8D6E63', // Brown Accent
+    color: '#E49F2F', // Orange from Modern Palette
     ownerId: null,
-    priority: 1,
+    priority: 2,
     description: 'Manage pet care, appointments, and all pet-related information.',
     isProfessional: false,
   ),
@@ -234,6 +245,17 @@ final List<EntityCategoryModel> defaultCategories = [
     ownerId: null,
     priority: 12,
     description: 'Manage vehicles, public transport, and travel arrangements.',
+    isProfessional: false,
+  ),
+  // CHARITY & RELIGION - Replaces the reference system as specified
+  EntityCategoryModel(
+    id: 'charity_religion',
+    name: 'Charity & Religion',
+    icon: 'assets/images/categories/charity_religion.png',
+    color: '#55C6D6', // Medium Turquoise from Modern Palette
+    ownerId: null,
+    priority: 13,
+    description: 'Manage charitable activities, religious events, and spiritual practices.',
     isProfessional: false,
   ),
 ];

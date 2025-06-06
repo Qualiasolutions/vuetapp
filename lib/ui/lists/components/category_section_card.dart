@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vuet_app/models/list_category_model.dart';
 import 'package:vuet_app/models/list_model.dart';
+import 'package:vuet_app/ui/theme/app_theme.dart';
 
 class CategorySectionCard extends StatelessWidget {
   final ListCategoryModel category;
@@ -21,7 +22,8 @@ class CategorySectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final categoryColor = _parseColor(category.color);
+    final categoryColor = AppTheme.accent;
+    final iconColor = _parseColor(category.color);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -30,7 +32,7 @@ class CategorySectionCard extends StatelessWidget {
           // Category Header
           Material(
             color: theme.colorScheme.surface,
-            borderRadius: isExpanded 
+            borderRadius: isExpanded
                 ? const BorderRadius.only(
                     topLeft: Radius.circular(16),
                     topRight: Radius.circular(16),
@@ -40,14 +42,15 @@ class CategorySectionCard extends StatelessWidget {
             shadowColor: Colors.black.withValues(alpha: 0.1),
             child: InkWell(
               onTap: lists.isEmpty ? onAddToCategory : onToggleExpansion,
-              borderRadius: isExpanded 
+              borderRadius: isExpanded
                   ? const BorderRadius.only(
                       topLeft: Radius.circular(16),
                       topRight: Radius.circular(16),
                     )
                   : BorderRadius.circular(16),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 child: Row(
                   children: [
                     // Category Icon
@@ -60,12 +63,12 @@ class CategorySectionCard extends StatelessWidget {
                       ),
                       child: Icon(
                         _getIconData(category.icon),
-                        color: categoryColor,
+                        color: iconColor,
                         size: 20,
                       ),
                     ),
                     const SizedBox(width: 16),
-                    
+
                     // Category Name & Lists Count
                     Expanded(
                       child: Column(
@@ -83,7 +86,8 @@ class CategorySectionCard extends StatelessWidget {
                             Text(
                               '${lists.length} list${lists.length == 1 ? '' : 's'}',
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                color: theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.6),
                               ),
                             ),
                           ] else ...[
@@ -91,7 +95,8 @@ class CategorySectionCard extends StatelessWidget {
                             Text(
                               'Tap to add first list',
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: categoryColor.withValues(alpha: 0.8),
+                                color:
+                                    AppTheme.secondary.withValues(alpha: 0.8),
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
@@ -99,19 +104,19 @@ class CategorySectionCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
+
                     // Add Button or Expansion Arrow
                     if (lists.isEmpty)
                       Container(
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: categoryColor.withValues(alpha: 0.1),
+                          color: AppTheme.secondary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
                           Icons.add,
-                          color: categoryColor,
+                          color: AppTheme.secondary,
                           size: 20,
                         ),
                       )
@@ -124,7 +129,7 @@ class CategorySectionCard extends StatelessWidget {
                             onPressed: onAddToCategory,
                             icon: Icon(
                               Icons.add,
-                              color: categoryColor,
+                              color: AppTheme.secondary,
                               size: 20,
                             ),
                             constraints: const BoxConstraints(
@@ -132,7 +137,8 @@ class CategorySectionCard extends StatelessWidget {
                               minHeight: 36,
                             ),
                             style: IconButton.styleFrom(
-                              backgroundColor: categoryColor.withValues(alpha: 0.1),
+                              backgroundColor:
+                                  AppTheme.secondary.withValues(alpha: 0.1),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -145,7 +151,8 @@ class CategorySectionCard extends StatelessWidget {
                             duration: const Duration(milliseconds: 200),
                             child: Icon(
                               Icons.keyboard_arrow_down,
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -164,9 +171,9 @@ class CategorySectionCard extends StatelessWidget {
                 bottomLeft: Radius.circular(16),
                 bottomRight: Radius.circular(16),
               ),
-                              elevation: 2,
-                shadowColor: Colors.black.withValues(alpha: 0.1),
-                child: Container(
+              elevation: 2,
+              shadowColor: Colors.black.withValues(alpha: 0.1),
+              child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                 child: Column(
@@ -177,9 +184,10 @@ class CategorySectionCard extends StatelessWidget {
                       color: theme.colorScheme.outline.withValues(alpha: 0.2),
                       margin: const EdgeInsets.only(bottom: 12),
                     ),
-                    
+
                     // Lists
-                    ...lists.map((list) => _buildListItem(context, list, categoryColor)),
+                    ...lists.map(
+                        (list) => _buildListItem(context, list, categoryColor)),
                   ],
                 ),
               ),
@@ -189,7 +197,8 @@ class CategorySectionCard extends StatelessWidget {
     );
   }
 
-  Widget _buildListItem(BuildContext context, ListModel list, Color categoryColor) {
+  Widget _buildListItem(
+      BuildContext context, ListModel list, Color categoryColor) {
     final theme = Theme.of(context);
     final progressPercent = list.completionPercentage / 100;
 
@@ -199,7 +208,7 @@ class CategorySectionCard extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         elevation: 1,
-                  shadowColor: Colors.black.withValues(alpha: 0.05),
+        shadowColor: Colors.black.withValues(alpha: 0.05),
         child: InkWell(
           onTap: () {
             // Navigate to list detail
@@ -214,12 +223,12 @@ class CategorySectionCard extends StatelessWidget {
                   width: 8,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: categoryColor,
+                    color: AppTheme.accent,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
                 const SizedBox(width: 16),
-                
+
                 // List content
                 Expanded(
                   child: Column(
@@ -232,7 +241,7 @@ class CategorySectionCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      
+
                       // Progress or description
                       if (list.totalItems > 0) ...[
                         Row(
@@ -240,16 +249,17 @@ class CategorySectionCard extends StatelessWidget {
                             Expanded(
                               child: LinearProgressIndicator(
                                 value: progressPercent,
-                                backgroundColor: categoryColor.withValues(alpha: 0.2),
-                                valueColor: AlwaysStoppedAnimation(categoryColor),
+                                backgroundColor: AppTheme.secondary.withValues(alpha: 0.2),
+                                valueColor: AlwaysStoppedAnimation(AppTheme.secondary),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Text(
                               '${list.completedItems}/${list.totalItems}',
-                                                              style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                                  fontWeight: FontWeight.w500,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface
+                                    .withValues(alpha: 0.6),
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
@@ -258,7 +268,8 @@ class CategorySectionCard extends StatelessWidget {
                         Text(
                           list.description!,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.6),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -267,7 +278,8 @@ class CategorySectionCard extends StatelessWidget {
                         Text(
                           'Empty list',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                            color: theme.colorScheme.onSurface
+                                .withValues(alpha: 0.4),
                             fontStyle: FontStyle.italic,
                           ),
                         ),
@@ -275,7 +287,7 @@ class CategorySectionCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 // Action buttons
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -291,7 +303,8 @@ class CategorySectionCard extends StatelessWidget {
                         minHeight: 32,
                       ),
                       style: IconButton.styleFrom(
-                        foregroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        foregroundColor:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                     IconButton(
@@ -305,7 +318,8 @@ class CategorySectionCard extends StatelessWidget {
                         minHeight: 32,
                       ),
                       style: IconButton.styleFrom(
-                        foregroundColor: theme.colorScheme.error.withValues(alpha: 0.7),
+                        foregroundColor:
+                            theme.colorScheme.error.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -355,4 +369,4 @@ class CategorySectionCard extends StatelessWidget {
         return Icons.folder_outlined;
     }
   }
-} 
+}

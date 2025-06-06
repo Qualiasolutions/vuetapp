@@ -1,586 +1,671 @@
-# Technical Context: Flutter + Supabase Architecture
-**Last Updated**: 2025-06-04 19:26 PM
-**Status**: Phase 2 Advanced Task Scheduling Complete → Ready for UI Integration
+# Technical Context - Vuet Flutter Migration
+*Last Updated: January 7, 2025*
 
-## 🎯 **EXECUTIVE SUMMARY**
+## Technology Stack Overview
 
-**Technical Health**: ✅ **EXCELLENT** (Phase 2 backend infrastructure complete)
-**Architecture**: Modern Flutter + Supabase stack with advanced task scheduling system
-**Current Status**: 45% technically complete, sophisticated task scheduling foundation operational
-**Timeline**: Phase 2 backend complete, ready for UI integration phase
+### Frontend Stack
+- **Framework**: Flutter 3.16+ (Dart 3.2+)
+- **State Management**: Riverpod 2.4+
+- **Navigation**: GoRouter 13.0+
+- **HTTP Client**: Dio 5.3+
+- **Code Generation**: Freezed, JSON Annotation, Build Runner
+- **UI Components**: Material 3 with custom Modern Palette theme
+- **Platform Support**: iOS, Android, Web (Progressive Web App)
 
-## 🏗️ **ARCHITECTURE OVERVIEW**
+### Backend Stack
+- **Database**: Supabase PostgreSQL with Row Level Security (RLS)
+- **Authentication**: Supabase Auth (email, OAuth providers)
+- **Storage**: Supabase Storage for files and images
+- **Realtime**: Supabase Realtime for live updates
+- **Edge Functions**: Supabase Edge Functions (Deno/TypeScript)
+- **API**: RESTful API with automatic OpenAPI generation
 
-### **Technology Stack** ✅ **PRODUCTION READY**
-```yaml
-Frontend: Flutter 3.32.1 (stable) with Dart 3.8.1 and Material Design 3
-Backend: Supabase (PostgreSQL + PostgREST + Real-time + Auth)
-State Management: Riverpod 2.x (Provider pattern)
-Database: PostgreSQL with Row Level Security
-Authentication: Supabase Auth with JWT tokens
-Real-time: Supabase real-time subscriptions
-Storage: Supabase Storage for files and images
-API: PostgREST auto-generated REST API
+### Development Tools
+- **IDE**: VS Code with Flutter/Dart extensions
+- **Version Control**: Git with GitHub
+- **CI/CD**: GitHub Actions for automated testing and deployment
+- **Testing**: Flutter Test, Integration Tests, Widget Tests
+- **Code Quality**: Dart Analyzer, Flutter Lints
+- **Documentation**: Dart Doc, README files
+
+## Architecture Overview
+
+### Clean Architecture Layers
+```
+┌─────────────────────────────────────┐
+│              UI Layer               │
+│  (Screens, Widgets, State)          │
+├─────────────────────────────────────┤
+│           Domain Layer              │
+│  (Entities, Use Cases, Interfaces)  │
+├─────────────────────────────────────┤
+│            Data Layer               │
+│  (Repositories, Data Sources, APIs) │
+└─────────────────────────────────────┘
 ```
 
-### **Application Architecture** ✅ **SCALABLE**
+### Project Structure
 ```
 lib/
-├── main.dart                    # Application entry point
-├── config/                      # Environment configuration
-├── models/                      # Data models
-│   ├── entity_model.dart       # 48 entity types
-│   ├── task_model.dart         # Advanced task system
-│   └── family_model.dart       # Family collaboration
-├── services/                    # Business logic layer
-│   ├── entity_service.dart     # Entity CRUD operations
-│   ├── task_service.dart       # Task management
-│   └── family_service.dart     # Family coordination
+├── main.dart                    # App entry point
+├── config/                      # Configuration files
+│   ├── theme_config.dart       # Modern Palette theme
+│   ├── supabase_config.dart    # Supabase client setup
+│   └── app_categories.dart     # Category definitions
+├── models/                      # Data models (Freezed)
+│   ├── entity_model.dart       # Base entity model
+│   ├── category_model.dart     # Category model
+│   └── task_model.dart         # Task model
 ├── repositories/                # Data access layer
-│   ├── supabase_entity_repository.dart
-│   ├── supabase_task_repository.dart
-│   └── supabase_family_repository.dart
-├── ui/                         # Presentation layer
-│   ├── screens/                # Application screens
-│   ├── components/             # Reusable UI components
-│   └── theme/                  # Material Design 3 theme
-└── providers/                  # Riverpod state providers
+│   ├── entity_repository.dart  # Entity CRUD operations
+│   ├── task_repository.dart    # Task management
+│   └── family_repository.dart  # Family sharing
+├── providers/                   # Riverpod providers
+│   ├── entity_providers.dart   # Entity state management
+│   ├── auth_providers.dart     # Authentication state
+│   └── family_providers.dart   # Family sharing state
+├── ui/                         # User interface
+│   ├── shared/                 # Reusable components
+│   │   ├── vuet_header.dart   # Modern header component
+│   │   ├── vuet_text_field.dart # Modern text field
+│   │   └── vuet_date_picker.dart # Modern date picker
+│   ├── screens/                # Main screens
+│   │   ├── categories/         # Category management
+│   │   ├── entities/           # Entity CRUD screens
+│   │   └── tasks/              # Task management
+│   └── widgets/                # Screen-specific widgets
+├── services/                   # Business logic services
+│   ├── auto_task_service.dart  # Automatic task generation
+│   ├── notification_service.dart # Push notifications
+│   └── sync_service.dart       # Data synchronization
+└── utils/                      # Utility functions
+    ├── validators.dart         # Form validation
+    ├── date_utils.dart         # Date formatting
+    └── constants.dart          # App constants
 ```
 
-## ✅ **CURRENT TECHNICAL STATUS (45% COMPLETE)**
+## Database Schema
 
-### **Core Infrastructure** ✅ **COMPLETE AND STABLE**
-
-#### **Database Layer** ✅ **FULLY OPERATIONAL**
-**Recent Breakthrough**: Critical database issues resolved in past 30 minutes
-
+### Core Tables
 ```sql
--- Database Structure (READY FOR IMPLEMENTATION)
-Tables Status:
-✅ entities (functional entity creation)
-✅ tasks (task assignment working)
-✅ app_categories (12 categories available)  
-✅ entity_categories (11 categories ready)
-✅ entity_types (48 types validated)
-✅ family tables (ready for collaboration)
-✅ lists tables (basic functionality working)
+-- Categories (14 total)
+categories (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  group_id INTEGER,
+  description TEXT,
+  icon VARCHAR(50),
+  color VARCHAR(7),
+  created_at TIMESTAMP DEFAULT NOW()
+);
 
--- Critical Fixes Applied:
-✅ PostgREST schema cache refreshed
-✅ Task 'assigned_to' column accessible
-✅ Entity creation working with valid entity_type_id values
-✅ All Supabase MCP operations functional
+-- Base entities table
+entities (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  category_id INTEGER REFERENCES categories(id),
+  entity_type VARCHAR(50) NOT NULL,
+  user_id UUID REFERENCES auth.users(id),
+  family_id INTEGER REFERENCES families(id),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Type-specific entity tables
+cars (
+  entity_id INTEGER PRIMARY KEY REFERENCES entities(id),
+  make VARCHAR(100),
+  model VARCHAR(100),
+  registration VARCHAR(20),
+  mot_due_date DATE,
+  insurance_due_date DATE,
+  service_due_date DATE,
+  tax_due_date DATE,
+  warranty_due_date DATE
+);
+
+birthdays (
+  entity_id INTEGER PRIMARY KEY REFERENCES entities(id),
+  date_of_birth DATE NOT NULL,
+  known_year BOOLEAN DEFAULT true,
+  relationship VARCHAR(50)
+);
+
+pets (
+  entity_id INTEGER PRIMARY KEY REFERENCES entities(id),
+  species VARCHAR(50),
+  breed VARCHAR(100),
+  date_of_birth DATE,
+  vaccination_due_date DATE,
+  microchip_number VARCHAR(50)
+);
+
+-- Tasks system
+tasks (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  due_date DATE,
+  due_time TIME,
+  completed BOOLEAN DEFAULT false,
+  entity_id INTEGER REFERENCES entities(id),
+  user_id UUID REFERENCES auth.users(id),
+  family_id INTEGER REFERENCES families(id),
+  recurrence_pattern JSONB,
+  auto_generated BOOLEAN DEFAULT false,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Family sharing
+families (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  created_by UUID REFERENCES auth.users(id),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+family_members (
+  id SERIAL PRIMARY KEY,
+  family_id INTEGER REFERENCES families(id),
+  user_id UUID REFERENCES auth.users(id),
+  permission_level VARCHAR(20) DEFAULT 'view',
+  joined_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(family_id, user_id)
+);
 ```
 
-#### **Authentication System** ✅ **PRODUCTION READY**
-```dart
-// Supabase Auth Integration (WORKING)
-- User registration and login: ✅ Functional
-- Session management: ✅ Persistent sessions
-- Password reset: ✅ Email-based recovery
-- User profiles: ✅ Profile management working
-- Row Level Security: ✅ Data isolation working
+### Row Level Security (RLS) Policies
+```sql
+-- Entities: Users can only access their own or family-shared entities
+CREATE POLICY "Users can view own and shared entities" ON entities
+  FOR SELECT USING (
+    user_id = auth.uid() OR
+    family_id IN (
+      SELECT family_id FROM family_members 
+      WHERE user_id = auth.uid()
+    )
+  );
+
+-- Tasks: Similar policy for tasks
+CREATE POLICY "Users can view own and shared tasks" ON tasks
+  FOR SELECT USING (
+    user_id = auth.uid() OR
+    family_id IN (
+      SELECT family_id FROM family_members 
+      WHERE user_id = auth.uid()
+    )
+  );
 ```
 
-#### **State Management** ✅ **SCALABLE ARCHITECTURE**
+## State Management Architecture
+
+### Riverpod Provider Hierarchy
 ```dart
-// Riverpod Provider Architecture (READY FOR SCALING)
-@riverpod
-class EntityNotifier extends _$EntityNotifier {
-  @override
-  Future<List<Entity>> build() async {
-    return await ref.read(entityServiceProvider).getAllEntities();
-  }
+// Core providers
+final supabaseClientProvider = Provider<SupabaseClient>((ref) => 
+    Supabase.instance.client);
+
+final authProvider = StreamProvider<User?>((ref) => 
+    ref.watch(supabaseClientProvider).auth.onAuthStateChange
+        .map((data) => data.session?.user));
+
+// Repository providers
+final entityRepositoryProvider = Provider<EntityRepository>((ref) => 
+    SupabaseEntityRepository(ref.watch(supabaseClientProvider)));
+
+final taskRepositoryProvider = Provider<TaskRepository>((ref) => 
+    SupabaseTaskRepository(ref.watch(supabaseClientProvider)));
+
+// State providers
+final categoriesProvider = FutureProvider<List<Category>>((ref) async {
+  final repository = ref.watch(entityRepositoryProvider);
+  return repository.getCategories();
+});
+
+final entitiesProvider = FutureProvider.family<List<Entity>, int>(
+    (ref, categoryId) async {
+  final repository = ref.watch(entityRepositoryProvider);
+  return repository.getEntitiesByCategory(categoryId);
+});
+
+// Form providers
+final entityFormProvider = StateNotifierProvider.family<
+    EntityFormNotifier, EntityFormState, String>((ref, entityType) => 
+    EntityFormNotifier(entityType, ref.watch(entityRepositoryProvider)));
+```
+
+### Auto-Task Generation System
+```dart
+class AutoTaskEngine {
+  final TaskRepository _taskRepository;
+  final List<AutoTaskRule> _rules;
   
-  Future<void> createEntity(EntityCreateRequest request) async {
-    await ref.read(entityServiceProvider).createEntity(request);
-    ref.invalidateSelf(); // Refresh state
-  }
-}
-
-// Provider Dependencies (WORKING)
-entityServiceProvider → entityRepositoryProvider → supabaseProvider
-```
-
-#### **UI Foundation** ✅ **MODERN MATERIAL DESIGN 3**
-```dart
-// Theme System (COMPLETE)
-- Material Design 3: ✅ Full implementation
-- Color schemes: ✅ Light/dark mode support
-- Typography: ✅ Material Design 3 text styles
-- Component themes: ✅ Consistent styling
-- Navigation: ✅ Bottom tabs + drawer working
-
-// UI Components (READY FOR CONTENT)
-- AppBar with consistent styling: ✅ Working
-- Bottom navigation: ✅ 5 tabs configured
-- Drawer navigation: ✅ Sidebar menu working
-- Form components: ✅ Input fields and validation
-- List components: ✅ Scrollable lists with actions
-```
-
-### **Functional Features** ✅ **WORKING** (35% of total app value)
-
-#### **Advanced Task Management** ✅ **OPERATIONAL**
-```dart
-// Phase 2 Advanced Task Scheduling (COMPLETE)
-- FlexibleTask: ✅ Duration-based scheduling with smart allocation
-- FixedTask: ✅ Time-specific scheduling with conflict detection
-- Recurrence: ✅ 8 advanced recurrence patterns implemented
-- TaskAction: ✅ Automated pre-task preparations and actions
-- TaskReminder: ✅ Multi-channel reminder system
-- Task-Entity Integration: ✅ Enhanced task-entity relationships
-- Smart Scheduling: ✅ Urgency-based prioritization and conflict detection
-- Timezone Support: ✅ Global timezone handling for fixed tasks
-
-// Basic Task CRUD Operations (WORKING)
-- Create tasks: ✅ Form validation and submission with scheduling types
-- Read tasks: ✅ List display and filtering with advanced scheduling info
-- Update tasks: ✅ Edit forms and validation for both flexible/fixed tasks
-- Delete tasks: ✅ Soft delete with confirmation
-- Task assignment: ✅ User assignment working (FIXED)
-- Task comments: ✅ Comment system operational
-```
-
-#### **AI Assistant (LANA)** ✅ **ENHANCED**
-```dart
-// AI Integration (BETTER THAN REACT APP)
-- Chat interface: ✅ Advanced conversation system
-- Task creation: ✅ AI-powered task generation
-- Natural language: ✅ Command processing
-- Context awareness: ✅ App integration working
-- OpenAI integration: ✅ GPT-4 powered responses
-```
-
-#### **Basic List Management** ✅ **FUNCTIONAL**
-```dart
-// List Operations (WORKING)
-- Create lists: ✅ List creation forms
-- Manage list items: ✅ Item CRUD operations
-- List categories: ✅ Categorization system
-- List templates: ✅ Template system working
-```
-
-## 🚨 **CRITICAL MISSING IMPLEMENTATION (55% GAP - ONLY 2 FEATURES)**
-
-### **1. ENTITY MANAGEMENT SYSTEM** ❌ **0% IMPLEMENTED** (80% app value)
-**Database**: ✅ Ready | **Frontend**: ❌ Not implemented
-
-#### **Required Technical Components**
-```dart
-// 1. Enhanced Entity Service (NEEDED)
-class EntityService {
-  Future<List<BaseEntity>> getEntitiesByCategory(int categoryId);
-  Future<BaseEntity> createEntityWithValidation(EntityCreateRequest request);
-  Future<void> validateEntityData(EntitySubtype type, Map<String, dynamic> data);
-  Future<List<BaseEntity>> searchEntities(String query, List<int> categoryIds);
-  Future<void> linkEntityToTasks(String entityId, List<String> taskIds);
-}
-
-// 2. Dynamic Form Builder (NEEDED)
-class EntityFormBuilder {
-  Widget buildFormForEntityType(EntitySubtype type) {
-    switch(type) {
-      case EntitySubtype.pet: return PetEntityForm();
-      case EntitySubtype.vehicle_car: return CarEntityForm();
-      case EntitySubtype.doctor: return DoctorEntityForm();
-      // ... all 48 entity types
+  Future<void> processEntityChange(Entity entity, ChangeType changeType) async {
+    for (final rule in _rules) {
+      if (rule.shouldTrigger(entity, changeType)) {
+        final tasks = rule.generateTasks(entity);
+        for (final task in tasks) {
+          await _taskRepository.createTask(task);
+        }
+      }
     }
   }
 }
 
-// 3. Entity-Task Integration Service (NEEDED)
-class EntityTaskService {
-  Future<void> linkTaskToEntities(String taskId, List<String> entityIds);
-  Future<List<Task>> getTasksForEntity(String entityId);
-  Future<Task> createTaskFromEntityTemplate(String entityId, TaskTemplate template);
-}
-```
-
-#### **Database Schema** (READY FOR USE)
-```sql
--- Entity Tables (FULLY OPERATIONAL)
-entities (
-  id uuid PRIMARY KEY,
-  name varchar NOT NULL,
-  entity_type_id integer REFERENCES entity_types(id), -- 48 types available
-  user_id uuid REFERENCES auth.users(id),
-  data jsonb, -- Dynamic entity data
-  created_at timestamptz DEFAULT now()
-);
-
--- All 48 Entity Types Available
-pet, vet, pet_groomer, pet_sitter, pet_walker,
-vehicle_car, vehicle_boat, public_transport,
-doctor, dentist, stylist, beauty_salon,
-school, teacher, student, tutor, course_work, subject,
-home, room, appliance, furniture, plant, garden_tool,
-colleague, event, holiday, anniversary, guest_list_invite,
-bank, bank_account, credit_card, restaurant, recipe, work,
-academic_plan, extracurricular_plan,
-holiday_plan, anniversary_plan, food_plan, social_plan,
-contractor, dry_cleaners, microchip_company,
-insurance_company_pet, insurance_policy_pet,
-social_media, hobby, laundry_item, trip
-```
-
-### **2. ADVANCED TASK SCHEDULING UI** ❌ **0% IMPLEMENTED** (15% app value)
-**Backend**: ✅ Phase 2 Complete | **Frontend**: ❌ UI integration needed
-
-#### **Phase 2 Backend Infrastructure** ✅ **COMPLETE**
-```dart
-// 1. Enhanced Task Models (IMPLEMENTED)
-@freezed
-class FlexibleTask with _$FlexibleTask {
-  factory FlexibleTask({
-    required String id,
-    required String title,
-    required String userId,
-    required int duration, // minutes
-    required TaskUrgency urgency,
-    required DateTime earliestActionDate,
-    DateTime? dueDate,
-    DateTime? scheduledStartTime,
-    DateTime? scheduledEndTime,
-    @Default(false) bool isScheduled,
-  }) = _FlexibleTask;
-}
-
-@freezed  
-class FixedTask with _$FixedTask {
-  factory FixedTask({
-    required String id,
-    required String title,
-    required String userId,
-    required DateTime startDateTime,
-    required DateTime endDateTime,
-    String? startTimezone,
-    int? duration, // Calculated automatically
-  }) = _FixedTask;
-}
-
-// 2. Recurrence Engine (IMPLEMENTED)
-@freezed
-class Recurrence with _$Recurrence {
-  factory Recurrence({
-    required String id,
-    required String taskId,
-    required RecurrenceType recurrenceType,
-    @Default(1) int intervalLength,
-    Map<String, dynamic>? recurrenceData,
-    @Default(true) bool isActive,
-  }) = _Recurrence;
-}
-
-// 3. Task Actions & Reminders (IMPLEMENTED)
-@freezed
-class TaskAction with _$TaskAction {
-  factory TaskAction({
-    required String id,
-    required String taskId,
-    required String actionDescription,
-    @Default(false) bool isRequired,
-    int? estimatedMinutes,
-    @Default(false) bool isCompleted,
-  }) = _TaskAction;
-}
-
-@freezed
-class TaskReminder with _$TaskReminder {
-  factory TaskReminder({
-    required String id,
-    required String taskId,
-    required ReminderType reminderType,
-    required int reminderMinutesBefore,
-    @Default(true) bool isActive,
-  }) = _TaskReminder;
-}
-```
-
-#### **Database Schema Enhancement** ✅ **IMPLEMENTED**
-```sql
--- Task Table Extensions (APPLIED)
-ALTER TABLE tasks ADD COLUMN scheduling_type varchar(20) CHECK (scheduling_type IN ('FLEXIBLE', 'FIXED'));
-ALTER TABLE tasks ADD COLUMN earliest_action_date date;
-ALTER TABLE tasks ADD COLUMN duration_minutes integer;
-ALTER TABLE tasks ADD COLUMN task_urgency varchar(20);
-ALTER TABLE tasks ADD COLUMN scheduled_start_time timestamptz;
-ALTER TABLE tasks ADD COLUMN scheduled_end_time timestamptz;
-ALTER TABLE tasks ADD COLUMN is_scheduled boolean DEFAULT false;
-ALTER TABLE tasks ADD COLUMN start_timezone varchar(100);
-ALTER TABLE tasks ADD COLUMN end_timezone varchar(100);
-
--- New Tables Created (APPLIED)
-CREATE TABLE recurrences (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id uuid REFERENCES tasks(id) ON DELETE CASCADE,
-  recurrence_type varchar(50) NOT NULL,
-  interval_length integer DEFAULT 1,
-  recurrence_data jsonb,
-  is_active boolean DEFAULT true,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-
-CREATE TABLE task_actions (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id uuid REFERENCES tasks(id) ON DELETE CASCADE,
-  action_description text NOT NULL,
-  is_required boolean DEFAULT false,
-  estimated_minutes integer,
-  is_completed boolean DEFAULT false,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-
-CREATE TABLE task_reminders (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id uuid REFERENCES tasks(id) ON DELETE CASCADE,
-  reminder_type varchar(20) NOT NULL,
-  reminder_minutes_before integer NOT NULL,
-  is_active boolean DEFAULT true,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-
-CREATE TABLE task_entities (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id uuid REFERENCES tasks(id) ON DELETE CASCADE,
-  entity_id uuid REFERENCES entities(id) ON DELETE CASCADE,
-  relationship_type varchar(50),
-  is_primary boolean DEFAULT false,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-```
-
-#### **Advanced Repository Layer** ✅ **IMPLEMENTED**
-```dart
-// AdvancedTaskRepository (COMPLETE)
-class AdvancedTaskRepository {
-  // FlexibleTask Operations
-  Future<List<FlexibleTask>> getUnscheduledFlexibleTasks(String userId);
-  Future<List<FlexibleTask>> getFlexibleTasksByUrgency(String userId, TaskUrgency urgency);
-  Future<FlexibleTask> scheduleFlexibleTask(String taskId, DateTime startTime, DateTime endTime);
+// Example rule for birthday tasks
+class BirthdayTaskRule implements AutoTaskRule {
+  @override
+  bool shouldTrigger(Entity entity, ChangeType changeType) {
+    return entity.entityType == 'birthday' && 
+           changeType == ChangeType.created;
+  }
   
-  // FixedTask Operations  
-  Future<List<FixedTask>> getFixedTasksInRange(String userId, DateTime start, DateTime end);
-  Future<bool> hasConflictingFixedTasks(String userId, DateTime start, DateTime end);
-  Future<List<FixedTask>> getActiveFixedTasks(String userId);
+  @override
+  List<Task> generateTasks(Entity entity) {
+    final birthday = entity as BirthdayEntity;
+    return [
+      Task(
+        title: '🎂 ${birthday.name}\'s Birthday',
+        dueDate: birthday.dateOfBirth,
+        recurrencePattern: RecurrencePattern.yearly(),
+        autoGenerated: true,
+        entityId: entity.id,
+      ),
+    ];
+  }
+}
+```
+
+## Modern Palette Implementation
+
+### Theme Configuration
+```dart
+class VuetTheme {
+  // Modern Palette Colors
+  static const Color darkJungleGreen = Color(0xFF202827);
+  static const Color mediumTurquoise = Color(0xFF55C6D6);
+  static const Color orange = Color(0xFFE49F2F);
+  static const Color steel = Color(0xFF798D8E);
+  static const Color white = Color(0xFFFFFFFF);
   
-  // Recurrence Management
-  Future<Recurrence> createRecurrence(Recurrence recurrence);
-  Future<List<DateTime>> calculateRecurrenceOccurrences(String recurrenceId, int count);
+  static ThemeData get lightTheme => ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.light(
+      primary: orange,
+      onPrimary: white,
+      secondary: mediumTurquoise,
+      onSecondary: darkJungleGreen,
+      surface: white,
+      onSurface: darkJungleGreen,
+      background: white,
+      onBackground: darkJungleGreen,
+      outline: steel,
+    ),
+    appBarTheme: AppBarTheme(
+      backgroundColor: darkJungleGreen,
+      foregroundColor: white,
+      elevation: 0,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: orange,
+        foregroundColor: white,
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      labelStyle: TextStyle(color: steel),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: steel),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: mediumTurquoise, width: 2),
+      ),
+    ),
+  );
+}
+```
+
+### Component Library
+```dart
+// Modern header component
+class VuetHeader extends StatelessWidget implements PreferredSizeWidget {
+  const VuetHeader({
+    required this.title,
+    this.actions,
+    super.key,
+  });
   
-  // Task Actions & Reminders
-  Future<List<TaskAction>> getTaskActions(String taskId);
-  Future<List<TaskReminder>> getTaskReminders(String taskId);
+  final String title;
+  final List<Widget>? actions;
   
-  // Task-Entity Integration
-  Future<void> linkTaskToEntity(String taskId, String entityId, String relationshipType);
-  Future<List<TaskEntity>> getTaskEntities(String taskId);
+  @override
+  Widget build(BuildContext context) => AppBar(
+    title: Text(title),
+    actions: actions,
+  );
+  
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+// Modern text field
+class VuetTextField extends StatelessWidget {
+  const VuetTextField({
+    required this.controller,
+    required this.labelText,
+    this.validator,
+    this.keyboardType,
+    this.obscureText = false,
+    super.key,
+  });
+  
+  final TextEditingController controller;
+  final String labelText;
+  final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
+  final bool obscureText;
+  
+  @override
+  Widget build(BuildContext context) => TextFormField(
+    controller: controller,
+    decoration: InputDecoration(labelText: labelText),
+    validator: validator,
+    keyboardType: keyboardType,
+    obscureText: obscureText,
+  );
+}
+
+// Modern date picker
+class VuetDatePicker extends StatefulWidget {
+  const VuetDatePicker({
+    required this.controller,
+    required this.labelText,
+    this.validator,
+    super.key,
+  });
+  
+  final TextEditingController controller;
+  final String labelText;
+  final String? Function(String?)? validator;
+  
+  @override
+  State<VuetDatePicker> createState() => _VuetDatePickerState();
 }
 ```
 
-#### **Required UI Components** (NEEDED)
+## API Integration
+
+### Supabase Client Configuration
 ```dart
-// 1. Task Creation UI (NEEDED)
-class TaskCreationScreen extends StatelessWidget {
-  Widget buildSchedulingTypeSelector(); // Flexible vs Fixed
-  Widget buildFlexibleTaskForm();       // Duration, urgency, date range
-  Widget buildFixedTaskForm();          // Specific date/time, timezone
-  Widget buildRecurrencePatternSelector(); // 8 recurrence types
-}
-
-// 2. Smart Scheduling Interface (NEEDED)
-class SmartSchedulingScreen extends StatelessWidget {
-  Widget buildUnscheduledTasksList();   // Tasks needing scheduling
-  Widget buildSuggestedTimeSlotsView();  // AI-suggested optimal slots
-  Widget buildConflictDetectionView();   // Conflict visualization
-}
-
-// 3. Calendar Integration (NEEDED)
-class AdvancedCalendarView extends StatelessWidget {
-  Widget buildFlexibleTasksLayer();     // Flexible tasks overlay
-  Widget buildFixedTasksLayer();        // Fixed tasks with conflicts
-  Widget buildRecurrenceIndicators();   // Recurring task markers
+class SupabaseConfig {
+  static const String url = String.fromEnvironment('SUPABASE_URL');
+  static const String anonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+  
+  static Future<void> initialize() async {
+    await Supabase.initialize(
+      url: url,
+      anonKey: anonKey,
+      authOptions: const FlutterAuthClientOptions(
+        authFlowType: AuthFlowType.pkce,
+      ),
+    );
+  }
 }
 ```
 
-### **3. FAMILY COLLABORATION SYSTEM** ❌ **5% IMPLEMENTED** (5% app value)
-**Database**: ✅ Tables exist | **Frontend**: ❌ Empty screens
-
-#### **Required Technical Components**
+### Repository Implementation
 ```dart
-// 1. Family Management Service (NEEDED)
-class FamilyService {
-  Future<Family> createFamily(String familyName, String adminUserId);
-  Future<void> inviteMember(String familyId, String email, FamilyRole role);
-  Future<void> acceptInvitation(String invitationToken);
-  Future<List<FamilyMember>> getFamilyMembers(String familyId);
+class SupabaseEntityRepository implements EntityRepository {
+  final SupabaseClient _client;
+  
+  SupabaseEntityRepository(this._client);
+  
+  @override
+  Future<List<Entity>> getEntitiesByCategory(int categoryId) async {
+    final response = await _client
+        .from('entities')
+        .select('''
+          *,
+          cars(*),
+          birthdays(*),
+          pets(*)
+        ''')
+        .eq('category_id', categoryId);
+    
+    return response.map((json) => Entity.fromJson(json)).toList();
+  }
+  
+  @override
+  Future<Entity> createEntity(Entity entity) async {
+    // Insert into base entities table
+    final entityResponse = await _client
+        .from('entities')
+        .insert(entity.toBaseJson())
+        .select()
+        .single();
+    
+    // Insert into type-specific table
+    await _insertTypeSpecificData(entityResponse['id'], entity);
+    
+    return await getEntity(entityResponse['id']);
+  }
 }
+```
 
-// 2. Permission System (NEEDED)
-class PermissionService {
-  bool canUserAccessEntity(String userId, String entityId);
-  bool canUserModifyTask(String userId, String taskId);
-  List<Permission> getUserPermissions(String userId, String familyId);
+## Testing Strategy
+
+### Unit Tests
+```dart
+// Repository tests
+void main() {
+  group('EntityRepository', () {
+    late MockSupabaseClient mockClient;
+    late SupabaseEntityRepository repository;
+    
+    setUp(() {
+      mockClient = MockSupabaseClient();
+      repository = SupabaseEntityRepository(mockClient);
+    });
+    
+    test('should fetch entities by category', () async {
+      // Arrange
+      when(() => mockClient.from('entities'))
+          .thenReturn(mockQueryBuilder);
+      when(() => mockQueryBuilder.select(any()))
+          .thenReturn(mockQueryBuilder);
+      when(() => mockQueryBuilder.eq('category_id', 1))
+          .thenAnswer((_) async => mockEntityData);
+      
+      // Act
+      final result = await repository.getEntitiesByCategory(1);
+      
+      // Assert
+      expect(result, isA<List<Entity>>());
+      expect(result.length, equals(2));
+    });
+  });
 }
+```
 
-// 3. Shared Resource Management (NEEDED)
-class SharedResourceService {
-  Future<void> shareEntityWithFamily(String entityId, String familyId);
-  Future<List<Entity>> getFamilySharedEntities(String familyId);
-  Future<void> assignTaskToFamilyMember(String taskId, String memberId);
+### Widget Tests
+```dart
+void main() {
+  testWidgets('EntityForm should validate required fields', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          home: EntityForm(entityType: 'car'),
+        ),
+      ),
+    );
+    
+    // Try to submit without filling required fields
+    await tester.tap(find.text('Save'));
+    await tester.pump();
+    
+    // Should show validation errors
+    expect(find.text('This field is required'), findsWidgets);
+  });
 }
 ```
 
-## 🚀 **FOCUSED 6-WEEK TECHNICAL IMPLEMENTATION PLAN**
-
-### **PHASE 1: ENTITY SYSTEM ARCHITECTURE** (Weeks 1-3) - 80% APP VALUE
-
-#### **Week 1: Core Entity Infrastructure**
+### Integration Tests
 ```dart
-// Technical Deliverables:
-1. Enhanced EntityService with full CRUD operations
-2. Base entity models for all 15+ categories
-3. Dynamic form builder for entity types
-4. Entity validation system
-
-// Database Work:
-1. Entity data validation functions
-2. Entity search indexing optimization
-3. Entity-category relationship optimization
+void main() {
+  group('Entity Management Flow', () {
+    testWidgets('should create and display new entity', (tester) async {
+      await tester.pumpWidget(MyApp());
+      
+      // Navigate to category
+      await tester.tap(find.text('Transport'));
+      await tester.pumpAndSettle();
+      
+      // Add new car
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pumpAndSettle();
+      
+      // Fill form
+      await tester.enterText(find.byKey(Key('make_field')), 'Toyota');
+      await tester.enterText(find.byKey(Key('model_field')), 'Camry');
+      
+      // Submit
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      
+      // Verify entity appears in list
+      expect(find.text('Toyota Camry'), findsOneWidget);
+    });
+  });
+}
 ```
 
-#### **Week 2: Category-Specific Implementation**
-```dart
-// Technical Deliverables:
-1. Pets entities (pet, vet, groomer, sitter, walker)
-2. Transport entities (car, boat, public_transport)
-3. Health entities (doctor, dentist, stylist, salon)
-4. Home entities (appliance, maintenance, insurance)
-5. Social entities (event, holiday, anniversary)
-6. Education entities (school, term, extracurricular)
+## Performance Considerations
 
-// Database Work:
-1. Entity type validation triggers
-2. Category-specific data constraints
-3. Entity relationship constraints
+### Optimization Strategies
+1. **Lazy Loading**: Load entities on demand using pagination
+2. **Caching**: Implement multi-layer caching with Riverpod
+3. **Image Optimization**: Use cached network images with placeholders
+4. **Database Indexing**: Proper indexes on frequently queried columns
+5. **Bundle Size**: Tree-shake unused dependencies
+
+### Monitoring
+- **Performance Metrics**: Track app startup time, screen load times
+- **Error Tracking**: Implement crash reporting and error logging
+- **User Analytics**: Track user engagement and feature usage
+- **Database Performance**: Monitor query performance and optimization
+
+## Security Implementation
+
+### Authentication Flow
+```dart
+class AuthService {
+  final SupabaseClient _client;
+  
+  Future<AuthResponse> signInWithEmail(String email, String password) async {
+    return await _client.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+  }
+  
+  Future<void> signOut() async {
+    await _client.auth.signOut();
+  }
+  
+  Stream<AuthState> get authStateChanges => 
+      _client.auth.onAuthStateChange;
+}
 ```
 
-#### **Week 3: Entity Management UI & Integration**
+### Data Validation
 ```dart
-// Technical Deliverables:
-1. Entity category navigation transformation
-2. Entity CRUD interfaces for all types
-3. Entity-task integration system
-4. Entity search and filtering system
-
-// Testing:
-1. Entity CRUD integration testing
-2. Entity-task relationship validation
-3. Performance testing with large entity datasets
+class EntityValidator {
+  static String? validateRequired(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'This field is required';
+    }
+    return null;
+  }
+  
+  static String? validateDate(String? value) {
+    if (value == null || value.isEmpty) return null;
+    
+    try {
+      DateTime.parse(value);
+      return null;
+    } catch (e) {
+      return 'Please enter a valid date (YYYY-MM-DD)';
+    }
+  }
+}
 ```
 
-### **PHASE 2: ADVANCED TASK SCHEDULING UI** (Weeks 4-5) - 15% APP VALUE
-**Note**: Backend infrastructure complete from Phase 2, now implementing UI layer
+## Deployment Pipeline
 
-#### **Week 4: Task Scheduling UI Components**
-```dart
-// Technical Deliverables:
-1. Task creation forms with scheduling type selection (Flexible vs Fixed)
-2. FlexibleTask form with duration, urgency, date range selectors
-3. FixedTask form with date/time pickers and timezone support
-4. Recurrence pattern configuration UI for all 8 pattern types
+### Build Configuration
+```yaml
+# pubspec.yaml
+name: vuet_flutter
+description: Vuet life management application
+version: 1.0.0+1
 
-// UI Components:
-1. SchedulingTypeSelector widget
-2. FlexibleTaskForm with smart duration input
-3. FixedTaskForm with timezone-aware datetime pickers
-4. RecurrencePatternBuilder with visual pattern preview
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: ">=3.16.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.4.9
+  go_router: ^13.0.0
+  supabase_flutter: ^2.0.0
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.7
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
+  flutter_lints: ^3.0.0
 ```
 
-#### **Week 5: Advanced Scheduling Interface**
-```dart
-// Technical Deliverables:
-1. Smart scheduling dashboard for unscheduled flexible tasks
-2. Calendar view with conflict detection visualization
-3. Task-entity relationship management UI
-4. Task actions and reminders management interface
+### CI/CD Pipeline
+```yaml
+# .github/workflows/flutter.yml
+name: Flutter CI/CD
 
-// Advanced Features:
-1. SmartSchedulingEngine integration for time slot suggestions
-2. ConflictDetectionView with resolution options
-3. TaskEntityLinker for associating tasks with entities
-4. ReminderConfigurationPanel for multi-channel reminders
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - run: flutter build web --release
 ```
-
-### **PHASE 3: FAMILY COLLABORATION ARCHITECTURE** (Week 6) - 5% APP VALUE
-
-#### **Week 6: Family Management & Shared Resources**
-```dart
-// Technical Deliverables:
-1. Family creation and management system
-2. Email-based invitation system with roles
-3. Shared entity and task access system
-4. Role-based permission system
-
-// Database Work:
-1. Family invitation tables optimization
-2. Role-based permission triggers  
-3. Shared resource permission optimization
-```
-
-## 📊 **TECHNICAL HEALTH METRICS**
-
-### **Performance Benchmarks**
-- **Database Query Performance**: < 100ms for entity/task queries
-- **UI Responsiveness**: < 16ms frame render time
-- **Memory Usage**: < 150MB typical app memory footprint
-- **Battery Efficiency**: Minimal background processing impact
-
-### **Scalability Targets**
-- **Entity Count**: Support for 10,000+ entities per user
-- **Task Count**: Support for 50,000+ tasks per user
-- **Family Size**: Support for 20+ family members
-- **Real-time Sync**: < 1 second sync latency
-
-### **Quality Assurance**
-- **Code Coverage**: > 80% test coverage for core features
-- **Integration Testing**: Comprehensive workflow testing
-- **Performance Testing**: Regular performance regression testing
-- **Security Testing**: Regular security audit of data access
-
-## 🔧 **IMMEDIATE TECHNICAL NEXT ACTIONS**
-
-### **Flutter Environment Status** ✅ **VERIFIED**
-- **Flutter Version**: 3.32.1 (stable channel, released 2025-05-29)
-- **Dart Version**: 3.8.1
-- **DevTools**: 2.45.1
-- **SDK Compatibility**: ✅ `'>=3.2.3 <4.0.0'` fully compatible
-- **Dependencies**: ✅ All packages compatible with Flutter 3.32.1
-
-### **Today's Technical Priorities**
-1. **Complete Transport Category**: Finalize transport entity management
-2. **User Invitation System**: Complete entity sharing functionality
-3. **Production Deployment**: Prepare for Firebase deployment
-4. **Quality Assurance**: Ensure Flutter 3.32.1 compatibility across all features
-
-### **This Week's Technical Goals**
-- Advanced task scheduling UI integration (Phase 2 UI components)
-- Task creation forms with scheduling type selection
-- Smart scheduling interface for flexible tasks
-- Calendar view with conflict detection and visualization
-- Enhanced performance from Flutter 3.32.1 and completed backend
 
 ---
 
-## 🎯 **TECHNICAL SUMMARY**
-
-**Current Status**: Strong technical foundation (45% complete) with Phase 2 advanced task scheduling backend complete
-**Architecture**: Modern, scalable Flutter + Supabase stack with sophisticated task scheduling infrastructure  
-**Critical Achievement**: Phase 2 Advanced Task Scheduling backend fully implemented, ready for UI integration
-**Timeline**: Focused 6-week technical implementation targeting entity system (80% value) + task scheduling UI (15% value) + family collaboration (5% value)
-
-The technical architecture is proven solid with Phase 2 completion demonstrating the platform's scalability. The advanced task scheduling backend provides enterprise-grade scheduling capabilities. Focus on entity management system UI will deliver 80% of remaining app value by Week 3, with task scheduling UI integration completing the core value proposition by Week 5.
+*This technical context provides the foundation for all implementation decisions and architectural choices in the Vuet Flutter migration.*

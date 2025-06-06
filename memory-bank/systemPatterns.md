@@ -1,207 +1,449 @@
-# System Patterns
+# System Patterns - Vuet Flutter Migration
+*Last Updated: January 7, 2025*
 
-## System Architecture
+## Architectural Patterns
 
-### Flutter Frontend + Supabase Backend ✅ **FLUTTER 3.32.1 VERIFIED**
-- **Frontend**: Flutter 3.32.1 (stable) with Dart 3.8.1 and modern Material Design 3
-- **Backend**: Supabase (PostgreSQL + Auth + Edge Functions + Storage)
-- **State Management**: Riverpod providers for reactive state management
-- **Navigation**: Flutter Navigator 2.0 with nested routing
-- **Real-time**: Supabase real-time subscriptions for live updates
+### Polymorphic Entity System
+**Pattern**: Base entity with type-specific extensions
+**Implementation**: Supabase tables with inheritance-like structure
 
-### Architecture Comparison: Flutter vs React Original
-| Component | React Version | Flutter Version |
-|-----------|---------------|-----------------|
-| Frontend | React Native + Expo | Flutter 3.32.1 + Dart 3.8.1 |
-| State | Redux + RTK Query | Riverpod 2.x |
-| Backend | Django REST API | Supabase |
-| Database | PostgreSQL | Supabase PostgreSQL |
-| Auth | Custom JWT | Supabase Auth |
-| Real-time | WebSocket polling | Supabase real-time |
-| Navigation | React Navigation | Flutter Navigator 2.0 |
+```sql
+-- Base entity table
+entities (id, name, description, category_id, entity_type, created_at, updated_at)
 
-## Key Technical Decisions
-
-### Modern Flutter Architecture
-- **Riverpod**: Compile-safe dependency injection and state management
-- **Freezed**: Immutable data classes with code generation
-- **JSON Annotation**: Automatic serialization/deserialization
-- **Build Runner**: Code generation for models and providers
-- **MCP Integration**: Supabase operations via Model Context Protocol
-
-### Database Design Patterns
-- **Row Level Security (RLS)**: User and family-based data isolation
-- **Foreign Key Constraints**: Data integrity across all relationships
-- **Database Triggers**: Automated timestamps and data consistency
-- **Composite Indexes**: Optimized queries for complex relationships
-- **Soft Deletes**: Data preservation with deletion flags
-
-### Cross-Feature Integration Patterns
-- **Entity Linking**: Direct ID references between models
-- **Bidirectional Sync**: State updates propagate across related features
-- **Event-Driven Updates**: Provider invalidation triggers UI refreshes
-- **Optimistic Updates**: Immediate UI feedback with rollback capability
-
-## Design Patterns in Use
-
-### Repository Pattern
+-- Type-specific tables
+cars (entity_id, make, model, registration, mot_due_date, insurance_due_date)
+birthdays (entity_id, date_of_birth, known_year)
+pets (entity_id, species, vaccination_due_date)
 ```
-Interface Definition → Implementation → Provider Exposure
-EntityRepository → SupabaseEntityRepository → entityRepositoryProvider
-CategoryRepository → SupabaseCategoryRepository → categoryRepositoryProvider 
-```
-The `EntityRepository` handles `BaseEntityModel` CRUD operations.
-The `CategoryRepository` handles `EntityCategoryModel` CRUD operations. Both use Supabase as the backend.
 
-Provider generation for these repositories is currently facing issues with `build_runner`.
-
-### Provider Architecture
-- **FutureProvider**: Async data fetching with caching
-- **StateNotifierProvider**: Complex state management with mutations
-- **Provider**: Simple value providers and computed values
-- **StreamProvider**: Real-time data streams from Supabase
-
-### Model Architecture
+**Flutter Pattern**:
 ```dart
 @freezed
-class EntityModel with _$EntityModel {
-  const factory EntityModel({
-    required String id,
-    required String name,
-    required EntitySubtype subtype,
-    // Integration fields
-    String? linkedTaskId,
-    String? linkedRoutineId,
-    // Metadata
-    required DateTime createdAt,
-    required DateTime updatedAt,
-  }) = _EntityModel;
-  
-  factory EntityModel.fromJson(Map<String, dynamic> json) =>
-      _$EntityModelFromJson(json);
+abstract class Entity with _$Entity {
+  const factory Entity.car({required Car carData, ...baseFields}) = CarEntity;
+  const factory Entity.birthday({required Birthday birthdayData, ...baseFields}) = BirthdayEntity;
+  const factory Entity.pet({required Pet petData, ...baseFields}) = PetEntity;
 }
 ```
 
-## Component Relationships
+### Category-Driven Architecture
+**Pattern**: Schema-driven category system with dynamic UI generation
+**Backend**: Categories table drives available entity types and UI configuration
+**Frontend**: Dynamic widget generation based on category configuration
 
-### Core Feature Integration
-```
-Categories ←→ Entities ←→ Tasks
-    ↓           ↓         ↓
-  Lists ←→ Routines ←→ Timeblocks
-    ↓           ↓         ↓
-      LANA AI Integration
-```
-
-### Family Collaboration Layer
-```
-User → Family → Shared Entities/Tasks/Lists
-  ↓      ↓         ↓
-Permissions → Invitations → Real-time Sync
+```dart
+class CategoryConfig {
+  final String name;
+  final IconData icon;
+  final Color primaryColor;
+  final List<String> entityTypes;
+  final Map<String, dynamic> preferences;
+  final List<AutoTaskRule> autoRules;
+}
 ```
 
-### Data Flow Patterns
+### Automatic Task Generation
+**Pattern**: Event-driven task creation based on entity lifecycle
+**Triggers**: Entity creation, update, date field changes
+**Rules Engine**: Configurable rules per entity type
 
-#### Entity Management Flow
-1. **Category Selection**: User selects from 15+ categories
-2. **Entity Creation**: Create entity with specific subtype
-3. **Integration**: Link to tasks, routines, or timeblocks
-4. **Family Sharing**: Share with family members if applicable
-5. **AI Enhancement**: LANA AI provides contextual suggestions
+```dart
+abstract class AutoTaskRule {
+  bool shouldTrigger(Entity entity, EntityChangeType changeType);
+  List<Task> generateTasks(Entity entity);
+}
 
-#### Task Coordination Flow
-1. **Creation Source**: Lists, routines, or direct creation
-2. **Entity Linking**: Associate with relevant entities
-3. **Scheduling**: Assign to timeblocks or routine schedules
-4. **Family Assignment**: Assign to family members
-5. **Completion Tracking**: Progress updates across all systems
-
-## Critical Implementation Paths
-
-### Phase 1: Categories & Entity Management
-```
-SQL Schema (entity_categories, entities) → Category Models & Entity Models (Dart/Freezed) → Repository Interfaces (CategoryRepository, EntityRepository) → Supabase Implementations (SupabaseCategoryRepository, SupabaseEntityRepository) → Riverpod Providers (categoryRepositoryProvider, entityRepositoryProvider) → Entity CRUD → Category Navigation → Entity Cards → Family Sharing
-```
-Current status: SQL Schema, Dart Models, Repository Interfaces, and Supabase Implementations are largely complete. Riverpod Provider generation is in progress.
-
-### Phase 2: Missing Critical Features
-```
-School Terms Management → Link List Functionality → Advanced Task Completion → Reference Management
+class BirthdayTaskRule extends AutoTaskRule {
+  @override
+  bool shouldTrigger(Entity entity, EntityChangeType changeType) =>
+      entity is BirthdayEntity && changeType == EntityChangeType.created;
+      
+  @override
+  List<Task> generateTasks(Entity entity) => [
+    Task.recurring(
+      title: '🎂 ${entity.name}',
+      schedule: RecurrencePattern.yearly(entity.dateOfBirth),
+    )
+  ];
+}
 ```
 
-#### School Terms Management
-```
-SchoolTerm Models → SchoolTerm Repository → Riverpod Providers → SchoolTermsScreen UI → Academic Planning Features → Calendar Integration
-```
-Status: Required for feature parity with React app. Not yet implemented.
+## State Management Patterns
 
-#### Link List Functionality
-```
-LinkList Models → LinkList Repository → Riverpod Providers → LinkListScreen UI → Anniversary/Holiday Handlers → Setup Guides
-```
-Status: Required for feature parity with React app. Not yet implemented.
+### Riverpod Provider Architecture
+**Pattern**: Feature-based provider organization with clear dependencies
 
-#### Advanced Task Completion
-```
-TaskCompletion Components → Type-Specific Handlers → Task Rescheduling → Completion Workflows → UI Integration
-```
-Status: Basic task completion exists, but advanced features from React app are missing.
+```dart
+// Repository layer
+final entityRepositoryProvider = Provider<EntityRepository>((ref) => 
+    EntityRepository(ref.watch(supabaseClientProvider)));
 
-#### Reference Management
-```
-Reference Models → Reference Repository → Riverpod Providers → AllReferencesScreen → Reference Organization → Entity Linking
-```
-Status: Basic reference model exists, but comprehensive management is missing.
+// State layer
+final entitiesProvider = AsyncNotifierProvider<EntitiesNotifier, List<Entity>>(
+    () => EntitiesNotifier());
 
-### Phase 3: Family Features
-```
-Family Models → Invitation System → Permission Management → Shared Resources → Real-time Sync
+// UI layer
+final entityFormProvider = StateNotifierProvider<EntityFormNotifier, EntityFormState>(
+    (ref) => EntityFormNotifier(ref.watch(entityRepositoryProvider)));
 ```
 
-### Phase 4: Advanced Calendar
+### Family Sharing State Pattern
+**Pattern**: Hierarchical state management for family permissions
+
+```dart
+class FamilyState {
+  final Family family;
+  final Map<String, FamilyMember> members;
+  final Map<String, PermissionLevel> permissions;
+  final List<Entity> sharedEntities;
+}
+
+enum PermissionLevel { view, edit, admin }
 ```
-Calendar Models → External Integration → Event Management → iCal Support → Unified View
+
+## UI/UX Patterns
+
+### Modern Palette Component System
+**Pattern**: Consistent color usage across all components
+
+```dart
+class VuetColors {
+  static const darkJungleGreen = Color(0xFF202827);  // Headers, primary text
+  static const mediumTurquoise = Color(0xFF55C6D6);  // Accents, links
+  static const orange = Color(0xFFE49F2F);           // Primary actions
+  static const steel = Color(0xFF798D8E);            // Secondary text
+  static const white = Color(0xFFFFFFFF);            // Backgrounds
+}
+
+class VuetTheme {
+  static ThemeData get theme => ThemeData(
+    colorScheme: ColorScheme.light(
+      primary: VuetColors.orange,
+      secondary: VuetColors.mediumTurquoise,
+      surface: VuetColors.white,
+      onSurface: VuetColors.darkJungleGreen,
+    ),
+  );
+}
 ```
 
-### Phase 5: Advanced Data Structure Features
+### Reusable Widget Library Pattern
+**Pattern**: Consistent UI components with Modern Palette integration
+
+```dart
+// Base header component
+class VuetHeader extends StatelessWidget implements PreferredSizeWidget {
+  const VuetHeader(this.title, {super.key});
+  final String title;
+  
+  @override
+  Widget build(BuildContext context) => AppBar(
+    backgroundColor: VuetColors.darkJungleGreen,
+    title: Text(title, style: TextStyle(color: VuetColors.white)),
+  );
+}
+
+// Form field component
+class VuetTextField extends StatelessWidget {
+  const VuetTextField({
+    required this.controller,
+    required this.label,
+    this.validator,
+    super.key,
+  });
+  
+  final TextEditingController controller;
+  final String label;
+  final String? Function(String?)? validator;
+  
+  @override
+  Widget build(BuildContext context) => TextFormField(
+    controller: controller,
+    decoration: InputDecoration(
+      labelText: label,
+      labelStyle: TextStyle(color: VuetColors.steel),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(color: VuetColors.mediumTurquoise, width: 2),
+      ),
+    ),
+    validator: validator,
+  );
+}
 ```
-Complex Recurrence Models → Task Actions & Reminders → Entity Form Specialization → Contact Management → Help System
+
+### Navigation Pattern
+**Pattern**: Type-safe routing with GoRouter
+
+```dart
+final router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/categories',
+      builder: (_, __) => const CategoryGrid(),
+      routes: [
+        GoRoute(
+          path: ':categoryId',
+          builder: (_, state) => CategoryDetailPage(
+            categoryId: int.parse(state.pathParameters['categoryId']!),
+          ),
+          routes: [
+            GoRoute(
+              path: 'entities/:entityId',
+              builder: (_, state) => EntityDetailPage(
+                entityId: int.parse(state.pathParameters['entityId']!),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ],
+);
 ```
-Status: These advanced features from the React app need to be implemented after the critical features.
 
-## Code Quality Patterns
+## Data Patterns
 
-### Established Standards
-- **Dart Conventions**: Strict lowerCamelCase naming
-- **Import Management**: Organized imports with unused cleanup
-- **Error Handling**: Comprehensive try-catch with user-friendly messages
-- **Retry Logic**: Exponential backoff for network operations
-- **Code Generation**: Reliable Freezed/JSON generation workflow
+### Repository Pattern
+**Pattern**: Clean separation between data access and business logic
 
-### Testing Patterns
-- **Unit Tests**: Model and provider testing
-- **Widget Tests**: UI component testing
-- **Integration Tests**: End-to-end feature testing
-- **Performance Tests**: Load and stress testing
+```dart
+abstract class EntityRepository {
+  Future<List<Entity>> getEntitiesByCategory(int categoryId);
+  Future<Entity> getEntity(int entityId);
+  Future<Entity> createEntity(Entity entity);
+  Future<Entity> updateEntity(Entity entity);
+  Future<void> deleteEntity(int entityId);
+}
 
-### Build and Deployment
-- **Environment Configuration**: Development, staging, production
-- **Code Analysis**: Flutter analysis with zero warnings goal
-- **Automated Testing**: CI/CD pipeline integration
-- **Performance Monitoring**: Real-time performance tracking
+class SupabaseEntityRepository implements EntityRepository {
+  final SupabaseClient _client;
+  
+  @override
+  Future<List<Entity>> getEntitiesByCategory(int categoryId) async {
+    final response = await _client
+        .from('entities')
+        .select('*, cars(*), birthdays(*), pets(*)')
+        .eq('category_id', categoryId);
+    
+    return response.map((json) => Entity.fromJson(json)).toList();
+  }
+}
+```
 
-## Integration with Original React Codebase
+### Caching Pattern
+**Pattern**: Multi-layer caching for performance
 
-### Feature Mapping Strategy
-- **Direct Translation**: Core functionality preserved exactly
-- **Enhancement**: Improved UX and cross-feature integration
-- **AI Augmentation**: LANA AI adds intelligence to existing features
-- **Modern Patterns**: Flutter best practices applied throughout
+```dart
+class CachedEntityRepository implements EntityRepository {
+  final EntityRepository _repository;
+  final Map<int, Entity> _cache = {};
+  
+  @override
+  Future<Entity> getEntity(int entityId) async {
+    if (_cache.containsKey(entityId)) {
+      return _cache[entityId]!;
+    }
+    
+    final entity = await _repository.getEntity(entityId);
+    _cache[entityId] = entity;
+    return entity;
+  }
+}
+```
 
-### Data Migration Considerations
-- **Schema Compatibility**: Supabase schema matches Django models
-- **Data Preservation**: All original data structures supported
-- **Feature Parity**: Every React feature has Flutter equivalent
-- **Enhancement Opportunities**: Additional features where beneficial
+## Error Handling Patterns
 
-The React codebase serves as the definitive functional specification, while Flutter implementation adds modern architecture and AI capabilities.
+### Result Pattern
+**Pattern**: Explicit error handling without exceptions
+
+```dart
+@freezed
+class Result<T> with _$Result<T> {
+  const factory Result.success(T data) = Success<T>;
+  const factory Result.failure(String error) = Failure<T>;
+}
+
+class EntityService {
+  Future<Result<Entity>> createEntity(Entity entity) async {
+    try {
+      final created = await _repository.createEntity(entity);
+      return Result.success(created);
+    } catch (e) {
+      return Result.failure('Failed to create entity: $e');
+    }
+  }
+}
+```
+
+### Error Boundary Pattern
+**Pattern**: Graceful error handling in UI
+
+```dart
+class ErrorBoundary extends StatelessWidget {
+  const ErrorBoundary({
+    required this.child,
+    this.onError,
+    super.key,
+  });
+  
+  final Widget child;
+  final void Function(Object error)? onError;
+  
+  @override
+  Widget build(BuildContext context) {
+    return child; // Simplified - actual implementation would catch errors
+  }
+}
+```
+
+## Testing Patterns
+
+### Repository Testing Pattern
+**Pattern**: Mock repositories for unit testing
+
+```dart
+class MockEntityRepository extends Mock implements EntityRepository {}
+
+void main() {
+  group('EntityService', () {
+    late MockEntityRepository mockRepository;
+    late EntityService service;
+    
+    setUp(() {
+      mockRepository = MockEntityRepository();
+      service = EntityService(mockRepository);
+    });
+    
+    test('should create entity successfully', () async {
+      // Arrange
+      final entity = Entity.car(carData: Car(...));
+      when(() => mockRepository.createEntity(entity))
+          .thenAnswer((_) async => entity.copyWith(id: 1));
+      
+      // Act
+      final result = await service.createEntity(entity);
+      
+      // Assert
+      expect(result, isA<Success<Entity>>());
+    });
+  });
+}
+```
+
+### Widget Testing Pattern
+**Pattern**: Component testing with providers
+
+```dart
+Widget createTestWidget(Widget child) {
+  return ProviderScope(
+    overrides: [
+      entityRepositoryProvider.overrideWithValue(MockEntityRepository()),
+    ],
+    child: MaterialApp(home: child),
+  );
+}
+
+void main() {
+  testWidgets('EntityForm should validate required fields', (tester) async {
+    await tester.pumpWidget(createTestWidget(const EntityForm()));
+    
+    await tester.tap(find.text('Save'));
+    await tester.pump();
+    
+    expect(find.text('Required'), findsOneWidget);
+  });
+}
+```
+
+## Performance Patterns
+
+### Lazy Loading Pattern
+**Pattern**: Load data on demand to improve performance
+
+```dart
+class LazyEntityList extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        final entity = ref.watch(entityProvider(index));
+        return entity.when(
+          data: (entity) => EntityTile(entity),
+          loading: () => const EntityTileSkeleton(),
+          error: (error, _) => EntityTileError(error),
+        );
+      },
+    );
+  }
+}
+```
+
+### Pagination Pattern
+**Pattern**: Efficient data loading for large datasets
+
+```dart
+class PaginatedEntityNotifier extends AsyncNotifier<List<Entity>> {
+  int _page = 0;
+  static const _pageSize = 20;
+  
+  @override
+  Future<List<Entity>> build() async {
+    return _loadPage(0);
+  }
+  
+  Future<void> loadMore() async {
+    final current = state.value ?? [];
+    final nextPage = await _loadPage(_page + 1);
+    state = AsyncValue.data([...current, ...nextPage]);
+    _page++;
+  }
+  
+  Future<List<Entity>> _loadPage(int page) async {
+    return ref.read(entityRepositoryProvider)
+        .getEntities(offset: page * _pageSize, limit: _pageSize);
+  }
+}
+```
+
+## Security Patterns
+
+### Row Level Security (RLS) Pattern
+**Pattern**: Database-level security for multi-tenant data
+
+```sql
+-- Enable RLS on entities table
+ALTER TABLE entities ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Users can only see entities they own or are shared with
+CREATE POLICY "Users can view own and shared entities" ON entities
+  FOR SELECT USING (
+    user_id = auth.uid() OR
+    EXISTS (
+      SELECT 1 FROM family_members fm
+      JOIN families f ON fm.family_id = f.id
+      WHERE f.id = entities.family_id AND fm.user_id = auth.uid()
+    )
+  );
+```
+
+### Permission Checking Pattern
+**Pattern**: Client-side permission validation
+
+```dart
+class PermissionService {
+  bool canEdit(Entity entity, User user) {
+    if (entity.userId == user.id) return true;
+    
+    final familyMember = user.familyMemberships
+        .where((m) => m.familyId == entity.familyId)
+        .firstOrNull;
+    
+    return familyMember?.permission.index >= PermissionLevel.edit.index;
+  }
+}
+```
+
+---
+
+*These patterns ensure consistency, maintainability, and scalability across the Vuet Flutter application.*

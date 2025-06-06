@@ -16,18 +16,20 @@ class AppCategory {
 }
 
 const List<AppCategory> appCategories = [
-  AppCategory(id: 1, name: "PETS", readableName: "Pets"),
-  AppCategory(id: 2, name: "SOCIAL_INTERESTS", readableName: "Social Interests"),
-  AppCategory(id: 3, name: "EDUCATION", readableName: "Education"),
-  AppCategory(id: 4, name: "CAREER", readableName: "Career"),
-  AppCategory(id: 5, name: "TRAVEL", readableName: "Travel"),
-  AppCategory(id: 6, name: "HEALTH_BEAUTY", readableName: "Health & Beauty"),
-  AppCategory(id: 7, name: "HOME", readableName: "Home"),
-  AppCategory(id: 8, name: "GARDEN", readableName: "Garden"),
-  AppCategory(id: 9, name: "FOOD", readableName: "Food"),
-  AppCategory(id: 10, name: "LAUNDRY", readableName: "Laundry"),
-  AppCategory(id: 11, name: "FINANCE", readableName: "Finance"),
-  AppCategory(id: 12, name: "TRANSPORT", readableName: "Transport"),
+  AppCategory(id: 1, name: "FAMILY", readableName: "Family"),
+  AppCategory(id: 2, name: "PETS", readableName: "Pets"),
+  AppCategory(id: 3, name: "SOCIAL_INTERESTS", readableName: "Social Interests"),
+  AppCategory(id: 4, name: "EDUCATION", readableName: "Education"),
+  AppCategory(id: 5, name: "CAREER", readableName: "Career"),
+  AppCategory(id: 6, name: "TRAVEL", readableName: "Travel"),
+  AppCategory(id: 7, name: "HEALTH_BEAUTY", readableName: "Health & Beauty"),
+  AppCategory(id: 8, name: "HOME", readableName: "Home"),
+  AppCategory(id: 9, name: "GARDEN", readableName: "Garden"),
+  AppCategory(id: 10, name: "FOOD", readableName: "Food"),
+  AppCategory(id: 11, name: "LAUNDRY", readableName: "Laundry"),
+  AppCategory(id: 12, name: "FINANCE", readableName: "Finance"),
+  AppCategory(id: 13, name: "TRANSPORT", readableName: "Transport"),
+  AppCategory(id: 14, name: "CHARITY_RELIGION", readableName: "Charity & Religion"),
 ];
 
 // Helper function to get a category by its ID
@@ -65,18 +67,19 @@ class CategoryDisplayGroup {
   });
 }
 
-// This list needs to be carefully constructed according to UI needs.
-// For now, it's a placeholder for how groups might be defined.
+// Updated category display groups with new structure
+// Family is now ID 1, and Charity & Religion replaces References
 const List<CategoryDisplayGroup> categoryDisplayGroups = [
-  CategoryDisplayGroup(displayName: "Pets", categoryIds: [1]),
-  CategoryDisplayGroup(displayName: "Social Interests", categoryIds: [2]),
-  CategoryDisplayGroup(displayName: "Education & Career", categoryIds: [3, 4]),
-  CategoryDisplayGroup(displayName: "Travel", categoryIds: [5]),
-  CategoryDisplayGroup(displayName: "Health & Beauty", categoryIds: [6], isPremium: true),
-  CategoryDisplayGroup(displayName: "Home & Garden", categoryIds: [7, 8, 9, 10]),
-  CategoryDisplayGroup(displayName: "Finance", categoryIds: [11]),
-  CategoryDisplayGroup(displayName: "Transport", categoryIds: [12]),
-  CategoryDisplayGroup(displayName: "References", categoryIds: [], isPremium: true),
+  CategoryDisplayGroup(displayName: "Family", categoryIds: [1]),
+  CategoryDisplayGroup(displayName: "Pets", categoryIds: [2]),
+  CategoryDisplayGroup(displayName: "Social Interests", categoryIds: [3]),
+  CategoryDisplayGroup(displayName: "Education & Career", categoryIds: [4, 5]),
+  CategoryDisplayGroup(displayName: "Travel", categoryIds: [6]),
+  CategoryDisplayGroup(displayName: "Health & Beauty", categoryIds: [7], isPremium: true),
+  CategoryDisplayGroup(displayName: "Home & Garden", categoryIds: [8, 9, 10, 11]),
+  CategoryDisplayGroup(displayName: "Finance", categoryIds: [12]),
+  CategoryDisplayGroup(displayName: "Transport", categoryIds: [13]),
+  CategoryDisplayGroup(displayName: "Charity & Religion", categoryIds: [14], isPremium: true),
 ];
 
 // Function to get the group for a category ID
@@ -93,4 +96,4 @@ CategoryDisplayGroup? getCategoryDisplayGroup(int categoryId) {
 List<AppCategory> getCategoriesInGroup(String displayGroupName) {
   final group = categoryDisplayGroups.firstWhere((g) => g.displayName == displayGroupName, orElse: () => const CategoryDisplayGroup(displayName: '', categoryIds: []));
   return appCategories.where((cat) => group.categoryIds.contains(cat.id)).toList();
-} 
+}

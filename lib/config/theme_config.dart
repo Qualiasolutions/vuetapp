@@ -1,19 +1,41 @@
 import 'package:flutter/material.dart';
 
+/// Modern Palette colors for Vuet App
+/// Dark Jungle Green #202827 · Medium Turquoise #55C6D6 · Orange #E49F2F · Steel #798D8E · White #FFFFFF
+class AppColors {
+  /// Dark Jungle Green - Primary dark color
+  static const Color darkJungleGreen = Color(0xFF202827);
+  
+  /// Medium Turquoise - Primary accent color
+  static const Color mediumTurquoise = Color(0xFF55C6D6);
+  
+  /// Orange - Secondary accent color
+  static const Color orange = Color(0xFFE49F2F);
+  
+  /// Steel - Neutral/muted color
+  static const Color steel = Color(0xFF798D8E);
+  
+  /// White - Background/text color
+  static const Color white = Color(0xFFFFFFFF);
+}
+
 /// Theme configuration for the app
 class ThemeConfig {
-  /// Primary color for the app
-  static const Color primaryColor = Color(0xFF1C2827);
-  
-  /// Secondary color for the app
-  static const Color secondaryColor = Color(0xFFE49F30);
-  
+  /// Primary color for the app (Medium Turquoise)
+  static const Color primaryColor = AppColors.mediumTurquoise;
+
+  /// Secondary color for the app (Orange)
+  static const Color secondaryColor = AppColors.orange;
+
+  /// Dark color for the app (Dark Jungle Green)
+  static const Color darkColor = AppColors.darkJungleGreen;
+
   /// Background color for the app
-  static const Color backgroundColor = Color(0xFFF5F5F5);
-  
+  static const Color backgroundColor = AppColors.white;
+
   /// Text color for the app
-  static const Color textColor = Color(0xFF333333);
-  
+  static const Color textColor = AppColors.darkJungleGreen;
+
   /// Light theme for the app
   static ThemeData lightTheme() {
     return ThemeData(
@@ -22,23 +44,24 @@ class ThemeConfig {
         seedColor: primaryColor,
         primary: primaryColor,
         secondary: secondaryColor,
+        tertiary: darkColor,
         surface: backgroundColor,
         onSurface: textColor,
       ),
       primaryColor: primaryColor,
       scaffoldBackgroundColor: backgroundColor,
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
-        foregroundColor: textColor,
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
-          color: textColor,
+          color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.w600,
         ),
         iconTheme: IconThemeData(
-          color: primaryColor,
+          color: Colors.white,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -186,7 +209,7 @@ class ThemeConfig {
       ),
     );
   }
-  
+
   /// Dark theme for the app
   static ThemeData darkTheme() {
     return ThemeData(
