@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vuet_app/models/task_type_enums.dart';
-import 'package:vuet_app/providers/advanced_task_providers.dart';
 import 'package:vuet_app/services/auth_service.dart';
 import 'package:vuet_app/utils/logger.dart';
 
@@ -31,10 +29,9 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
 
   // Task type selection (7 traditional types)
   TaskType _selectedTaskType = TaskType.task;
-  
+
   // Common fields
   String? _assignedTo; // Single doer selection
-  TaskPriority _priority = TaskPriority.medium;
   String _urgency = 'medium'; // Hi, Med, Low
   bool _isPrivate = false;
   DateTime? _dueDate;
@@ -44,9 +41,10 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   DateTime? _startDateTime;
   DateTime? _endDateTime;
   int _duration = 15; // Default 15 minutes
-  
+
   // Scheduling preference
-  String _timePreference = 'flexible'; // 'flexible', 'specific_time', 'date_range'
+  String _timePreference =
+      'flexible'; // 'flexible', 'specific_time', 'date_range'
 
   bool _isLoading = false;
 
@@ -72,35 +70,36 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
   }
 
   bool get _isTaskDynamic => _selectedTaskType == TaskType.task;
-  bool get _requiresSpecificTime => !_isTaskDynamic && _timePreference == 'specific_time';
 
-  Future<void> _selectDate(DateTime? initialDate, Function(DateTime) onDateSelected) async {
+  Future<void> _selectDate(
+      DateTime? initialDate, Function(DateTime) onDateSelected) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: initialDate ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
     );
-    
+
     if (picked != null) {
       onDateSelected(picked);
     }
   }
 
-  Future<void> _selectDateTime(DateTime? initialDateTime, Function(DateTime) onDateTimeSelected) async {
+  Future<void> _selectDateTime(
+      DateTime? initialDateTime, Function(DateTime) onDateTimeSelected) async {
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: initialDateTime ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
     );
-    
+
     if (pickedDate != null && mounted) {
       final pickedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(initialDateTime ?? DateTime.now()),
       );
-      
+
       if (pickedTime != null) {
         final dateTime = DateTime(
           pickedDate.year,
@@ -136,7 +135,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             DropdownButtonFormField<TaskType>(
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               value: _selectedTaskType,
               items: TaskType.values.map((type) {
@@ -165,9 +165,9 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              _isTaskDynamic 
-                ? 'Tasks are dynamic and can be scheduled flexibly'
-                : 'This event type is static and considered during scheduling',
+              _isTaskDynamic
+                  ? 'Tasks are dynamic and can be scheduled flexibly'
+                  : 'This event type is static and considered during scheduling',
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey[600],
@@ -211,7 +211,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             // Title
             TextFormField(
               controller: _titleController,
@@ -227,7 +227,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Description
             TextFormField(
               controller: _descriptionController,
@@ -238,10 +238,11 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               maxLines: 3,
             ),
             const SizedBox(height: 16),
-            
+
             // Single Doer selection (only for Tasks)
             if (_isTaskDynamic) ...[
-              const Text('Doer*', style: TextStyle(fontWeight: FontWeight.w500)),
+              const Text('Doer*',
+                  style: TextStyle(fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
               Container(
                 width: double.infinity,
@@ -258,7 +259,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                     ),
                     const SizedBox(width: 12),
                     const Expanded(
-                      child: Text('Current User'), // TODO: Replace with actual user selection
+                      child: Text(
+                          'Current User'), // TODO: Replace with actual user selection
                     ),
                     if (_assignedTo == null)
                       Container(
@@ -267,7 +269,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                           color: Colors.orange,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(Icons.warning, color: Colors.white, size: 16),
+                        child: const Icon(Icons.warning,
+                            color: Colors.white, size: 16),
                       ),
                   ],
                 ),
@@ -280,7 +283,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 ),
               const SizedBox(height: 16),
             ],
-            
+
             // Location
             TextFormField(
               controller: _locationController,
@@ -291,7 +294,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Phone number (clickable)
             TextFormField(
               controller: _phoneController,
@@ -327,9 +330,10 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             // Urgency Level
-            const Text('Urgency Level:', style: TextStyle(fontWeight: FontWeight.w500)),
+            const Text('Urgency Level:',
+                style: TextStyle(fontWeight: FontWeight.w500)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -348,7 +352,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               }).toList(),
             ),
             const SizedBox(height: 16),
-            
+
             // Private checkbox
             Row(
               children: [
@@ -386,7 +390,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             // Time preference selection
             if (_isTaskDynamic) ...[
               const Text('When would you like to do this?'),
@@ -427,32 +431,13 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 ],
               ),
             ],
-            
+
             // Duration field (for flexible tasks)
             if (_isTaskDynamic && _timePreference == 'flexible') ...[
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Text('Duration: '),
-                  Expanded(
-                    child: Slider(
-                      value: _duration.toDouble(),
-                      min: 5,
-                      max: 480, // 8 hours
-                      divisions: 95,
-                      label: '${_duration} min',
-                      onChanged: (value) {
-                        setState(() {
-                          _duration = value.round();
-                        });
-                      },
-                    ),
-                  ),
-                  Text('${_duration} min'),
-                ],
-              ),
+              _buildDurationSelector(),
             ],
-            
+
             // Specific time fields
             if (_timePreference == 'specific_time') ...[
               const SizedBox(height: 16),
@@ -464,9 +449,10 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 ),
                 readOnly: true,
                 controller: TextEditingController(
-                  text: _startDateTime != null 
-                    ? DateFormat('MMM d, yyyy - h:mm a').format(_startDateTime!)
-                    : '',
+                  text: _startDateTime != null
+                      ? DateFormat('MMM d, yyyy - h:mm a')
+                          .format(_startDateTime!)
+                      : '',
                 ),
                 onTap: () => _selectDateTime(_startDateTime, (dateTime) {
                   setState(() {
@@ -476,7 +462,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                   });
                 }),
                 validator: (value) {
-                  if (_timePreference == 'specific_time' && _startDateTime == null) {
+                  if (_timePreference == 'specific_time' &&
+                      _startDateTime == null) {
                     return 'Please select a start time';
                   }
                   return null;
@@ -491,9 +478,9 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 ),
                 readOnly: true,
                 controller: TextEditingController(
-                  text: _endDateTime != null 
-                    ? DateFormat('MMM d, yyyy - h:mm a').format(_endDateTime!)
-                    : '',
+                  text: _endDateTime != null
+                      ? DateFormat('MMM d, yyyy - h:mm a').format(_endDateTime!)
+                      : '',
                 ),
                 onTap: () => _selectDateTime(_endDateTime, (dateTime) {
                   setState(() {
@@ -501,10 +488,12 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                   });
                 }),
                 validator: (value) {
-                  if (_timePreference == 'specific_time' && _endDateTime == null) {
+                  if (_timePreference == 'specific_time' &&
+                      _endDateTime == null) {
                     return 'Please select an end time';
                   }
-                  if (_startDateTime != null && _endDateTime != null && 
+                  if (_startDateTime != null &&
+                      _endDateTime != null &&
                       _endDateTime!.isBefore(_startDateTime!)) {
                     return 'End time must be after start time';
                   }
@@ -512,7 +501,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 },
               ),
             ],
-            
+
             // Date range fields
             if (_timePreference == 'date_range') ...[
               const SizedBox(height: 16),
@@ -524,9 +513,9 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 ),
                 readOnly: true,
                 controller: TextEditingController(
-                  text: _startDateTime != null 
-                    ? DateFormat.yMMMd().format(_startDateTime!)
-                    : '',
+                  text: _startDateTime != null
+                      ? DateFormat.yMMMd().format(_startDateTime!)
+                      : '',
                 ),
                 onTap: () => _selectDate(_startDateTime, (date) {
                   setState(() {
@@ -543,9 +532,9 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                 ),
                 readOnly: true,
                 controller: TextEditingController(
-                  text: _dueDate != null 
-                    ? DateFormat.yMMMd().format(_dueDate!)
-                    : '',
+                  text: _dueDate != null
+                      ? DateFormat.yMMMd().format(_dueDate!)
+                      : '',
                 ),
                 onTap: () => _selectDate(_dueDate, (date) {
                   setState(() {
@@ -557,6 +546,29 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDurationSelector() {
+    return Row(
+      children: [
+        const Text('Duration: '),
+        Expanded(
+          child: Slider(
+            value: _duration.toDouble(),
+            min: 5,
+            max: 480, // 8 hours
+            divisions: 95,
+            label: '$_duration min',
+            onChanged: (value) {
+              setState(() {
+                _duration = value.round();
+              });
+            },
+          ),
+        ),
+        Text('$_duration min'),
+      ],
     );
   }
 
@@ -576,19 +588,19 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       final taskData = {
         'user_id': currentUser.id,
         'title': _titleController.text.trim(),
-        'description': _descriptionController.text.trim().isEmpty 
-          ? null 
-          : _descriptionController.text.trim(),
+        'description': _descriptionController.text.trim().isEmpty
+            ? null
+            : _descriptionController.text.trim(),
         'task_type': _selectedTaskType.name,
         'priority': _urgency,
         'is_private': _isPrivate,
-        'location': _locationController.text.trim().isEmpty 
-          ? null 
-          : _locationController.text.trim(),
+        'location': _locationController.text.trim().isEmpty
+            ? null
+            : _locationController.text.trim(),
         'type_specific_data': {
-          'phone_number': _phoneController.text.trim().isEmpty 
-            ? null 
-            : _phoneController.text.trim(),
+          'phone_number': _phoneController.text.trim().isEmpty
+              ? null
+              : _phoneController.text.trim(),
         },
         'entity_id': widget.linkedEntityId,
         'tags': _tags,
@@ -600,14 +612,17 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
         taskData['scheduling_type'] = 'FLEXIBLE';
         taskData['duration_minutes'] = _duration;
         taskData['task_urgency'] = _urgency.toUpperCase();
-        
-        if (_timePreference == 'specific_time' && _startDateTime != null && _endDateTime != null) {
+
+        if (_timePreference == 'specific_time' &&
+            _startDateTime != null &&
+            _endDateTime != null) {
           taskData['start_datetime'] = _startDateTime!.toIso8601String();
           taskData['end_datetime'] = _endDateTime!.toIso8601String();
           taskData['is_scheduled'] = true;
         } else if (_timePreference == 'date_range') {
           if (_startDateTime != null) {
-            taskData['earliest_action_date'] = _startDateTime!.toIso8601String().split('T')[0];
+            taskData['earliest_action_date'] =
+                _startDateTime!.toIso8601String().split('T')[0];
           }
           if (_dueDate != null) {
             taskData['due_date'] = _dueDate!.toIso8601String();
@@ -619,7 +634,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
         if (_startDateTime != null && _endDateTime != null) {
           taskData['start_datetime'] = _startDateTime!.toIso8601String();
           taskData['end_datetime'] = _endDateTime!.toIso8601String();
-          taskData['duration_minutes'] = _endDateTime!.difference(_startDateTime!).inMinutes;
+          taskData['duration_minutes'] =
+              _endDateTime!.difference(_startDateTime!).inMinutes;
         }
       }
 
@@ -630,7 +646,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${_selectedTaskType.displayName} created successfully!'),
+            content:
+                Text('${_selectedTaskType.displayName} created successfully!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -640,7 +657,8 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error creating ${_selectedTaskType.displayName.toLowerCase()}: $e'),
+            content: Text(
+                'Error creating ${_selectedTaskType.displayName.toLowerCase()}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -668,13 +686,14 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
           ),
           TextButton(
             onPressed: _isLoading ? null : _submitForm,
-            child: _isLoading 
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Change', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: _isLoading
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Change',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -691,7 +710,7 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
             const SizedBox(height: 16),
             _buildTimeFields(),
             const SizedBox(height: 24),
-            
+
             // Submit button
             SizedBox(
               height: 50,
@@ -701,23 +720,24 @@ class _CreateTaskScreenState extends ConsumerState<CreateTaskScreen> {
                   backgroundColor: Theme.of(context).primaryColor,
                   foregroundColor: Colors.white,
                 ),
-                child: _isLoading 
-                  ? const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                child: _isLoading
+                    ? const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 8),
-                        Text('Creating...'),
-                      ],
-                    )
-                  : Text('Create ${_selectedTaskType.displayName}'),
+                          SizedBox(width: 8),
+                          Text('Creating...'),
+                        ],
+                      )
+                    : Text('Create ${_selectedTaskType.displayName}'),
               ),
             ),
           ],

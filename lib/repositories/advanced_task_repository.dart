@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vuet_app/models/advanced_task_models.dart';
-import 'package:vuet_app/models/task_type_enums.dart';
+import 'package:vuet_app/models/task_type_enums.dart' as enums;
 
 /// Repository for advanced task scheduling operations
 class AdvancedTaskRepository {
@@ -11,12 +11,9 @@ class AdvancedTaskRepository {
   /// Create a new flexible task
   Future<FlexibleTask> createFlexibleTask(FlexibleTask task) async {
     final taskData = _flexibleTaskToDatabase(task);
-    
-    final response = await _supabase
-        .from('tasks')
-        .insert(taskData)
-        .select()
-        .single();
+
+    final response =
+        await _supabase.from('tasks').insert(taskData).select().single();
 
     return _databaseToFlexibleTask(response);
   }
@@ -25,7 +22,7 @@ class AdvancedTaskRepository {
   Future<FlexibleTask> updateFlexibleTask(FlexibleTask task) async {
     final taskData = _flexibleTaskToDatabase(task);
     taskData['updated_at'] = DateTime.now().toIso8601String();
-    
+
     final response = await _supabase
         .from('tasks')
         .update(taskData)
@@ -45,7 +42,9 @@ class AdvancedTaskRepository {
         .eq('scheduling_type', 'FLEXIBLE')
         .order('earliest_action_date', ascending: true);
 
-    return response.map<FlexibleTask>((json) => _databaseToFlexibleTask(json)).toList();
+    return response
+        .map<FlexibleTask>((json) => _databaseToFlexibleTask(json))
+        .toList();
   }
 
   /// Get unscheduled flexible tasks
@@ -60,21 +59,40 @@ class AdvancedTaskRepository {
         .order('task_urgency', ascending: false)
         .order('due_date', ascending: true);
 
-    return response.map<FlexibleTask>((json) => _databaseToFlexibleTask(json)).toList();
+    return response
+        .map<FlexibleTask>((json) => _databaseToFlexibleTask(json))
+        .toList();
+  }
+
+  /// Convert from task_type_enums.TaskUrgency to advanced_task_models.TaskUrgency
+  TaskUrgency _convertTaskUrgency(enums.TaskUrgency urgency) {
+    switch (urgency) {
+      case enums.TaskUrgency.low:
+        return TaskUrgency.low;
+      case enums.TaskUrgency.medium:
+        return TaskUrgency.medium;
+      case enums.TaskUrgency.high:
+        return TaskUrgency.high;
+      case enums.TaskUrgency.urgent:
+        return TaskUrgency.urgent;
+    }
   }
 
   /// Get flexible tasks by urgency
-  Future<List<FlexibleTask>> getFlexibleTasksByUrgency(String userId, TaskUrgency urgency) async {
+  Future<List<FlexibleTask>> getFlexibleTasksByUrgency(
+      String userId, enums.TaskUrgency urgency) async {
     final response = await _supabase
         .from('tasks')
         .select()
         .eq('user_id', userId)
         .eq('scheduling_type', 'FLEXIBLE')
-        .eq('task_urgency', urgency.name.toUpperCase())
+        .eq('task_urgency', urgency.value.toUpperCase())
         .eq('is_completed', false)
         .order('due_date', ascending: true);
 
-    return response.map<FlexibleTask>((json) => _databaseToFlexibleTask(json)).toList();
+    return response
+        .map<FlexibleTask>((json) => _databaseToFlexibleTask(json))
+        .toList();
   }
 
   /// Schedule a flexible task
@@ -103,12 +121,9 @@ class AdvancedTaskRepository {
   /// Create a new fixed task
   Future<FixedTask> createFixedTask(FixedTask task) async {
     final taskData = _fixedTaskToDatabase(task);
-    
-    final response = await _supabase
-        .from('tasks')
-        .insert(taskData)
-        .select()
-        .single();
+
+    final response =
+        await _supabase.from('tasks').insert(taskData).select().single();
 
     return _databaseToFixedTask(response);
   }
@@ -117,7 +132,7 @@ class AdvancedTaskRepository {
   Future<FixedTask> updateFixedTask(FixedTask task) async {
     final taskData = _fixedTaskToDatabase(task);
     taskData['updated_at'] = DateTime.now().toIso8601String();
-    
+
     final response = await _supabase
         .from('tasks')
         .update(taskData)
@@ -137,7 +152,9 @@ class AdvancedTaskRepository {
         .eq('scheduling_type', 'FIXED')
         .order('start_datetime', ascending: true);
 
-    return response.map<FixedTask>((json) => _databaseToFixedTask(json)).toList();
+    return response
+        .map<FixedTask>((json) => _databaseToFixedTask(json))
+        .toList();
   }
 
   /// Get fixed tasks in a date range
@@ -155,7 +172,9 @@ class AdvancedTaskRepository {
         .lte('start_datetime', endDate.toIso8601String())
         .order('start_datetime', ascending: true);
 
-    return response.map<FixedTask>((json) => _databaseToFixedTask(json)).toList();
+    return response
+        .map<FixedTask>((json) => _databaseToFixedTask(json))
+        .toList();
   }
 
   /// Check for task conflicts in a time range
@@ -178,7 +197,9 @@ class AdvancedTaskRepository {
     }
 
     final response = await query.order('start_datetime', ascending: true);
-    return response.map<FixedTask>((json) => _databaseToFixedTask(json)).toList();
+    return response
+        .map<FixedTask>((json) => _databaseToFixedTask(json))
+        .toList();
   }
 
   // MARK: - Recurrence Operations
@@ -196,11 +217,8 @@ class AdvancedTaskRepository {
       'is_active': recurrence.isActive,
     };
 
-    final response = await _supabase
-        .from('recurrences')
-        .insert(data)
-        .select()
-        .single();
+    final response =
+        await _supabase.from('recurrences').insert(data).select().single();
 
     return _databaseToRecurrence(response);
   }
@@ -214,7 +232,9 @@ class AdvancedTaskRepository {
         .eq('is_active', true)
         .order('created_at', ascending: true);
 
-    return response.map<Recurrence>((json) => _databaseToRecurrence(json)).toList();
+    return response
+        .map<Recurrence>((json) => _databaseToRecurrence(json))
+        .toList();
   }
 
   /// Update recurrence pattern
@@ -253,11 +273,8 @@ class AdvancedTaskRepository {
       'is_enabled': action.isEnabled,
     };
 
-    final response = await _supabase
-        .from('task_actions')
-        .insert(data)
-        .select()
-        .single();
+    final response =
+        await _supabase.from('task_actions').insert(data).select().single();
 
     return _databaseToTaskAction(response);
   }
@@ -271,7 +288,9 @@ class AdvancedTaskRepository {
         .eq('is_enabled', true)
         .order('action_timedelta', ascending: false);
 
-    return response.map<TaskAction>((json) => _databaseToTaskAction(json)).toList();
+    return response
+        .map<TaskAction>((json) => _databaseToTaskAction(json))
+        .toList();
   }
 
   // MARK: - Task Reminders Operations
@@ -287,11 +306,8 @@ class AdvancedTaskRepository {
       'is_enabled': reminder.isEnabled,
     };
 
-    final response = await _supabase
-        .from('task_reminders')
-        .insert(data)
-        .select()
-        .single();
+    final response =
+        await _supabase.from('task_reminders').insert(data).select().single();
 
     return _databaseToTaskReminder(response);
   }
@@ -305,22 +321,25 @@ class AdvancedTaskRepository {
         .eq('is_enabled', true)
         .order('timedelta', ascending: false);
 
-    return response.map<TaskReminder>((json) => _databaseToTaskReminder(json)).toList();
+    return response
+        .map<TaskReminder>((json) => _databaseToTaskReminder(json))
+        .toList();
   }
 
   // MARK: - Task-Entity Relationships
 
   /// Link a task to entities
-  Future<void> linkTaskToEntities(String taskId, List<String> entityIds, {String relationshipType = 'primary'}) async {
-    final data = entityIds.map((entityId) => {
-      'task_id': taskId,
-      'entity_id': entityId,
-      'relationship_type': relationshipType,
-    }).toList();
+  Future<void> linkTaskToEntities(String taskId, List<String> entityIds,
+      {String relationshipType = 'primary'}) async {
+    final data = entityIds
+        .map((entityId) => {
+              'task_id': taskId,
+              'entity_id': entityId,
+              'relationship_type': relationshipType,
+            })
+        .toList();
 
-    await _supabase
-        .from('task_entities')
-        .insert(data);
+    await _supabase.from('task_entities').insert(data);
   }
 
   /// Get entities linked to a task
@@ -331,7 +350,9 @@ class AdvancedTaskRepository {
         .eq('task_id', taskId)
         .order('created_at', ascending: true);
 
-    return response.map<TaskEntity>((json) => _databaseToTaskEntity(json)).toList();
+    return response
+        .map<TaskEntity>((json) => _databaseToTaskEntity(json))
+        .toList();
   }
 
   /// Get tasks linked to an entity
@@ -353,22 +374,19 @@ class AdvancedTaskRepository {
     await _supabase.from('task_reminders').delete().eq('task_id', taskId);
     await _supabase.from('task_actions').delete().eq('task_id', taskId);
     await _supabase.from('recurrences').delete().eq('task_id', taskId);
-    
+
     // Finally delete the task
     await _supabase.from('tasks').delete().eq('id', taskId);
   }
 
   /// Mark task as completed
   Future<void> markTaskCompleted(String taskId) async {
-    await _supabase
-        .from('tasks')
-        .update({
-          'is_completed': true,
-          'completed_at': DateTime.now().toIso8601String(),
-          'status': 'completed',
-          'updated_at': DateTime.now().toIso8601String(),
-        })
-        .eq('id', taskId);
+    await _supabase.from('tasks').update({
+      'is_completed': true,
+      'completed_at': DateTime.now().toIso8601String(),
+      'status': 'completed',
+      'updated_at': DateTime.now().toIso8601String(),
+    }).eq('id', taskId);
   }
 
   // MARK: - Private Helper Methods
@@ -380,7 +398,8 @@ class AdvancedTaskRepository {
       'title': task.title,
       'description': task.description,
       'scheduling_type': 'FLEXIBLE',
-      'earliest_action_date': task.earliestActionDate?.toIso8601String().split('T')[0],
+      'earliest_action_date':
+          task.earliestActionDate?.toIso8601String().split('T')[0],
       'due_date': task.dueDate?.toIso8601String(),
       'duration_minutes': task.duration,
       'task_urgency': task.urgency.name.toUpperCase(),
@@ -449,6 +468,12 @@ class AdvancedTaskRepository {
   }
 
   FlexibleTask _databaseToFlexibleTask(Map<String, dynamic> json) {
+    enums.TaskUrgency taskUrgency = json['task_urgency'] != null
+        ? enums.TaskUrgency.values.firstWhere(
+            (e) => e.value.toUpperCase() == json['task_urgency'],
+            orElse: () => enums.TaskUrgency.medium)
+        : enums.TaskUrgency.medium;
+
     return FlexibleTask(
       id: json['id'],
       title: json['title'],
@@ -461,25 +486,39 @@ class AdvancedTaskRepository {
       routineId: json['routine_id'],
       routineInstanceId: json['routine_instance_id'],
       isGeneratedFromRoutine: json['is_generated_from_routine'] ?? false,
-      taskType: json['task_type'] != null ? TaskType.values.firstWhere((e) => e.toString().split('.').last == json['task_type']) : null,
+      taskType: json['task_type'] != null
+          ? enums.TaskType.values.firstWhere(
+              (e) => e.toString().split('.').last == json['task_type'])
+          : null,
       taskSubtype: json['task_subtype'],
       location: json['location'],
       typeSpecificData: json['type_specific_data'],
       priority: json['priority'] ?? 'medium',
       status: json['status'] ?? 'pending',
       isCompleted: json['is_completed'] ?? false,
-      completedAt: json['completed_at'] != null ? DateTime.parse(json['completed_at']) : null,
+      completedAt: json['completed_at'] != null
+          ? DateTime.parse(json['completed_at'])
+          : null,
       isRecurring: json['is_recurring'] ?? false,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
-      deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
-      earliestActionDate: json['earliest_action_date'] != null ? DateTime.parse(json['earliest_action_date']) : null,
-      dueDate: json['due_date'] != null ? DateTime.parse(json['due_date']) : null,
+      deletedAt: json['deleted_at'] != null
+          ? DateTime.parse(json['deleted_at'])
+          : null,
+      earliestActionDate: json['earliest_action_date'] != null
+          ? DateTime.parse(json['earliest_action_date'])
+          : null,
+      dueDate:
+          json['due_date'] != null ? DateTime.parse(json['due_date']) : null,
       duration: json['duration_minutes'] ?? 30,
-      urgency: json['task_urgency'] != null ? TaskUrgency.values.firstWhere((e) => e.name.toUpperCase() == json['task_urgency']) : TaskUrgency.medium,
-      scheduledStartTime: json['scheduled_start_time'] != null ? DateTime.parse(json['scheduled_start_time']) : null,
-      scheduledEndTime: json['scheduled_end_time'] != null ? DateTime.parse(json['scheduled_end_time']) : null,
+      urgency: _convertTaskUrgency(taskUrgency),
+      scheduledStartTime: json['scheduled_start_time'] != null
+          ? DateTime.parse(json['scheduled_start_time'])
+          : null,
+      scheduledEndTime: json['scheduled_end_time'] != null
+          ? DateTime.parse(json['scheduled_end_time'])
+          : null,
       isScheduled: json['is_scheduled'] ?? false,
     );
   }
@@ -497,26 +536,41 @@ class AdvancedTaskRepository {
       routineId: json['routine_id'],
       routineInstanceId: json['routine_instance_id'],
       isGeneratedFromRoutine: json['is_generated_from_routine'] ?? false,
-      taskType: json['task_type'] != null ? TaskType.values.firstWhere((e) => e.toString().split('.').last == json['task_type']) : null,
+      taskType: json['task_type'] != null
+          ? enums.TaskType.values.firstWhere(
+              (e) => e.toString().split('.').last == json['task_type'])
+          : null,
       taskSubtype: json['task_subtype'],
       location: json['location'],
       typeSpecificData: json['type_specific_data'],
       priority: json['priority'] ?? 'medium',
       status: json['status'] ?? 'pending',
       isCompleted: json['is_completed'] ?? false,
-      completedAt: json['completed_at'] != null ? DateTime.parse(json['completed_at']) : null,
+      completedAt: json['completed_at'] != null
+          ? DateTime.parse(json['completed_at'])
+          : null,
       isRecurring: json['is_recurring'] ?? false,
       tags: json['tags'] != null ? List<String>.from(json['tags']) : null,
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
-      deletedAt: json['deleted_at'] != null ? DateTime.parse(json['deleted_at']) : null,
-      startDateTime: json['start_datetime'] != null ? DateTime.parse(json['start_datetime']) : null,
-      endDateTime: json['end_datetime'] != null ? DateTime.parse(json['end_datetime']) : null,
+      deletedAt: json['deleted_at'] != null
+          ? DateTime.parse(json['deleted_at'])
+          : null,
+      startDateTime: json['start_datetime'] != null
+          ? DateTime.parse(json['start_datetime'])
+          : null,
+      endDateTime: json['end_datetime'] != null
+          ? DateTime.parse(json['end_datetime'])
+          : null,
       startTimezone: json['start_timezone'],
       endTimezone: json['end_timezone'],
-      startDate: json['start_date'] != null ? DateTime.parse(json['start_date']) : null,
-      endDate: json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
-      date: json['task_date'] != null ? DateTime.parse(json['task_date']) : null,
+      startDate: json['start_date'] != null
+          ? DateTime.parse(json['start_date'])
+          : null,
+      endDate:
+          json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
+      date:
+          json['task_date'] != null ? DateTime.parse(json['task_date']) : null,
       duration: json['duration_minutes'],
     );
   }
@@ -525,10 +579,15 @@ class AdvancedTaskRepository {
     return Recurrence(
       id: json['id'],
       taskId: json['task_id'],
-      recurrenceType: RecurrenceType.values.firstWhere((e) => e.name.toUpperCase() == json['recurrence_type']),
+      recurrenceType: RecurrenceType.values
+          .firstWhere((e) => e.name.toUpperCase() == json['recurrence_type']),
       intervalLength: json['interval_length'] ?? 1,
-      earliestOccurrence: json['earliest_occurrence'] != null ? DateTime.parse(json['earliest_occurrence']) : null,
-      latestOccurrence: json['latest_occurrence'] != null ? DateTime.parse(json['latest_occurrence']) : null,
+      earliestOccurrence: json['earliest_occurrence'] != null
+          ? DateTime.parse(json['earliest_occurrence'])
+          : null,
+      latestOccurrence: json['latest_occurrence'] != null
+          ? DateTime.parse(json['latest_occurrence'])
+          : null,
       recurrenceData: json['recurrence_data'],
       isActive: json['is_active'] ?? true,
       createdAt: DateTime.parse(json['created_at']),
@@ -545,7 +604,9 @@ class AdvancedTaskRepository {
       actionType: json['action_type'],
       actionData: json['action_data'],
       isEnabled: json['is_enabled'] ?? true,
-      lastExecuted: json['last_executed'] != null ? DateTime.parse(json['last_executed']) : null,
+      lastExecuted: json['last_executed'] != null
+          ? DateTime.parse(json['last_executed'])
+          : null,
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
@@ -559,7 +620,8 @@ class AdvancedTaskRepository {
       reminderType: json['reminder_type'] ?? 'default',
       message: json['message'],
       isEnabled: json['is_enabled'] ?? true,
-      lastSent: json['last_sent'] != null ? DateTime.parse(json['last_sent']) : null,
+      lastSent:
+          json['last_sent'] != null ? DateTime.parse(json['last_sent']) : null,
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );

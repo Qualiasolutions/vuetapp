@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/task_type_enums.dart';
+import 'package:vuet_app/models/task_subtype_enums.dart';
 import 'package:vuet_app/ui/widgets/modern_components.dart';
 import 'package:vuet_app/providers/category_providers.dart';
 import 'package:vuet_app/providers/entity_providers.dart';

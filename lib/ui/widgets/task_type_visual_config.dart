@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vuet_app/models/task_type_enums.dart';
+import 'package:vuet_app/models/task_subtype_enums.dart';
 
 /// Visual configuration for task types including colors, icons, and display properties
 class TaskTypeVisualConfig {
@@ -199,7 +200,7 @@ class TaskTypeVisualConfig {
     if (taskType == null) return defaultConfig.displayName;
 
     final config = getConfig(taskType);
-    
+
     // For types with meaningful subtypes, show subtype name
     if (taskSubtype != null) {
       switch (taskType) {
@@ -257,7 +258,7 @@ class TaskTypeVisualConfig {
   }) {
     final config = taskType != null ? getConfig(taskType) : defaultConfig;
     final icon = getTaskIcon(taskType, taskSubtype);
-    
+
     if (showShortName) {
       return Container(
         width: size,
@@ -304,7 +305,7 @@ class TaskTypeVisualConfig {
     final config = taskType != null ? getConfig(taskType) : defaultConfig;
     final displayName = getDisplayName(taskType, taskSubtype);
     final icon = getTaskIcon(taskType, taskSubtype);
-    
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 6.0 : 8.0,

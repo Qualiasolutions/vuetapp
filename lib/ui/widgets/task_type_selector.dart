@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:vuet_app/models/task_type_enums.dart';
+import 'package:vuet_app/models/task_subtype_enums.dart';
 
 /// A widget for selecting task types and subtypes
 class TaskTypeSelector extends StatefulWidget {
   /// Initial task type
   final TaskType? initialTaskType;
-  
+
   /// Initial task subtype
   final String? initialTaskSubtype;
-  
+
   /// Callback when task type changes
   final Function(TaskType?) onTaskTypeChanged;
-  
+
   /// Callback when task subtype changes
   final Function(String?) onTaskSubtypeChanged;
 
@@ -81,11 +82,11 @@ class _TaskTypeSelectorState extends State<TaskTypeSelector> {
                 label: Text(
                   type.displayName,
                   style: TextStyle(
-                    color: _selectedTaskType == type 
-                        ? Colors.white 
+                    color: _selectedTaskType == type
+                        ? Colors.white
                         : Colors.grey[800],
-                    fontWeight: _selectedTaskType == type 
-                        ? FontWeight.w600 
+                    fontWeight: _selectedTaskType == type
+                        ? FontWeight.w600
                         : FontWeight.w500,
                   ),
                 ),
@@ -109,25 +110,45 @@ class _TaskTypeSelectorState extends State<TaskTypeSelector> {
   }
 
   Widget _buildTaskSubtypeSelector(TaskType taskType) {
-    List<String> subtypes = [];
-    
+    List<DropdownMenuItem<String>> subtypeItems = [];
+
     switch (taskType) {
       case TaskType.activity:
-        subtypes = ActivitySubtype.values.map((e) => e.toString()).toList();
+        subtypeItems = ActivitySubtype.values.map((e) {
+          return DropdownMenuItem(
+            value: e.toString().split('.').last,
+            child: Text(e.displayName),
+          );
+        }).toList();
         break;
       case TaskType.transport:
-        subtypes = TransportSubtype.values.map((e) => e.toString()).toList();
+        subtypeItems = TransportSubtype.values.map((e) {
+          return DropdownMenuItem(
+            value: e.toString().split('.').last,
+            child: Text(e.displayName),
+          );
+        }).toList();
         break;
       case TaskType.accommodation:
-        subtypes = AccommodationSubtype.values.map((e) => e.toString()).toList();
+        subtypeItems = AccommodationSubtype.values.map((e) {
+          return DropdownMenuItem(
+            value: e.toString().split('.').last,
+            child: Text(e.displayName),
+          );
+        }).toList();
         break;
       case TaskType.anniversary:
-        subtypes = AnniversarySubtype.values.map((e) => e.toString()).toList();
+        subtypeItems = AnniversarySubtype.values.map((e) {
+          return DropdownMenuItem(
+            value: e.toString().split('.').last,
+            child: Text(e.displayName),
+          );
+        }).toList();
         break;
       default:
         return const SizedBox.shrink();
     }
-    
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -137,29 +158,27 @@ class _TaskTypeSelectorState extends State<TaskTypeSelector> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.all(4),
         child: Row(
-          children: subtypes.map((subtype) {
-            String displayName = _getSubtypeDisplayName(taskType, subtype);
-            
+          children: subtypeItems.map((item) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2),
               child: ChoiceChip(
                 label: Text(
-                  displayName,
+                  item.child.toString(),
                   style: TextStyle(
-                    color: _selectedTaskSubtype == subtype 
-                        ? Colors.white 
+                    color: _selectedTaskSubtype == item.value
+                        ? Colors.white
                         : Colors.grey[800],
-                    fontWeight: _selectedTaskSubtype == subtype 
-                        ? FontWeight.w600 
+                    fontWeight: _selectedTaskSubtype == item.value
+                        ? FontWeight.w600
                         : FontWeight.w500,
                   ),
                 ),
-                selected: _selectedTaskSubtype == subtype,
+                selected: _selectedTaskSubtype == item.value,
                 selectedColor: const Color(0xFF0D9488),
                 backgroundColor: Colors.grey[100],
                 onSelected: (selected) {
                   setState(() {
-                    _selectedTaskSubtype = selected ? subtype : null;
+                    _selectedTaskSubtype = selected ? item.value : null;
                   });
                   widget.onTaskSubtypeChanged(_selectedTaskSubtype);
                 },
@@ -170,14 +189,14 @@ class _TaskTypeSelectorState extends State<TaskTypeSelector> {
       ),
     );
   }
-  
+
   bool _hasSubtypes(TaskType taskType) {
     return taskType == TaskType.activity ||
         taskType == TaskType.transport ||
         taskType == TaskType.accommodation ||
         taskType == TaskType.anniversary;
   }
-  
+
   String _getSubtypeTitle(TaskType taskType) {
     switch (taskType) {
       case TaskType.activity:
@@ -190,41 +209,6 @@ class _TaskTypeSelectorState extends State<TaskTypeSelector> {
         return 'Anniversary Type';
       default:
         return 'Subtype';
-    }
-  }
-  
-  String _getSubtypeDisplayName(TaskType taskType, String subtype) {
-    switch (taskType) {
-      case TaskType.activity:
-        final activitySubtype = ActivitySubtype.values.firstWhere(
-          (e) => e.toString() == subtype,
-          orElse: () => ActivitySubtype.activity,
-        );
-        return activitySubtype.displayName;
-        
-      case TaskType.transport:
-        final transportSubtype = TransportSubtype.values.firstWhere(
-          (e) => e.toString() == subtype,
-          orElse: () => TransportSubtype.flight,
-        );
-        return transportSubtype.displayName;
-        
-      case TaskType.accommodation:
-        final accommodationSubtype = AccommodationSubtype.values.firstWhere(
-          (e) => e.toString() == subtype,
-          orElse: () => AccommodationSubtype.hotel,
-        );
-        return accommodationSubtype.displayName;
-        
-      case TaskType.anniversary:
-        final anniversarySubtype = AnniversarySubtype.values.firstWhere(
-          (e) => e.toString() == subtype,
-          orElse: () => AnniversarySubtype.birthday,
-        );
-        return anniversarySubtype.displayName;
-        
-      default:
-        return subtype.split('.').last;
     }
   }
 }
