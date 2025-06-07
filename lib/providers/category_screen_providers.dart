@@ -88,7 +88,10 @@ final personalCategoryDisplayGroupsProvider = Provider<List<CategoryDisplayGroup
         return groupDefA.sortOrder.compareTo(groupDefB.sortOrder);
       });
 
-      return resultGroups;
+      // Filter out the "Family" category before returning
+      final filteredResultGroups = resultGroups.where((group) => group.systemName != "FAMILY").toList();
+
+      return filteredResultGroups;
     },
     loading: () => [], // Return empty list while loading
     error: (error, stackTrace) {

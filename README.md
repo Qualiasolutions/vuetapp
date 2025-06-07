@@ -112,6 +112,22 @@ Instead of just creating isolated tasks, Vuet lets you:
    flutter run
    ```
 
+7. **Deploy to Firebase Hosting**
+   ```bash
+   # Install Firebase tools if not already installed
+   npm install -g firebase-tools
+   
+   # Login to Firebase
+   firebase login
+   
+   # Initialize Firebase (if not already done)
+   firebase init
+   
+   # Build and deploy
+   npm run build
+   npm run deploy
+   ```
+
 ## 📁 Project Structure
 
 ```

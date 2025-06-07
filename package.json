@@ -1,0 +1,19 @@
+{
+    "name": "vuet-app",
+    "version": "1.0.0",
+    "description": "Vuet App - Supabase & Flutter Implementation",
+    "private": true,
+    "scripts": {
+        "predeploy": "flutter build web --release",
+        "deploy": "firebase deploy --only hosting",
+        "build": "flutter build web --release",
+        "clean": "flutter clean",
+        "test": "flutter test"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    },
+    "dependencies": {
+        "firebase-tools": "^12.0.0"
+    }
+}
