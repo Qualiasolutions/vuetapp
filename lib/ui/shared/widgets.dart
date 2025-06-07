@@ -27,6 +27,10 @@ class VuetTextField extends StatelessWidget {
     required this.controller,
     required this.validator,
     this.type = TextInputType.text,
+    this.readOnly = false,
+    this.onTap,
+    this.minLines, // Add minLines
+    this.maxLines = 1, // Add maxLines, default to 1
     super.key,
   });
   
@@ -34,11 +38,19 @@ class VuetTextField extends StatelessWidget {
   final TextEditingController controller;
   final String? Function(String?) validator;
   final TextInputType type;
+  final bool readOnly;
+  final VoidCallback? onTap;
+  final int? minLines; // Add minLines field
+  final int maxLines; // Add maxLines field
   
   @override
   Widget build(BuildContext context) => TextFormField(
         controller: controller,
         keyboardType: type,
+        readOnly: readOnly,
+        onTap: onTap,
+        minLines: minLines, // Pass minLines
+        maxLines: type == TextInputType.multiline ? maxLines : 1, // Pass maxLines, ensure it's 1 if not multiline
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: const TextStyle(color: AppColors.steel),

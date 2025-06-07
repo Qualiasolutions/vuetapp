@@ -62,7 +62,10 @@
 ### 📋 MEDIUM PRIORITY - Architecture Alignment
 - [x] **FAMILY Category Decision**: ✅ RESOLVED - Family entity system implemented. To be a backend category, not displayed on main UI grid.
 - [x] **Extra Categories Strategy**: ✅ RESOLVED - 'Documents' category eliminated. 'Charity & Religion' kept. Total 14 categories (including Family).
-- [x] **Schema-Driven Categories**: ✅ COMPLETED (Backend/Model Logic) - New `entity_categories` table created, populated, and extended with `app_category_int_id` and `parent_id`. Flutter models, repositories, and services updated. UI integration and `parent_id` data population are next.
+- [x] **Schema-Driven Categories**: ✅ COMPLETED (Backend/Model Logic & UI Integration) - New `entity_categories` table created, populated, and extended. Flutter models, repositories, services, and key UI components (`CategoriesGrid`, `HierarchicalCategorySelectorDialog`) updated to use schema-driven data. `parent_id` data population by user is pending for full hierarchy.
+
+### 🎯 PETS CATEGORY IMPLEMENTATION (PHASE 1) ✅ COMPLETED
+- [x] **Core Infrastructure**: Supabase tables (`pets`, `pet_appointments`), Flutter models, repositories, providers, and initial List/Form screens created.
 
 ### 📝 DOCUMENTATION COMPLETION
 - [ ] Complete remaining memory bank files based on findings
@@ -74,7 +77,7 @@
 ### Entity Categories (14 total)
 | Category | Backend ID | Guide Status | Implementation |
 |----------|------------|--------------|----------------|
-| Pets | 1 | ✅ Match | Ready |
+| Pets | 1 | ✅ Match | ✅ Phase 1 (Core Infra) Completed. Phase 2 (Routing for Dev ✅, Auto-Tasks ✅, Specific UI Refinements ✅) COMPLETED. General UI Review ⏳ PENDING. |
 | Social Interests | 2 | ✅ Match | Ready |
 | Education | 3 | ✅ Match | Ready |
 | Career | 4 | ✅ Match | Ready |
@@ -125,12 +128,17 @@
 - [x] **Transport Data Layer**: Repositories and Providers fully implemented with Supabase integration. All Transport UI screens now use this data layer.
 
 ## Next Session Priorities
-1.  **UI Integration for Schema-Driven Categories**:
-    *   Thoroughly review and refactor UI components (e.g., category grids in `categories_grid.dart`, various selectors) to fetch and display categories correctly from the `entity_categories` table via updated providers (e.g., `allEntityCategoriesProvider`, `hierarchicalCategoriesProvider`). Ensure `is_displayed_on_grid` and `sort_order` are respected.
-    *   Verify icon display logic now that `iconName` is available (e.g., in `HierarchicalCategorySelectorDialog` and other places).
-2.  **Populate `parent_id` Data (User Task)**: User to update `parent_id` values in the `entity_categories` table in Supabase to define actual category hierarchies.
-3.  **Proceed with Next Entity Category Implementation**: Based on `progress.md`, identify and implement the next highest priority entity category (e.g., Pets), ensuring it uses the new schema-driven and hierarchical category system.
-4.  **Update Memory Bank**: Ensure all memory bank files accurately reflect the current project state after these changes (this is ongoing).
+1.  **Testing Current Changes (User Task)**: 
+    *   Test GoRouter setup by running `flutter run lib/main_development.dart` and navigating within Pets category and other GoRouter-integrated routes.
+    *   Test automatic task generation for Pet vaccinations by creating/updating Pets with `vaccinationDue` dates and checking for task creation.
+2.  **"Pets" Category - Phase 2 Implementation (Continued)**:
+    *   **Routing:** ✅ COMPLETED (for `main_development.dart`).
+    *   **Automatic Task Generation:** ✅ COMPLETED.
+    *   **UI Refinements:** ✅ COMPLETED (Icons in `PetListScreen` updated, multiline notes in `PetAppointmentFormScreen` addressed). General review pending specific feedback.
+3.  **GoRouter Refactor (Production & Main)**: If development testing is successful, apply similar GoRouter refactoring to `lib/main.dart` and `lib/main_production.dart`.
+4.  **Populate `parent_id` Data (User Task)**: User to update `parent_id` values in the `entity_categories` table in Supabase to define actual category hierarchies.
+5.  **Proceed with Next Entity Category Implementation**: After "Pets" Phase 2 is complete, identify and implement the next highest priority entity category (e.g., Social Interests).
+6.  **Update Memory Bank**: Ensure all memory bank files accurately reflect the current project state after these changes (this is ongoing).
 
 ## Blockers & Decisions Needed
 - (Resolved in this session) ~~FAMILY Category: How to handle missing FAMILY category in backend?~~

@@ -53,7 +53,7 @@ class _ProfessionalCategoriesListState extends ConsumerState<ProfessionalCategor
           final filteredCategories = widget.searchQuery.isEmpty
               ? categories
               : categories.where((category) => 
-                  category.displayName.toLowerCase().contains(widget.searchQuery.toLowerCase())).toList(); // Updated to displayName
+                  (category.displayName ?? '').toLowerCase().contains(widget.searchQuery.toLowerCase())).toList(); // Updated to displayName
           
           // Show empty state for search with no results
           if (filteredCategories.isEmpty && widget.searchQuery.isNotEmpty) {
@@ -100,7 +100,7 @@ class _ProfessionalCategoriesListState extends ConsumerState<ProfessionalCategor
 
                   return Card(
                     child: ListTile(
-                      title: Text(category.displayName), // Updated to displayName
+                      title: Text(category.displayName ?? ''), // Updated to displayName
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -109,7 +109,7 @@ class _ProfessionalCategoriesListState extends ConsumerState<ProfessionalCategor
                             onPressed: () {
                               setState(() {
                                 _editingCategory = category;
-                                _editingCategoryName = category.displayName; // Updated to displayName
+                                _editingCategoryName = category.displayName ?? ''; // Updated to displayName
                               });
                             },
                           ),

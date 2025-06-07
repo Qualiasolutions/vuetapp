@@ -351,6 +351,7 @@ class _GroupFormScreenState extends ConsumerState<GroupFormScreen> {
   void _saveGroup() {
     if (_formKey.currentState!.validate()) {
       // TODO: Save to Supabase MCP
+      /* // Commenting out unused variable and its object creation for now
       final group = Group(
         id: widget.groupId != null ? int.tryParse(widget.groupId!) : null,
         name: _nameController.text.trim(),
@@ -378,6 +379,7 @@ class _GroupFormScreenState extends ConsumerState<GroupFormScreen> {
             ? _notesController.text.trim() 
             : null,
       );
+      */
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(

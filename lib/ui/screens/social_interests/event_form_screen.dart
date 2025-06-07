@@ -213,6 +213,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         return;
       }
 
+      /* // Commenting out unused variable and its object creation for now
       final event = Event(
         id: widget.event?.id,
         name: _nameController.text.trim(),
@@ -225,6 +226,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
       );
+      */
 
       // TODO: Save to Supabase using MCP tools
       // For now, just show success and navigate back

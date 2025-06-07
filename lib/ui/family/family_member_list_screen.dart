@@ -297,15 +297,15 @@ class _FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  int _calculateAge(DateTime birthDate) {
-    final now = DateTime.now();
-    int age = now.year - birthDate.year;
-    if (now.month < birthDate.month || 
-        (now.month == birthDate.month && now.day < birthDate.day)) {
-      age--;
-    }
-    return age;
-  }
+  // int _calculateAge(DateTime birthDate) { // Unused element
+  //   final now = DateTime.now();
+  //   int age = now.year - birthDate.year;
+  //   if (now.month < birthDate.month || 
+  //       (now.month == birthDate.month && now.day < birthDate.day)) {
+  //     age--;
+  //   }
+  //   return age;
+  // }
 }
 
 class _FamilyMemberCard extends StatelessWidget {

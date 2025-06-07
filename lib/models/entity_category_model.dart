@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter/material.dart'; // For IconData, Color if we convert here
+// For IconData, Color if we convert here // Removed unused import: material.dart
 
 part 'entity_category_model.freezed.dart';
 part 'entity_category_model.g.dart';
@@ -9,7 +9,7 @@ class EntityCategory with _$EntityCategory {
   const factory EntityCategory({
     required String id, // UUID from Supabase
     required String name, // Internal name, e.g., "pets", "social_interests"
-    required String displayName, // User-facing name, e.g., "My Pets"
+    String? displayName, // User-facing name, e.g., "My Pets" - Made nullable
     String? iconName, // String identifier for Flutter Icon
     String? colorHex, // Hex color string, e.g., "#FF5733"
     @Default(0) int sortOrder,

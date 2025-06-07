@@ -4,7 +4,7 @@ import '../models/transport_entities.dart'; // Added import for models
 
 // Provider for CarRepository
 final carRepositoryProvider = Provider<CarRepository>((ref) {
-  return SupabaseCarRepository();
+  return SupabaseCarRepository(ref); // Pass ref to the constructor
 });
 
 // Provider for PublicTransportRepository

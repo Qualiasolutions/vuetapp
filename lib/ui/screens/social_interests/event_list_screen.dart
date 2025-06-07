@@ -101,7 +101,7 @@ class _EventListScreenState extends ConsumerState<EventListScreen> {
 
   Widget _buildEventCard(Event event) {
     final daysUntil = event.date.difference(DateTime.now()).inDays;
-    final isUpcoming = daysUntil >= 0;
+    // final isUpcoming = daysUntil >= 0; // Unused variable
     final isPast = daysUntil < 0;
     
     return Card(

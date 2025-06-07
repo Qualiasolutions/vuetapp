@@ -165,6 +165,7 @@ class _FamilyMemberFormScreenState extends State<FamilyMemberFormScreen> {
     }
 
     try {
+      /* // Commenting out unused variable and its object creation for now
       final familyMember = FamilyMember(
         id: widget.familyMember?.id,
         firstName: _firstNameController.text.trim(),
@@ -183,6 +184,7 @@ class _FamilyMemberFormScreenState extends State<FamilyMemberFormScreen> {
             ? null 
             : _notesController.text.trim(),
       );
+      */
 
       // TODO: Save to Supabase using MCP tools
       // For now, show success message and navigate back

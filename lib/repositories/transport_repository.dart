@@ -1,7 +1,10 @@
 import '../models/transport_entities.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../state/auto_task_engine.dart'; // Added for auto task generation
-import '../models/task_model.dart'; // Added for TaskModel
+import '../state/auto_task_engine.dart';
+import '../models/task_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Added for Ref
+import '../providers/task_providers.dart'; // Added for autoTaskEngineProvider and taskServiceProvider
+import '../providers/auth_providers.dart'; // Assuming supabaseClientProvider might be here or in a common spot
 
 // --- Car Repository ---
 abstract class CarRepository {
@@ -13,21 +16,40 @@ abstract class CarRepository {
 }
 
 class SupabaseCarRepository implements CarRepository {
-  final _supabase = Supabase.instance.client;
-  final AutoTaskEngine _autoTaskEngine = AutoTaskEngine([CarAutoTaskRule()]); // Initialize AutoTaskEngine
+  final SupabaseClient _supabase;
+  final Ref _ref;
+
+  // Constructor now takes Ref
+  SupabaseCarRepository(this._ref) : _supabase = _ref.read(supabaseClientProvider); // Use a provider for SupabaseClient
+
+  // Removed: final AutoTaskEngine _autoTaskEngine = AutoTaskEngine([CarAutoTaskRule()]);
 
   Future<void> _saveTasks(List<TaskModel> tasks) async {
     if (tasks.isEmpty) return;
-    final tasksToInsert = tasks.map((task) {
-      // Ensure task.id is not null, if it is, it means it's a new task from auto-generation
-      // The TaskModel's toJson should handle the user_id mapping to created_by for Supabase
-      final json = task.toJson();
-      // Supabase expects 'user_id' for the creator, ensure it's set if not already
-      json['user_id'] ??= _supabase.auth.currentUser?.id;
-      json.remove('id'); // Let Supabase generate the ID for new tasks
-      return json;
-    }).toList();
-    await _supabase.from('tasks').insert(tasksToInsert);
+    final taskService = _ref.read(taskServiceProvider);
+    for (final task in tasks) {
+      // Call TaskService.createTask, mapping fields from TaskModel
+      // TaskService.createTask will handle setting createdById, createdAt, updatedAt, id, status etc.
+      await taskService.createTask(
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate,
+        priority: task.priority,
+        categoryId: task.categoryId,
+        entityId: task.entityId,
+        taskType: task.taskType,
+        taskSubtype: task.taskSubtype,
+        startDateTime: task.startDateTime,
+        endDateTime: task.endDateTime,
+        location: task.location,
+        typeSpecificData: task.typeSpecificData,
+        urgency: task.urgency,
+        taskBehavior: task.taskBehavior,
+        tags: task.tags,
+        parentTaskId: task.parentTaskId,
+        // isRecurring and recurrencePattern might need to be passed if supported by createTask
+      );
+    }
   }
 
   @override
@@ -144,7 +166,8 @@ class SupabaseCarRepository implements CarRepository {
       // For now, just returning with the ID.
       final savedCar = car.copyWith(id: newEntityId);
       // Generate and save auto-tasks
-      final newTasks = _autoTaskEngine.processEntityChange(savedCar, EntityChangeType.created);
+      final autoTaskEngine = _ref.read(autoTaskEngineProvider);
+      final newTasks = autoTaskEngine.processEntityChange(savedCar, EntityChangeType.created);
       await _saveTasks(newTasks);
       return savedCar;
     } else {
@@ -170,7 +193,8 @@ class SupabaseCarRepository implements CarRepository {
       }).eq('entity_id', car.id!);
 
       // Generate and save auto-tasks
-      final updatedTasks = _autoTaskEngine.processEntityChange(car, EntityChangeType.updated);
+      final autoTaskEngine = _ref.read(autoTaskEngineProvider);
+      final updatedTasks = autoTaskEngine.processEntityChange(car, EntityChangeType.updated);
       await _saveTasks(updatedTasks);
       return car;
     }

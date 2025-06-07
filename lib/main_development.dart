@@ -16,7 +16,8 @@ import 'package:vuet_app/ui/screens/tasks/task_detail_screen.dart';
 import 'package:vuet_app/ui/screens/auth/auth_wrapper.dart';
 import 'package:vuet_app/ui/screens/auth/update_password_screen.dart';
 import 'package:vuet_app/ui/screens/notifications/notifications_screen.dart';
-import 'package:vuet_app/ui/screens/home/modernized_home_screen.dart'; // Added ModernizedHomeScreen
+// Added ModernizedHomeScreen // Removed unused import: modernized_home_screen.dart
+import 'package:vuet_app/ui/screens/categories/categories_grid.dart'; // Import CategoriesGrid
 import 'package:vuet_app/ui/screens/calendar/calendar_screen.dart'; // Added CalendarScreen
 import 'package:vuet_app/widgets/notification_badge.dart';
 import 'package:vuet_app/widgets/tab_notification_badge.dart';
@@ -25,6 +26,67 @@ import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart'; // Adde
 import 'package:vuet_app/ui/screens/lana_ai_assistant_screen.dart'; // Added LanaAiAssistantScreen
 import 'package:vuet_app/ui/screens/account/my_account_screen.dart'; // Added MyAccountScreen
 // Added SettingsScreen
+import 'package:go_router/go_router.dart';
+import 'package:vuet_app/ui/navigation/pets_navigator.dart';
+import 'package:vuet_app/ui/navigation/account_settings_navigator.dart'; // Assuming this should be used
+// Added for /family route // Removed unused import: family_screen.dart
+
+// Global navigator key for GoRouter
+final GlobalKey<NavigatorState> _rootNavigatorKey =
+    GlobalKey<NavigatorState>(debugLabel: 'root');
+
+// GoRouter configuration
+final GoRouter _router = GoRouter(
+  navigatorKey: _rootNavigatorKey,
+  initialLocation: '/', 
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/',
+      name: 'home_wrapper', // Changed name to avoid conflict if HomePage itself has a 'home' name
+      builder: (BuildContext context, GoRouterState state) => const AuthWrapper(
+        child: HomePage(title: 'Vuet App (Dev)'),
+      ),
+    ),
+    GoRoute(
+      path: '/update-password',
+      name: 'update-password',
+      builder: (BuildContext context, GoRouterState state) =>
+          const UpdatePasswordScreen(),
+    ),
+    GoRoute(
+      path: '/notifications',
+      name: 'notifications',
+      builder: (BuildContext context, GoRouterState state) =>
+          const NotificationsScreen(),
+    ),
+    // Note: The original main.dart had a /family route. Adding it here for main_development.dart consistency if FamilyScreen is available.
+    // If FamilyScreen is not used in main_development.dart's original routes, this can be removed.
+    // Checking original main_development.dart: it did NOT have /family.
+    // Checking original main.dart: it DID have /family.
+    // For now, I will include it but comment it out if FamilyScreen is not imported by default in main_development.dart
+    // FamilyScreen is NOT imported in the original main_development.dart. So, it should remain commented or removed.
+    // Let's assume it's not needed for main_development.dart for now to match its original routes.
+    // GoRoute(
+    //   path: '/family',
+    //   name: 'family',
+    //   builder: (BuildContext context, GoRouterState state) => const AuthWrapper(
+    //     child: FamilyScreen(), 
+    //   ),
+    // ),
+    // Integrate routes from modular navigators
+    ...AccountSettingsNavigator.routes(),
+    ...PetsNavigator.routes(),
+  ],
+  // Optional: Add errorBuilder and redirect logic as needed
+  // errorBuilder: (context, state) => ErrorScreen(error: state.error),
+  // redirect: (BuildContext context, GoRouterState state) {
+  //   // final loggedIn = ref.watch(authProvider).isLoggedIn; 
+  //   // final loggingIn = state.matchedLocation == '/login';
+  //   // if (!loggedIn && !loggingIn) return '/login';
+  //   // if (loggedIn && loggingIn) return '/';
+  //   return null;
+  // },
+);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,7 +117,7 @@ class VuetApp extends ConsumerStatefulWidget {
 }
 
 class _VuetAppState extends ConsumerState<VuetApp> {
-  final _navigatorKey = GlobalKey<NavigatorState>();
+  // final _navigatorKey = GlobalKey<NavigatorState>(); // Removed, GoRouter uses _rootNavigatorKey
   bool _isDarkMode = false; // Added for Dark Mode toggle
 
   @override
@@ -64,18 +126,14 @@ class _VuetAppState extends ConsumerState<VuetApp> {
     // Initialize deep link handler after the first frame is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authService = ref.read(supabaseAuthServiceProvider);
-      // Ensure context is still valid if this callback is delayed
-      if (_navigatorKey.currentContext != null &&
-          _navigatorKey.currentContext!.mounted) {
-        DeepLinkHandler.initialize(_navigatorKey.currentContext, authService);
+      // DeepLinkHandler should now use the _rootNavigatorKey context
+      if (_rootNavigatorKey.currentContext != null &&
+          _rootNavigatorKey.currentContext!.mounted) {
+        DeepLinkHandler.initialize(_rootNavigatorKey.currentContext, authService);
       } else {
-        // Fallback or log if context is not available, though this is less likely for addPostFrameCallback
-        // Potentially initialize without context if DeepLinkHandler can support it for non-navigational links
-        // Or, store authService and context and try again if context becomes available.
-        // For now, we assume it will usually be available.
-        DeepLinkHandler.initialize(null, authService); // Cast needed
+        DeepLinkHandler.initialize(null, authService); 
         debugPrint(
-            "DeepLinkHandler initialized without BuildContext after frame.");
+            "DeepLinkHandler initialized without BuildContext (using root key context) after frame.");
       }
     });
   }
@@ -108,24 +166,13 @@ class _VuetAppState extends ConsumerState<VuetApp> {
         // TaskService and TaskCommentService are removed as they are now Riverpod providers.
         // NotificationService was already a Riverpod provider.
       ],
-      child: MaterialApp(
-        // MaterialApp is the direct child now
+      child: MaterialApp.router(
         title: 'Vuet App (Dev)', // Indicate Development
         debugShowCheckedModeBanner: true, // Show debug banner in dev
         theme: _isDarkMode
             ? AppTheme.darkTheme
             : AppTheme.lightTheme, // Updated theme based on state
-        navigatorKey: _navigatorKey, // _navigatorKey is part of _VuetAppState
-        home: const AuthWrapper(
-          child: HomePage(title: 'Vuet App (Dev)'),
-        ),
-        routes: {
-          '/home': (context) => const AuthWrapper(
-                child: HomePage(title: 'Vuet App (Dev)'),
-              ),
-          '/update-password': (context) => const UpdatePasswordScreen(),
-          '/notifications': (context) => const NotificationsScreen(),
-        },
+        routerConfig: _router, // Use GoRouter configuration
       ),
     );
   }
@@ -188,7 +235,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.initState();
     _widgetOptions = <Widget>[
       const CalendarScreen(), // First tab
-      const ModernizedHomeScreen(), // Second tab
+      const CategoriesGrid(), // Second tab - Changed from ModernizedHomeScreen
       const RedesignedListsScreen(), // Third tab
       const TaskListScreen(), // Fourth tab (originally Profile, now Tasks to keep it)
       const LanaAiAssistantScreen(), // Fifth tab
@@ -274,7 +321,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             icon: const NotificationBadge(),
             tooltip: 'Notifications',
             onPressed: () {
-              Navigator.pushNamed(context, '/notifications');
+              // Navigator.pushNamed(context, '/notifications'); // Old way
+              context.goNamed('notifications'); // GoRouter way
             },
           ),
 

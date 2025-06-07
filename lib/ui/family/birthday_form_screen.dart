@@ -132,12 +132,14 @@ class _BirthdayFormScreenState extends State<BirthdayFormScreen> {
     }
 
     try {
+      /* // Commenting out unused variable and its object creation for now
       final birthday = Birthday(
         id: widget.birthday?.id,
         name: _nameController.text.trim(),
         dob: DateTime.parse(_dobController.text),
         knownYear: _knownYear,
       );
+      */
 
       // TODO: Save to Supabase using MCP tools
       // For now, show success message and navigate back

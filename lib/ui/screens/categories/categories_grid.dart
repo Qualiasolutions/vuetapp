@@ -26,6 +26,7 @@ class CategoriesGrid extends ConsumerWidget {
   });
 
   // Helper to convert display name to a switch-case friendly ID
+  // This might still be useful for other logic or can be removed if not needed.
   String _getGroupId(String displayName) {
     return displayName
         .toLowerCase()
@@ -33,58 +34,320 @@ class CategoriesGrid extends ConsumerWidget {
         .replaceAll(' ', '_');
   }
 
-  // Get appropriate icon for each category
-  IconData _getCategoryIcon(String groupId) {
-    switch (groupId) {
+  // Maps string icon names from the database to Material IconData
+  IconData _getIconFromString(String? iconName) {
+    if (iconName == null) return Icons.category; // Default icon
+    // Ensure iconName is treated as case-insensitive for matching
+    switch (iconName.toLowerCase()) {
+      // Main Categories & Aliases
+      case 'family':
+      case 'family_restroom':
+        return Icons.family_restroom;
       case 'pets':
         return Icons.pets;
       case 'social_interests':
+      case 'people':
         return Icons.people;
+      case 'education':
       case 'education_and_career':
+      // 'school' is also a subcategory key, handled below if more specific icon needed
         return Icons.school;
+      case 'career':
+      // 'work' is also a subcategory key
+        return Icons.work;
       case 'travel':
-        return Icons.flight;
+      // 'flight' is also a subcategory key
+        return Icons.flight_takeoff; // Main travel icon
+      case 'health_beauty':
       case 'health_and_beauty':
+      case 'spa': // Also a direct subcategory icon string
         return Icons.spa;
+      case 'home':
       case 'home_and_garden':
+      // 'home_property' is a subcategory key
         return Icons.home;
+      case 'garden':
+      // 'garden_generic' is a subcategory key
+        return Icons.local_florist; // Main garden icon
+      case 'food':
+      // 'restaurant' is also a subcategory key/direct icon string
+        return Icons.restaurant; // Main food icon
+      case 'laundry':
+        return Icons.local_laundry_service;
       case 'finance':
+      case 'account_balance_wallet':
+      case 'account_balance':
         return Icons.account_balance_wallet;
       case 'transport':
+      case 'directions_car': // Also a subcategory key 'car'
         return Icons.directions_car;
-      case 'references':
-        return Icons.auto_stories;
+      case 'charity_religion':
+      case 'church':
+        return Icons.church;
+
+      // PETS Subcategories
+      case 'pet': // Generic pet, covered by main 'pets' if not distinct
+        return Icons.pets_outlined;
+      case 'bird':
+        return Icons.flutter_dash; // Placeholder, consider Icons.emoji_nature
+      case 'cat':
+        return Icons.pets_outlined; // No specific Material cat icon
+      case 'dog':
+        return Icons.pets_outlined; // No specific Material dog icon
+      case 'fish':
+        return Icons.waves_outlined; 
+      case 'other_pet':
+        return Icons.pets_outlined;
+      case 'vet':
+        return Icons.medical_services_outlined;
+      case 'pet_walker':
+        return Icons.directions_walk_outlined;
+      case 'pet_groomer':
+        return Icons.content_cut_outlined;
+      case 'pet_sitter':
+        return Icons.home_work_outlined;
+      case 'microchip_company':
+        return Icons.memory_outlined;
+      case 'insurance_company_pet': 
+      case 'insurance_company': 
+        return Icons.shield_outlined;
+      case 'insurance_policy_pet': 
+      case 'insurance_policy': 
+        return Icons.article_outlined;
+      case 'pet_birthday':
+        return Icons.cake_outlined;
+
+      // SOCIAL INTERESTS Subcategories
+      case 'event':
+        return Icons.event_outlined;
+      case 'hobby':
+        return Icons.interests_outlined;
+      case 'holiday_social': // key from _iconPath
+      case 'holiday': // general holiday
+        return Icons.celebration_outlined;
+      case 'holiday_plan_social': // key from _iconPath
+      case 'holiday_plan':
+        return Icons.edit_calendar_outlined;
+      case 'social_plan':
+        return Icons.group_outlined;
+      case 'social_media':
+        return Icons.share_outlined;
+      case 'anniversary_plan':
+        return Icons.edit_calendar_outlined;
+      case 'birthday':
+        return Icons.cake_outlined; // Shared with pet_birthday
+      case 'anniversary':
+        return Icons.auto_awesome_outlined;
+      case 'event_subentity':
+        return Icons.event_note_outlined;
+      case 'guest_list_invite':
+        return Icons.list_alt_outlined;
+
+      // EDUCATION Subcategories
+      case 'school': // Subcategory, distinct from main 'Education' if needed
+        return Icons.school_outlined;
+      case 'subject':
+        return Icons.book_online_outlined;
+      case 'course_work':
+        return Icons.assignment_ind_outlined;
+      case 'teacher':
+        return Icons.person_pin_outlined;
+      case 'tutor':
+        return Icons.supervisor_account_outlined;
+      case 'academic_plan':
+        return Icons.assessment_outlined;
+      case 'extracurricular_plan':
+        return Icons.sports_soccer_outlined;
+      case 'student':
+        return Icons.face_retouching_natural_outlined;
+      case 'school_break':
+        return Icons.beach_access_outlined;
+      case 'school_term':
+        return Icons.date_range_outlined;
+      case 'school_term_end':
+        return Icons.event_available_outlined;
+      case 'school_term_start':
+        return Icons.event_note_outlined;
+      case 'school_year_end':
+        return Icons.emoji_events_outlined;
+      case 'school_year_start':
+        return Icons.flag_circle_outlined;
+
+      // CAREER Subcategories
+      case 'work': // Subcategory, distinct from main 'Career' if needed
+        return Icons.work_outline;
+      case 'colleague':
+        return Icons.people_alt_outlined;
+      case 'career_goal':
+        return Icons.emoji_flags_outlined;
+      case 'days_off':
+        return Icons.weekend_outlined;
+      case 'employee':
+        return Icons.badge_outlined;
+
+      // TRAVEL Subcategories
+      case 'trip':
+        return Icons.explore_outlined;
+      case 'accommodations': // Direct name 'hotel'
+      case 'hotel':
+        return Icons.hotel_outlined;
+      case 'attractions': // Direct name 'photo_camera'
+      case 'photo_camera':
+        return Icons.photo_camera_outlined;
+      case 'drive_time':
+        return Icons.timer_outlined;
+      case 'flight': // Subcategory, distinct from main 'Travel' if needed
+        return Icons.flight_outlined;
+      case 'holiday_travel':
+        return Icons.luggage_outlined;
+      case 'holiday_plan_travel':
+        return Icons.calendar_month_outlined;
+      case 'hotel_or_rental':
+        return Icons.holiday_village_outlined;
+      case 'rental_car':
+        return Icons.car_rental_outlined;
+      case 'stay_with_friend':
+        return Icons.night_shelter_outlined;
+      case 'taxi_or_transfer':
+        return Icons.local_taxi_outlined;
+      case 'train_bus_ferry':
+        return Icons.commute_outlined;
+      case 'travel_plan':
+        return Icons.map_outlined;
+
+      // HEALTH & BEAUTY Subcategories
+      case 'doctor':
+        return Icons.medical_information_outlined;
+      case 'dentist':
+        return Icons.tag_faces_outlined;
+      case 'beauty_salon':
+        return Icons.storefront_outlined;
+      case 'stylist':
+        return Icons.cut_outlined;
+      case 'appointment':
+        return Icons.calendar_today_outlined;
+      case 'beauty_generic': // Direct name 'spa', covered by main
+        return Icons.spa_outlined; // Explicit for subcategory
+      case 'fitness_activity': // Direct name 'fitness_center'
+      case 'fitness_center':
+        return Icons.fitness_center_outlined;
+      case 'health_goal':
+        return Icons.favorite_border_outlined;
+      case 'medical_generic': // Direct name 'local_hospital'
+      case 'local_hospital':
+        return Icons.local_hospital_outlined;
+      case 'patient':
+        return Icons.personal_injury_outlined;
+
+      // HOME Subcategories
+      case 'home_property': // key from _iconPath
+        return Icons.home_outlined; // Explicit for subcategory
+      case 'room':
+        return Icons.meeting_room_outlined;
+      case 'furniture':
+        return Icons.chair_outlined;
+      case 'appliance':
+        return Icons.kitchen_outlined;
+      case 'contractor':
+        return Icons.construction_outlined;
+      case 'cleaning_home': // Direct name 'cleaning_services'
+      case 'cleaning_services':
+        return Icons.cleaning_services_outlined;
+      case 'cooking_home': 
+        return Icons.soup_kitchen_outlined;
+      case 'home_maintenance_tasks': // Direct name 'home_repair_service'
+      case 'home_repair_service':
+        return Icons.home_repair_service_outlined;
+
+      // GARDEN Subcategories
+      case 'plant':
+        return Icons.eco_outlined;
+      case 'garden_tool':
+        return Icons.handyman_outlined;
+      case 'garden_generic':
+        return Icons.grass_outlined;
+      case 'gardening_tasks': // Direct name 'yard'
+      case 'yard':
+        return Icons.yard_outlined;
+      
+      // FOOD Subcategories
+      case 'food_plan':
+        return Icons.restaurant_menu_outlined;
+      case 'recipe':
+        return Icons.menu_book_outlined;
+      // 'restaurant' (main food icon) also from _iconPath('restaurant')
+      case 'food_generic':
+        return Icons.lunch_dining_outlined;
+
+      // LAUNDRY Subcategories
+      case 'laundry_item':
+        return Icons.checkroom_outlined;
+      case 'dry_cleaners':
+        return Icons.dry_cleaning_outlined;
+      case 'clothing_laundry':
+        return Icons.style_outlined; // Corrected from styler_outlined
+      case 'laundry_plan':
+        return Icons.event_note_outlined;
+
+      // FINANCE Subcategories
+      case 'bank': 
+        return Icons.account_balance_outlined; // More specific than main finance icon
+      case 'credit_card':
+        return Icons.credit_card_outlined;
+      case 'bank_account':
+        return Icons.account_box_outlined;
+      case 'finance_generic':
+        return Icons.savings_outlined;
+
+      // TRANSPORT Subcategories
+      case 'car': // key from _iconPath('car'), covered by main 'transport'
+        return Icons.directions_car_outlined; // Explicit for subcategory
+      case 'boat': // key from _iconPath('boat')
+        return Icons.directions_boat_outlined;
+      case 'public_transport_cat': // key from _iconPath('public_transport')
+      case 'public_transport':
+        return Icons.train_outlined;
+
+      // From Hierarchical Dialog specific additions / other existing
+      case 'local_florist': // Already in Hierarchical, good for main Garden
+         return Icons.local_florist_outlined;
+      // 'restaurant' already handled for Food main/sub
+      // 'local_laundry_service' already handled for Laundry main
+      case 'favorite': // From Hierarchical, was spa, now favorite
+         return Icons.favorite_outlined;
+
       default:
-        return Icons.category;
+        print('Unknown iconName: $iconName, using default.'); // Optional: for debugging
+        return Icons.category; // Fallback icon
     }
   }
 
-  String _getCategorySetupKey(String displayName) {
-    // Map display names to setup content keys
-    switch (displayName.toLowerCase()) {
-      case 'pets':
-        return 'pets';
-      case 'social interests':
-        return 'social_interests';
-      case 'education & career':
-        return 'education'; // Use education as primary for the combined group
-      case 'travel':
-        return 'travel';
-      case 'health & beauty':
-        return 'health_beauty';
-      case 'home & garden':
-        return 'home'; // Use home as primary for the combined group
-      case 'finance':
-        return 'finance';
-      case 'transport':
-        return 'transport';
-      default:
-        return displayName
-            .toLowerCase()
-            .replaceAll(' & ', '_')
-            .replaceAll(' ', '_');
-    }
-  }
+  // String _getCategorySetupKey(String displayName) { // This method will be replaced by using group.systemName directly
+  //   // Map display names to setup content keys
+  //   switch (displayName.toLowerCase()) {
+  //     case 'pets':
+  //       return 'pets';
+  //     case 'social interests':
+  //       return 'social_interests';
+  //     case 'education & career':
+  //       return 'education'; // Use education as primary for the combined group
+  //     case 'travel':
+  //       return 'travel';
+  //     case 'health & beauty':
+  //       return 'health_beauty';
+  //     case 'home & garden':
+  //       return 'home'; // Use home as primary for the combined group
+  //     case 'finance':
+  //       return 'finance';
+  //     case 'transport':
+  //       return 'transport';
+  //     default:
+  //       return displayName
+  //           .toLowerCase()
+  //           .replaceAll(' & ', '_')
+  //           .replaceAll(' ', '_');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -107,11 +370,9 @@ class CategoriesGrid extends ConsumerWidget {
     final List<CategoryDisplayGroup> allDisplayGroups =
         ref.watch(personalCategoryDisplayGroupsProvider);
 
-    // Filter out the family category and apply search query if any
+    // Apply search query if any. Filtering by isDisplayedOnGrid is now handled by the provider.
     final filteredDisplayGroups = allDisplayGroups
         .where((group) =>
-            group.displayName.toLowerCase() !=
-                "family" && // Filter out family category
             (searchQuery.isEmpty ||
                 group.displayName
                     .toLowerCase()
@@ -176,7 +437,7 @@ class CategoriesGrid extends ConsumerWidget {
             itemCount: itemCount,
             itemBuilder: (context, index) {
               final group = filteredDisplayGroups[index];
-              final groupId = _getGroupId(group.displayName);
+              // final groupId = _getGroupId(group.displayName); // Unused variable
               final isReferences = group.displayName == 'References';
 
               return FutureBuilder(
@@ -201,10 +462,12 @@ class CategoriesGrid extends ConsumerWidget {
                                       'References is a premium feature that will be available soon.')),
                             );
                           } else {
-                            final List<AppCategory> actualCategoriesInGroup =
-                                getCategoriesInGroup(group.displayName);
-                            String categorySetupKey =
-                                _getCategorySetupKey(group.displayName);
+                            // Use group.systemName (which is EntityCategory.name) as the categoryId for setup and intro.
+                            // This is more stable than displayName.
+                            // Ensure group.systemName is not null or empty if it's critical.
+                            // For now, we assume it's valid.
+                            // final List<AppCategory> actualCategoriesInGroup = getCategoriesInGroup(group.displayName); // Removed, uses old static data
+                            final String categorySetupKey = group.systemName.toLowerCase().replaceAll(' ', '_').replaceAll('&', 'and');
 
                             // Check if setup is already completed
                             final setupService = ref.read(setupServiceProvider);
@@ -215,11 +478,12 @@ class CategoriesGrid extends ConsumerWidget {
 
                             if (isCompleted) {
                               // Navigate directly to category-specific screen
-                              _navigateToCategoryScreen(context, group.displayName);
+                              // Pass group.systemName or group.displayName as needed by _navigateToCategoryScreen
+                              _navigateToCategoryScreen(context, group.systemName, group.displayName);
                             } else {
                               // Show introduction screen
                               final introScreen = CategoryIntroductionScreen(
-                                categoryId: categorySetupKey,
+                                categoryId: categorySetupKey, // Use the system name based key
                                 categoryName: group.displayName,
                                 onComplete: () {
                                   // Optional completion callback
@@ -300,7 +564,7 @@ class CategoriesGrid extends ConsumerWidget {
                                         ),
                                         child: Center(
                                           child: Icon(
-                                            _getCategoryIcon(groupId),
+                                            _getIconFromString(group.iconName), // Use new icon logic
                                             color: AppTheme.accent,
                                             size: iconSize,
                                           ),
@@ -329,7 +593,7 @@ class CategoriesGrid extends ConsumerWidget {
                                   ),
                                 ),
                                 // Premium Tag
-                                if (group.isPremium)
+                                if (group.isPremium == true) // Handle nullable bool
                                   const Positioned(
                                     top: 8,
                                     right: 8,
@@ -352,42 +616,45 @@ class CategoriesGrid extends ConsumerWidget {
   }
 
   // Navigate to the appropriate category-specific screen
-  void _navigateToCategoryScreen(BuildContext context, String displayName) {
+  void _navigateToCategoryScreen(BuildContext context, String systemName, String displayName) {
     Widget screen;
     
-    switch (displayName.toLowerCase()) {
-      case 'pets':
-        screen = const PetsCategoryScreen();
+    // systemName is EntityCategory.name, e.g., "PETS", "SOCIAL_INTERESTS", "HOME_AND_GARDEN"
+    // These should match the 'name' column in the entity_categories table.
+    switch (systemName) { 
+      case 'PETS':
+        screen = const PetsCategoryScreen(); // These screens might need displayName for their AppBar title
         break;
-      case 'social interests':
+      case 'SOCIAL_INTERESTS':
         screen = const SocialInterestsCategoryScreen();
         break;
-      case 'education & career':
+      case 'EDUCATION_AND_CAREER': // Assuming EntityCategory.name is 'EDUCATION_AND_CAREER'
         screen = const EducationCategoryScreen();
         break;
-      case 'travel':
+      case 'TRAVEL':
         screen = const TravelCategoryScreen();
         break;
-      case 'health & beauty':
+      case 'HEALTH_AND_BEAUTY': // Assuming EntityCategory.name is 'HEALTH_AND_BEAUTY'
         screen = const HealthBeautyCategoryScreen();
         break;
-      case 'home & garden':
+      case 'HOME_AND_GARDEN': // Assuming EntityCategory.name is 'HOME_AND_GARDEN'
         screen = const HomeGardenCategoryScreen();
         break;
-      case 'finance':
+      case 'FINANCE':
         screen = const FinanceCategoryScreen();
         break;
-      case 'transport':
+      case 'TRANSPORT':
         screen = const TransportCategoryScreen();
         break;
-      case 'charity & religion':
+      case 'CHARITY_AND_RELIGION': // Assuming EntityCategory.name is 'CHARITY_AND_RELIGION'
         screen = const CharityReligionCategoryScreen();
         break;
       default:
+        // Pass systemName as categoryId, and displayName for display purposes
         screen = SubCategoryScreen(
-          categoryId: displayName.toLowerCase().replaceAll(' & ', '_').replaceAll(' ', '_'),
+          categoryId: systemName, 
           categoryName: displayName,
-          subCategoryKeys: const [],
+          subCategoryKeys: const [], // This remains as is for now
         );
     }
 

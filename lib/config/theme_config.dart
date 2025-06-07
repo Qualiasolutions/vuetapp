@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// Modern Palette colors for Vuet App
 /// Dark Jungle Green #202827 · Medium Turquoise #55C6D6 · Orange #E49F2F · Steel #798D8E · White #FFFFFF
@@ -163,46 +164,46 @@ class ThemeConfig {
         thickness: 1,
         space: 16,
       ),
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
+      textTheme: GoogleFonts.robotoTextTheme(ThemeData.light().textTheme).copyWith(
+        displayLarge: GoogleFonts.roboto(
           color: textColor,
           fontSize: 28,
           fontWeight: FontWeight.bold,
         ),
-        displayMedium: TextStyle(
+        displayMedium: GoogleFonts.roboto(
           color: textColor,
           fontSize: 24,
           fontWeight: FontWeight.bold,
         ),
-        displaySmall: TextStyle(
+        displaySmall: GoogleFonts.roboto(
           color: textColor,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-        headlineMedium: TextStyle(
+        headlineMedium: GoogleFonts.roboto(
           color: textColor,
           fontSize: 18,
           fontWeight: FontWeight.w600,
         ),
-        headlineSmall: TextStyle(
+        headlineSmall: GoogleFonts.roboto(
           color: textColor,
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
-        titleLarge: TextStyle(
+        titleLarge: GoogleFonts.roboto(
           color: textColor,
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: TextStyle(
+        bodyLarge: GoogleFonts.roboto(
           color: textColor,
           fontSize: 16,
         ),
-        bodyMedium: TextStyle(
+        bodyMedium: GoogleFonts.roboto(
           color: textColor,
           fontSize: 14,
         ),
-        bodySmall: TextStyle(
+        bodySmall: GoogleFonts.roboto(
           color: Colors.grey,
           fontSize: 12,
         ),
@@ -334,46 +335,46 @@ class ThemeConfig {
         thickness: 1,
         space: 16,
       ),
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
+      textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme).copyWith(
+        displayLarge: GoogleFonts.roboto(
           color: Colors.white,
           fontSize: 28,
           fontWeight: FontWeight.bold,
         ),
-        displayMedium: TextStyle(
+        displayMedium: GoogleFonts.roboto(
           color: Colors.white,
           fontSize: 24,
           fontWeight: FontWeight.bold,
         ),
-        displaySmall: TextStyle(
+        displaySmall: GoogleFonts.roboto(
           color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-        headlineMedium: TextStyle(
+        headlineMedium: GoogleFonts.roboto(
           color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.w600,
         ),
-        headlineSmall: TextStyle(
+        headlineSmall: GoogleFonts.roboto(
           color: Colors.white,
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
-        titleLarge: TextStyle(
+        titleLarge: GoogleFonts.roboto(
           color: Colors.white,
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: TextStyle(
+        bodyLarge: GoogleFonts.roboto(
           color: Colors.white,
           fontSize: 16,
         ),
-        bodyMedium: TextStyle(
+        bodyMedium: GoogleFonts.roboto(
           color: Colors.white,
           fontSize: 14,
         ),
-        bodySmall: TextStyle(
+        bodySmall: GoogleFonts.roboto(
           color: Colors.grey,
           fontSize: 12,
         ),

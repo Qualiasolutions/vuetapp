@@ -7,6 +7,7 @@ import 'package:vuet_app/services/notification_service.dart' show notificationSe
 import 'package:vuet_app/services/auth_service.dart'; // Added for authServiceProvider
 import 'package:vuet_app/repositories/supabase_task_repository.dart'; // Added for supabaseTaskRepositoryProvider
 import 'package:vuet_app/models/task_model.dart'; // Import the task model
+import 'package:vuet_app/state/auto_task_engine.dart'; // Import AutoTaskEngine and rules
 
 // Riverpod provider for TaskService, now defined in its own providers file
 final taskServiceProvider = ChangeNotifierProvider<TaskService>((ref) {
@@ -52,4 +53,13 @@ final taskCategoryDetailProviderFamily = FutureProvider.autoDispose.family<TaskC
 final tasksByEntityIdProvider = FutureProvider.family<List<TaskModel>, String>((ref, entityId) async {
   final taskService = ref.watch(taskServiceProvider);
   return await taskService.getTasksByEntityId(entityId);
+});
+
+// Provider for AutoTaskEngine
+final autoTaskEngineProvider = Provider<AutoTaskEngine>((ref) {
+  return AutoTaskEngine([
+    CarAutoTaskRule(),
+    PetVaccinationTaskRule(),
+    // Add other rules here as they are created
+  ]);
 });

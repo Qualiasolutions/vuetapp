@@ -202,6 +202,7 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
         return DateTime.tryParse(text);
       }
 
+      /* // Commenting out unused variable and its object creation for now
       final contact = Contact(
         id: widget.contact?.id,
         name: _nameController.text.trim(),
@@ -214,6 +215,7 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
         jobTitle: _jobTitleController.text.trim().isEmpty ? null : _jobTitleController.text.trim(),
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
       );
+      */
 
       // TODO: Save to Supabase using MCP tools
       // For now, just show success and navigate back

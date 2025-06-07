@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+// import 'package:go_router/go_router.dart'; // No longer directly used for navigation calls
 import '../../../ui/shared/widgets.dart';
 import '../../../config/theme_config.dart';
+import '../../navigation/pets_navigator.dart'; // Import the PetsNavigator
 
 /// Pets Category Screen - Shows all Pets entity types
 /// As specified in detailed guide: Pet, PetAppointment
@@ -22,13 +23,13 @@ class PetsCategoryScreen extends StatelessWidget {
             title: 'Pets',
             icon: Icons.pets,
             description: 'Manage your pets',
-            onTap: () => context.go('/categories/pets/pets'),
+            onTap: () => PetsNavigator.navigateToPetList(context),
           ),
           _PetsEntityTile(
             title: 'Pet Appointments',
             icon: Icons.medical_services,
             description: 'Schedule vet visits',
-            onTap: () => context.go('/categories/pets/appointments'),
+            onTap: () => PetsNavigator.navigateToPetAppointmentList(context), // No petId for general list
           ),
         ],
       ),
@@ -61,7 +62,7 @@ class PetsCategoryScreen extends StatelessWidget {
               title: const Text('Pet'),
               onTap: () {
                 Navigator.pop(context);
-                context.go('/categories/pets/pets/create');
+                PetsNavigator.navigateToPetCreate(context);
               },
             ),
             ListTile(
@@ -69,7 +70,9 @@ class PetsCategoryScreen extends StatelessWidget {
               title: const Text('Pet Appointment'),
               onTap: () {
                 Navigator.pop(context);
-                context.go('/categories/pets/appointments/create');
+                // Navigating to create appointment without a specific petId
+                // The form screen is expected to handle this (e.g., show a pet selector)
+                PetsNavigator.navigateToPetAppointmentCreate(context); 
               },
             ),
           ],

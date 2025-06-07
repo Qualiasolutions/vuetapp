@@ -23,8 +23,8 @@ mixin _$EntityCategory {
   String get id => throw _privateConstructorUsedError; // UUID from Supabase
   String get name =>
       throw _privateConstructorUsedError; // Internal name, e.g., "pets", "social_interests"
-  String get displayName =>
-      throw _privateConstructorUsedError; // User-facing name, e.g., "My Pets"
+  String? get displayName =>
+      throw _privateConstructorUsedError; // User-facing name, e.g., "My Pets" - Made nullable
   String? get iconName =>
       throw _privateConstructorUsedError; // String identifier for Flutter Icon
   String? get colorHex =>
@@ -57,7 +57,7 @@ abstract class $EntityCategoryCopyWith<$Res> {
   $Res call(
       {String id,
       String name,
-      String displayName,
+      String? displayName,
       String? iconName,
       String? colorHex,
       int sortOrder,
@@ -85,7 +85,7 @@ class _$EntityCategoryCopyWithImpl<$Res, $Val extends EntityCategory>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? displayName = null,
+    Object? displayName = freezed,
     Object? iconName = freezed,
     Object? colorHex = freezed,
     Object? sortOrder = null,
@@ -104,10 +104,10 @@ class _$EntityCategoryCopyWithImpl<$Res, $Val extends EntityCategory>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      displayName: null == displayName
+      displayName: freezed == displayName
           ? _value.displayName
           : displayName // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       iconName: freezed == iconName
           ? _value.iconName
           : iconName // ignore: cast_nullable_to_non_nullable
@@ -155,7 +155,7 @@ abstract class _$$EntityCategoryImplCopyWith<$Res>
   $Res call(
       {String id,
       String name,
-      String displayName,
+      String? displayName,
       String? iconName,
       String? colorHex,
       int sortOrder,
@@ -181,7 +181,7 @@ class __$$EntityCategoryImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? displayName = null,
+    Object? displayName = freezed,
     Object? iconName = freezed,
     Object? colorHex = freezed,
     Object? sortOrder = null,
@@ -200,10 +200,10 @@ class __$$EntityCategoryImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      displayName: null == displayName
+      displayName: freezed == displayName
           ? _value.displayName
           : displayName // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       iconName: freezed == iconName
           ? _value.iconName
           : iconName // ignore: cast_nullable_to_non_nullable
@@ -246,7 +246,7 @@ class _$EntityCategoryImpl implements _EntityCategory {
   const _$EntityCategoryImpl(
       {required this.id,
       required this.name,
-      required this.displayName,
+      this.displayName,
       this.iconName,
       this.colorHex,
       this.sortOrder = 0,
@@ -266,8 +266,8 @@ class _$EntityCategoryImpl implements _EntityCategory {
   final String name;
 // Internal name, e.g., "pets", "social_interests"
   @override
-  final String displayName;
-// User-facing name, e.g., "My Pets"
+  final String? displayName;
+// User-facing name, e.g., "My Pets" - Made nullable
   @override
   final String? iconName;
 // String identifier for Flutter Icon
@@ -360,7 +360,7 @@ abstract class _EntityCategory implements EntityCategory {
   const factory _EntityCategory(
       {required final String id,
       required final String name,
-      required final String displayName,
+      final String? displayName,
       final String? iconName,
       final String? colorHex,
       final int sortOrder,
@@ -378,7 +378,7 @@ abstract class _EntityCategory implements EntityCategory {
   @override
   String get name; // Internal name, e.g., "pets", "social_interests"
   @override
-  String get displayName; // User-facing name, e.g., "My Pets"
+  String? get displayName; // User-facing name, e.g., "My Pets" - Made nullable
   @override
   String? get iconName; // String identifier for Flutter Icon
   @override

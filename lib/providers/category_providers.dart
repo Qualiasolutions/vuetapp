@@ -17,11 +17,11 @@ part 'category_providers.g.dart';
 // This provider will likely need significant rework or replacement once the new schema-driven approach is fully implemented.
 // For now, just updating model names to clear immediate errors.
 final categoriesProvider = FutureProvider<List<EntityCategory>>((ref) async {
-  final categoryRepository = ref.watch(supabaseCategoryRepositoryProvider);
+  // final categoryRepository = ref.watch(supabaseCategoryRepositoryProvider); // Unused
   final authService = ref.watch(authServiceProvider);
 
   try {
-    List<EntityCategory> userCategories = [];
+    // List<EntityCategory> userCategories = []; // Unused
     if (authService.isSignedIn) {
       // Assuming fetchCategories will be updated to return List<EntityCategory>
       // and interact with the new 'entity_categories' table.

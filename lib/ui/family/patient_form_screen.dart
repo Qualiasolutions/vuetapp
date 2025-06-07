@@ -128,6 +128,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
     }
 
     try {
+      /* // Commenting out unused variable and its object creation for now
       final patient = Patient(
         id: widget.patient?.id,
         firstName: _firstNameController.text.trim(),
@@ -139,6 +140,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
             ? null 
             : _notesController.text.trim(),
       );
+      */
 
       // TODO: Save to Supabase using MCP tools
       // For now, show success message and navigate back

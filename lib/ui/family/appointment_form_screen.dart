@@ -281,7 +281,8 @@ class _AppointmentFormScreenState extends State<AppointmentFormScreen> {
         return;
       }
 
-      final appointment = Appointment(
+      /* // Commenting out unused variable and its object creation for now
+      final appointment = Appointment( 
         id: widget.appointment?.id,
         title: _titleController.text.trim(),
         startDatetime: startDateTime,
@@ -294,6 +295,7 @@ class _AppointmentFormScreenState extends State<AppointmentFormScreen> {
             : _notesController.text.trim(),
         patientIds: widget.appointment?.patientIds ?? [], // TODO: Implement patient selection
       );
+      */
 
       // TODO: Save to Supabase using MCP tools
       // For now, show success message and navigate back

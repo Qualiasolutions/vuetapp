@@ -132,12 +132,12 @@ class _AnniversaryFormScreenState extends State<AnniversaryFormScreen> {
     }
 
     try {
-      final anniversary = Anniversary(
-        id: widget.anniversary?.id,
-        name: _nameController.text.trim(),
-        date: DateTime.parse(_dateController.text),
-        knownYear: _knownYear,
-      );
+      // final anniversary = Anniversary( // Unused variable
+      //   id: widget.anniversary?.id,
+      //   name: _nameController.text.trim(),
+      //   date: DateTime.parse(_dateController.text),
+      //   knownYear: _knownYear,
+      // );
 
       // TODO: Save to Supabase using MCP tools
       // For now, show success message and navigate back

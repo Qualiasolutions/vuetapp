@@ -58,7 +58,7 @@ class SupabaseEntityCategoryRepository extends BaseSupabaseRepository
       // .order() is a method of PostgrestFilterBuilder and returns PostgrestTransformBuilder
       // We await the result of the chain.
       final response = await queryBuilder
-          .order('priority', ascending: true)
+          .order('sort_order', ascending: true) // Changed 'priority' to 'sort_order'
           .order('name', ascending: true);
           
       // The response here is PostgrestList (which is List<Map<String, dynamic>>)

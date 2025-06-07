@@ -10,7 +10,7 @@ _$EntityCategoryImpl _$$EntityCategoryImplFromJson(Map<String, dynamic> json) =>
     _$EntityCategoryImpl(
       id: json['id'] as String,
       name: json['name'] as String,
-      displayName: json['displayName'] as String,
+      displayName: json['displayName'] as String?,
       iconName: json['iconName'] as String?,
       colorHex: json['colorHex'] as String?,
       sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
