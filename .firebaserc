@@ -1,6 +1,7 @@
 {
   "projects": {
-    "Vuet": "qaaaa-448c6"
+    "Vuet": "northern-eon-454808-c0",
+    "default": "northern-eon-454808-c0"
   },
   "targets": {},
   "etags": {}

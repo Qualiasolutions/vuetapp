@@ -570,7 +570,7 @@ class CategoriesGrid extends ConsumerWidget {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(height: 12),
+                                      const SizedBox(height: 8), // Reduced from 12
                                       // Category name with perfect centering
                                       Container(
                                         alignment: Alignment.center,
@@ -582,7 +582,7 @@ class CategoriesGrid extends ConsumerWidget {
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w600,
-                                            fontSize: 14.0,
+                                            fontSize: 13.0, // Reduced from 14.0
                                             height: 1.2,
                                           ),
                                           maxLines: 2,

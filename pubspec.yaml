@@ -81,7 +81,6 @@ flutter:
     - assets/
     - assets/images/
     - assets/images/categories/
-    - assets/FontManifest.json
   
   # Use Google Fonts instead of local font files
   fonts: []
