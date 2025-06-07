@@ -4,6 +4,7 @@ import 'package:vuet_app/models/timeblock_model.dart';
 import 'package:vuet_app/providers/timeblock_providers.dart';
 import 'package:vuet_app/ui/screens/timeblocks/create_edit_timeblock_screen.dart';
 import 'package:vuet_app/ui/widgets/modern_components.dart';
+import 'package:vuet_app/ui/theme/app_theme.dart';
 
 class TimeblocksScreen extends ConsumerStatefulWidget {
   const TimeblocksScreen({super.key});
@@ -40,6 +41,7 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
   Widget build(BuildContext context) {
     final timeblocksAsync = ref.watch(userTimeblocksProvider);
     final timeblockNotifier = ref.watch(timeblockNotifierProvider.notifier);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
@@ -48,18 +50,22 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
           'Weekly Schedule',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Color(0xFF374151),
+            fontSize: 20,
           ),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF374151),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
           IconButton(
             icon: const Icon(
               Icons.refresh,
-              color: Color(0xFF374151),
+              color: Colors.white,
             ),
             onPressed: () => ref.refresh(userTimeblocksProvider),
             tooltip: 'Refresh',
@@ -74,10 +80,12 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
           error: (error, stack) => _buildErrorState(error.toString()),
         ),
       ),
-      floatingActionButton: ModernComponents.modernFAB(
-        icon: Icons.add,
+      floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToCreateTimeblock(),
-        tooltip: 'Add Timeblock',
+        backgroundColor: colorScheme.secondary,
+        foregroundColor: Colors.white,
+        elevation: 2,
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -113,6 +121,7 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
 
   Widget _buildDaySection(int dayOfWeek, List<TimeblockModel> timeblocks, TimeblockNotifier notifier) {
     final dayName = _getDayName(dayOfWeek);
+    final colorScheme = Theme.of(context).colorScheme;
     
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -126,10 +135,10 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
               children: [
                 Text(
                   dayName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF374151),
+                    color: colorScheme.primary,
                   ),
                 ),
                 Row(
@@ -142,7 +151,7 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.add, size: 20),
+                      icon: Icon(Icons.add, size: 20, color: colorScheme.secondary),
                       onPressed: () => _navigateToCreateTimeblock(dayOfWeek: dayOfWeek),
                       tooltip: 'Add timeblock for $dayName',
                     ),
@@ -187,6 +196,7 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
     final endTime = _parseTime(timeblock.endTime);
     final duration = _calculateDuration(startTime, endTime);
     final color = _parseColor(timeblock.color);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -199,7 +209,7 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
               width: 4,
               height: 60,
               decoration: BoxDecoration(
-                color: color,
+                color: color ?? colorScheme.primary,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -213,10 +223,10 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
                 children: [
                   Text(
                     startTime,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF374151),
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   Text(
@@ -247,32 +257,23 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
                   if (timeblock.title != null && timeblock.title!.isNotEmpty) ...[
                     Text(
                       timeblock.title!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF374151),
+                        color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 2),
                   ],
                   if (timeblock.description != null && timeblock.description!.isNotEmpty) ...[
+                    const SizedBox(height: 4),
                     Text(
                       timeblock.description!,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         color: Colors.grey.shade600,
                       ),
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                    ),
-                  ] else if (timeblock.title == null || timeblock.title!.isEmpty) ...[
-                    Text(
-                      'Timeblock',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                        fontStyle: FontStyle.italic,
-                      ),
                     ),
                   ],
                 ],
@@ -280,44 +281,16 @@ class _TimeblocksScreenState extends ConsumerState<TimeblocksScreen>
             ),
             
             // Actions
-            PopupMenuButton<String>(
-              onSelected: (value) => _handleTimeblockAction(value, timeblock, notifier),
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit, size: 18),
-                      SizedBox(width: 8),
-                      Text('Edit'),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem(
-                  value: 'duplicate',
-                  child: Row(
-                    children: [
-                      Icon(Icons.copy, size: 18),
-                      SizedBox(width: 8),
-                      Text('Duplicate'),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete, size: 18, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Delete', style: TextStyle(color: Colors.red)),
-                    ],
-                  ),
-                ),
-              ],
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                child: Icon(Icons.more_vert, color: Colors.grey.shade400),
+            IconButton(
+              icon: Icon(
+                Icons.edit_outlined,
+                size: 18,
+                color: colorScheme.primary,
               ),
+              onPressed: () => _navigateToEditTimeblock(timeblock.id),
+              tooltip: 'Edit',
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
           ],
         ),

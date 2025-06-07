@@ -17,8 +17,8 @@ class AppTheme {
   /// Primary brand color (Dark Jungle Green)
   static const Color primary = Color(0xFF203F39);
 
-  /// Secondary brand color (Medium Turquoise)
-  static const Color secondary = Color(0xFF55C6D4);
+  /// Secondary brand color (Dark Teal)
+  static const Color secondary = Color(0xFF005D63);
 
   /// Accent color (Orange)
   static const Color accent = Color(0xFFE39F2F);

@@ -99,7 +99,7 @@ class _PatientListScreenState extends State<PatientListScreen> {
           Icon(
             Icons.local_hospital_outlined,
             size: 64,
-            color: AppColors.steel.withOpacity(0.5),
+            color: AppColors.steel.withAlpha((255 * 0.5).round()),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -239,7 +239,7 @@ class _PatientCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: AppColors.steel.withOpacity(0.3),
+          color: AppColors.steel.withAlpha((255 * 0.3).round()),
           width: 0.5,
         ),
       ),
@@ -253,7 +253,7 @@ class _PatientCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.mediumTurquoise.withOpacity(0.15),
+                  color: AppColors.mediumTurquoise.withAlpha((255 * 0.15).round()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(

@@ -26,16 +26,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final selectedDayEvents = ref.watch(dayEventsProvider(_selectedDay));
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendar'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _navigateToCreateEvent(),
-            tooltip: 'Create Event',
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: const Text('Calendar'),
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.add),
+      //       onPressed: () => _navigateToCreateEvent(),
+      //       tooltip: 'Create Event',
+      //     ),
+      //   ],
+      // ),
       body: Column(
         children: [
           _buildCalendar(),
@@ -92,10 +92,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       calendarStyle: CalendarStyle(
         markersMaxCount: 3,
         markersAlignment: Alignment.bottomCenter,
-        markerDecoration: const BoxDecoration(
-          color: Colors.blue,
+        markerDecoration: BoxDecoration(
+          color: Colors.blue.withOpacity(0.8),
           shape: BoxShape.circle,
         ),
+        markerSize: 5.0, // Smaller marker size
+        markerMargin: const EdgeInsets.only(top: 8), // Add more space between day and marker
         todayDecoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primary.withAlpha((0.5 * 255).round()),
           shape: BoxShape.circle,
@@ -104,6 +106,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           color: Theme.of(context).colorScheme.primary,
           shape: BoxShape.circle,
         ),
+        cellMargin: const EdgeInsets.all(6), // Add more space between days
+        outsideDaysVisible: false, // Hide days from other months
       ),
       headerStyle: HeaderStyle(
         formatButtonTextStyle: const TextStyle(fontSize: 14.0),

@@ -5,6 +5,7 @@ import 'package:vuet_app/providers/routine_providers.dart';
 import 'package:vuet_app/ui/screens/routines/routine_detail_screen.dart';
 import 'package:vuet_app/ui/screens/routines/create_edit_routine_screen.dart';
 import 'package:vuet_app/widgets/modern_components.dart';
+import 'package:vuet_app/ui/theme/app_theme.dart';
 
 class RoutinesScreen extends ConsumerWidget {
   const RoutinesScreen({super.key});
@@ -12,6 +13,7 @@ class RoutinesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final routinesAsync = ref.watch(routinesProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -21,13 +23,16 @@ class RoutinesScreen extends ConsumerWidget {
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 24,
-            color: Color(0xFF374151),
           ),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF374151),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 1,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
           IconButton(
             onPressed: () => _navigateToCreateRoutine(context),
@@ -36,7 +41,7 @@ class RoutinesScreen extends ConsumerWidget {
               color: Colors.white,
             ),
             style: IconButton.styleFrom(
-              backgroundColor: Colors.blue.shade600,
+              backgroundColor: colorScheme.secondary,
               foregroundColor: Colors.white,
             ),
           ),
@@ -74,6 +79,8 @@ class RoutinesScreen extends ConsumerWidget {
   }
 
   Widget _buildRoutineCard(BuildContext context, WidgetRef ref, RoutineModel routine) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ModernComponents.modernCard(
@@ -90,12 +97,12 @@ class RoutinesScreen extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.1),
+                        color: colorScheme.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         Icons.repeat_rounded,
-                        color: Colors.blue.shade700,
+                        color: colorScheme.primary,
                         size: 24,
                       ),
                     ),
@@ -166,9 +173,9 @@ class RoutinesScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    _buildDaysChip(routine),
+                    _buildDaysChip(routine, context),
                     const SizedBox(width: 8),
-                    _buildTimeChip(routine),
+                    _buildTimeChip(routine, context),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -198,7 +205,8 @@ class RoutinesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDaysChip(RoutineModel routine) {
+  Widget _buildDaysChip(RoutineModel routine, BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final activeDays = <String>[];
     if (routine.monday) activeDays.add('Mo');
     if (routine.tuesday) activeDays.add('Tu');
@@ -210,11 +218,11 @@ class RoutinesScreen extends ConsumerWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-        color: Colors.green.withValues(alpha: 0.1),
+      decoration: BoxDecoration(
+        color: colorScheme.secondary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.green.withValues(alpha: 0.3),
+          color: colorScheme.secondary.withOpacity(0.3),
         ),
       ),
       child: Text(
@@ -222,20 +230,22 @@ class RoutinesScreen extends ConsumerWidget {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w500,
-          color: Colors.green.shade700,
+          color: colorScheme.secondary,
         ),
       ),
     );
   }
 
-  Widget _buildTimeChip(RoutineModel routine) {
+  Widget _buildTimeChip(RoutineModel routine, BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: colorScheme.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.blue.shade200,
+          color: colorScheme.primary.withOpacity(0.3),
         ),
       ),
       child: Row(
@@ -244,15 +254,15 @@ class RoutinesScreen extends ConsumerWidget {
           Icon(
             Icons.access_time_rounded,
             size: 14,
-            color: Colors.blue.shade700,
+            color: colorScheme.primary,
           ),
           const SizedBox(width: 4),
           Text(
-            '${routine.startTime} - ${routine.endTime}',
+            _formatTime(routine.startTime),
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Colors.blue.shade700,
+              color: colorScheme.primary,
             ),
           ),
         ],
@@ -439,5 +449,10 @@ class RoutinesScreen extends ConsumerWidget {
     }
 
     return '${activeDays.join(', ')} from ${routine.startTime} to ${routine.endTime}';
+  }
+
+  String _formatTime(String time) {
+    // Implement the logic to format the time based on your requirements
+    return time;
   }
 }

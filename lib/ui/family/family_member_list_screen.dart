@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/theme_config.dart';
 import '../../models/family_entities.dart';
+import '../../providers/family_member_providers.dart';
 import '../shared/widgets.dart';
 
 /// FamilyMember List Screen - Shows all FamilyMember entities
 /// Following detailed guide specifications with Modern Palette
-class FamilyMemberListScreen extends StatefulWidget {
+class FamilyMemberListScreen extends ConsumerStatefulWidget {
   const FamilyMemberListScreen({super.key});
 
   @override
-  State<FamilyMemberListScreen> createState() => _FamilyMemberListScreenState();
+  ConsumerState<FamilyMemberListScreen> createState() => _FamilyMemberListScreenState();
 }
 
-class _FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
-  List<FamilyMember> _familyMembers = [];
-  List<FamilyMember> _filteredFamilyMembers = [];
-  bool _isLoading = true;
+class _FamilyMemberListScreenState extends ConsumerState<FamilyMemberListScreen> {
   final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _loadFamilyMembers();
-    _searchController.addListener(_filterFamilyMembers);
+    _searchController.addListener(() {
+      if (mounted) {
+        setState(() {
+          _searchQuery = _searchController.text;
+        });
+      }
+    });
   }
 
   @override
@@ -32,99 +37,32 @@ class _FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
     super.dispose();
   }
 
-  Future<void> _loadFamilyMembers() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      // TODO: Load from Supabase using MCP tools
-      // For now, show sample data
-      await Future.delayed(const Duration(milliseconds: 500));
-      
-      setState(() {
-        _familyMembers = [
-          FamilyMember(
-            id: 1,
-            firstName: 'John',
-            lastName: 'Smith',
-            relationship: 'Father',
-            dateOfBirth: DateTime(1975, 5, 15),
-            phoneNumber: '+1-555-0123',
-            email: 'john.smith@email.com',
-            notes: 'Emergency contact',
-          ),
-          FamilyMember(
-            id: 2,
-            firstName: 'Sarah',
-            lastName: 'Smith',
-            relationship: 'Mother',
-            dateOfBirth: DateTime(1978, 8, 22),
-            phoneNumber: '+1-555-0124',
-            email: 'sarah.smith@email.com',
-            notes: null,
-          ),
-          FamilyMember(
-            id: 3,
-            firstName: 'Emma',
-            lastName: 'Smith',
-            relationship: 'Sister',
-            dateOfBirth: DateTime(2005, 12, 3),
-            phoneNumber: null,
-            email: null,
-            notes: 'High school student',
-          ),
-          FamilyMember(
-            id: 4,
-            firstName: 'Robert',
-            lastName: 'Johnson',
-            relationship: 'Grandfather',
-            dateOfBirth: DateTime(1945, 3, 10),
-            phoneNumber: '+1-555-0125',
-            email: null,
-            notes: 'Lives in assisted living',
-          ),
-        ];
-        _filteredFamilyMembers = List.from(_familyMembers);
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading family members: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+  List<FamilyMember> _filterFamilyMembers(List<FamilyMember> allMembers) {
+    if (_searchQuery.isEmpty) {
+      return allMembers;
     }
+    final query = _searchQuery.toLowerCase();
+    return allMembers.where((member) {
+      return member.firstName.toLowerCase().contains(query) ||
+             member.lastName.toLowerCase().contains(query) ||
+             (member.relationship?.toLowerCase().contains(query) ?? false);
+    }).toList();
   }
 
-  void _filterFamilyMembers() {
-    final query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredFamilyMembers = _familyMembers.where((member) {
-        return member.firstName.toLowerCase().contains(query) ||
-               member.lastName.toLowerCase().contains(query) ||
-               (member.relationship?.toLowerCase().contains(query) ?? false);
-      }).toList();
-    });
+  Future<void> _refreshFamilyMembers() async {
+    await ref.refresh(familyMembersProvider.future);
   }
 
   @override
   Widget build(BuildContext context) {
+    final familyMembersAsyncValue = ref.watch(familyMembersProvider);
+
     return Scaffold(
       appBar: const VuetHeader('Family Members'),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                // Search bar
-                Padding(
+      body: Column(
+        children: [
+          // Search bar
+          Padding(
                   padding: const EdgeInsets.all(16),
                   child: TextField(
                     controller: _searchController,
@@ -141,14 +79,31 @@ class _FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
                     ),
                   ),
                 ),
-                // Family members list
-                Expanded(
-                  child: _filteredFamilyMembers.isEmpty
-                      ? _buildEmptyState()
-                      : _buildFamilyMembersList(),
+          // Family members list
+          Expanded(
+            child: familyMembersAsyncValue.when(
+              data: (allMembers) {
+                final filteredMembers = _filterFamilyMembers(allMembers);
+                if (filteredMembers.isEmpty) {
+                  return _buildEmptyState(allMembers.isEmpty);
+                }
+                return _buildFamilyMembersList(filteredMembers);
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Error: ${err.toString()}'),
+                    const SizedBox(height: 10),
+                    ElevatedButton(onPressed: _refreshFamilyMembers, child: const Text('Retry'))
+                  ],
                 ),
-              ],
+              ),
             ),
+          ),
+        ],
+      ),
       floatingActionButton: VuetFAB(
         onPressed: () => context.go('/categories/family/family-members/create'),
         tooltip: 'Add Family Member',
@@ -156,7 +111,7 @@ class _FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(bool isTrulyEmpty) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -164,11 +119,11 @@ class _FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
           Icon(
             Icons.people_outline,
             size: 64,
-            color: AppColors.steel.withOpacity(0.5),
+            color: AppColors.steel.withAlpha((255 * 0.5).round()),
           ),
           const SizedBox(height: 16),
           Text(
-            _searchController.text.isEmpty 
+            isTrulyEmpty && _searchQuery.isEmpty
                 ? 'No family members yet'
                 : 'No family members found',
             style: const TextStyle(
@@ -179,7 +134,7 @@ class _FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            _searchController.text.isEmpty
+            isTrulyEmpty && _searchQuery.isEmpty
                 ? 'Add family members to keep track of contact information'
                 : 'Try adjusting your search terms',
             style: const TextStyle(
@@ -188,7 +143,7 @@ class _FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
             ),
             textAlign: TextAlign.center,
           ),
-          if (_searchController.text.isEmpty) ...[
+          if (isTrulyEmpty && _searchQuery.isEmpty) ...[
             const SizedBox(height: 24),
             VuetSaveButton(
               text: 'Add First Family Member',
@@ -200,20 +155,28 @@ class _FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
     );
   }
 
-  Widget _buildFamilyMembersList() {
+  Widget _buildFamilyMembersList(List<FamilyMember> membersToDisplay) {
     return RefreshIndicator(
-      onRefresh: _loadFamilyMembers,
+      onRefresh: _refreshFamilyMembers,
       color: AppColors.mediumTurquoise,
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
-        itemCount: _filteredFamilyMembers.length,
+        itemCount: membersToDisplay.length,
         separatorBuilder: (context, index) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
-          final familyMember = _filteredFamilyMembers[index];
+          final familyMember = membersToDisplay[index];
           return _FamilyMemberCard(
             familyMember: familyMember,
             onTap: () => _showFamilyMemberDetails(familyMember),
-            onEdit: () => context.go('/categories/family/family-members/${familyMember.id}/edit'),
+            onEdit: () {
+              if (familyMember.id != null) { // Ensure ID is not null before navigating
+                context.go('/categories/family/family-members/${familyMember.id}/edit');
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Error: Family member ID is missing.'), backgroundColor: Colors.red),
+                );
+              }
+            },
             onDelete: () => _deleteFamilyMember(familyMember),
           );
         },
@@ -271,19 +234,32 @@ class _FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              // TODO: Delete from Supabase using MCP tools
-              setState(() {
-                _familyMembers.removeWhere((m) => m.id == familyMember.id);
-                _filterFamilyMembers();
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Family member deleted'),
-                  backgroundColor: AppColors.mediumTurquoise,
-                ),
-              );
+              if (familyMember.id == null) {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Error: Cannot delete member without ID.'), backgroundColor: Colors.red),
+                );
+                return;
+              }
+              try {
+                await ref.read(familyMemberServiceProvider).deleteFamilyMember(familyMember.id!);
+                _refreshFamilyMembers(); // Refresh the list
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Family member deleted'),
+                      backgroundColor: AppColors.mediumTurquoise,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error deleting family member: $e'), backgroundColor: Colors.red),
+                  );
+                }
+              }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Delete'),
@@ -329,7 +305,7 @@ class _FamilyMemberCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: AppColors.steel.withOpacity(0.3),
+          color: AppColors.steel.withAlpha((255 * 0.3).round()),
           width: 0.5,
         ),
       ),
@@ -343,7 +319,7 @@ class _FamilyMemberCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.mediumTurquoise.withOpacity(0.15),
+                  color: AppColors.mediumTurquoise.withAlpha((255 * 0.15).round()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(

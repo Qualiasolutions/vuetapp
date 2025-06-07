@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart';
 // import 'package:vuet_app/ui/screens/categories/categories_screen.dart'; // No longer needed
 import 'package:vuet_app/ui/screens/categories/categories_grid.dart'; // Use CategoriesGrid
 import 'package:vuet_app/ui/screens/calendar/calendar_screen.dart';
@@ -19,7 +18,7 @@ class BottomNavigation extends ConsumerWidget {
     final currentIndex = ref.watch(bottomNavIndexProvider);
 
     // Ensure currentIndex is within the new valid range
-    final adjustedCurrentIndex = currentIndex >= 3 ? 3 : currentIndex; // Adjusted for 4 items
+    final adjustedCurrentIndex = currentIndex >= 2 ? 2 : currentIndex; // Adjusted for 3 items
 
     // Listen for tab changes and refresh categories data when categories tab is selected
     ref.listen(bottomNavIndexProvider, (previous, next) {
@@ -49,8 +48,7 @@ class BottomNavigation extends ConsumerWidget {
             child: Center(child: Text('Dashboard - Coming Soon!')),
           ),
           CategoriesGrid(), // Changed from CategoriesScreen
-          RedesignedListsScreen(),
-          // TimeblockNavigator removed
+          // RedesignedListsScreen removed
           CalendarScreen(),
         ],
       ),
@@ -68,10 +66,7 @@ class BottomNavigation extends ConsumerWidget {
             icon: Icon(Icons.category), // Use a category icon
             label: 'Categories', // Update label to Categories
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list_alt),
-            label: 'Lists',
-          ),
+          // Lists item removed
           // Timeblocks item removed
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_month),

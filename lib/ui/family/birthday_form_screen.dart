@@ -1,38 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../config/theme_config.dart';
-import '../../models/family_entities.dart';
-import '../shared/widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:vuet_app/models/family_entities.dart';
+import 'package:vuet_app/providers/birthday_providers.dart';
+import 'package:vuet_app/ui/shared/widgets.dart';
+import 'package:vuet_app/config/theme_config.dart';
 
-/// Birthday Form Screen - Create/Edit Birthday entities
-/// Following detailed guide: name, dob, known_year fields
-class BirthdayFormScreen extends StatefulWidget {
-  const BirthdayFormScreen({
-    super.key,
-    this.birthday,
-    this.isEditing = false,
-  });
+class BirthdayFormScreen extends ConsumerStatefulWidget {
+  final String? birthdayId; // This will be the BaseEntityModel ID (string)
 
-  final Birthday? birthday;
-  final bool isEditing;
+  const BirthdayFormScreen({super.key, this.birthdayId});
 
   @override
-  State<BirthdayFormScreen> createState() => _BirthdayFormScreenState();
+  ConsumerState<BirthdayFormScreen> createState() => _BirthdayFormScreenState();
 }
 
-class _BirthdayFormScreenState extends State<BirthdayFormScreen> {
+class _BirthdayFormScreenState extends ConsumerState<BirthdayFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _dobController = TextEditingController();
+  
+  late TextEditingController _nameController;
+  late TextEditingController _dobController;
+  late TextEditingController _notesController;
   bool _knownYear = true;
+
+  Birthday? _existingBirthday;
+  bool _isLoading = false;
+  DateTime? _selectedDateOfBirth;
 
   @override
   void initState() {
     super.initState();
-    if (widget.birthday != null) {
-      _nameController.text = widget.birthday!.name;
-      _dobController.text = widget.birthday!.dob.toIso8601String().split('T')[0];
-      _knownYear = widget.birthday!.knownYear;
+    _nameController = TextEditingController();
+    _dobController = TextEditingController();
+    _notesController = TextEditingController();
+
+    if (widget.birthdayId != null) {
+      _loadExistingData();
+    }
+  }
+
+  Future<void> _loadExistingData() async {
+    setState(() => _isLoading = true);
+    try {
+      _existingBirthday = await ref.read(birthdayByIdProvider(widget.birthdayId!).future);
+      if (_existingBirthday != null) {
+        _nameController.text = _existingBirthday!.name;
+        _selectedDateOfBirth = _existingBirthday!.dob;
+        _dobController.text = DateFormat('yyyy-MM-dd').format(_selectedDateOfBirth!);
+        _knownYear = _existingBirthday!.knownYear;
+        _notesController.text = _existingBirthday!.notes ?? '';
+      } else {
+         if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Birthday not found.'), backgroundColor: Colors.red));
+      }
+    } catch (e) {
+       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error loading birthday data: $e'), backgroundColor: Colors.red));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -40,134 +64,150 @@ class _BirthdayFormScreenState extends State<BirthdayFormScreen> {
   void dispose() {
     _nameController.dispose();
     _dobController.dispose();
+    _notesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDateOfBirth ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 10)), // Allow future dates for planning
+    );
+    if (picked != null && picked != _selectedDateOfBirth) {
+      setState(() {
+        _selectedDateOfBirth = picked;
+        _dobController.text = DateFormat('yyyy-MM-dd').format(_selectedDateOfBirth!);
+      });
+    }
+  }
+
+  Future<void> _saveForm() async {
+    if (_formKey.currentState!.validate()) {
+      if (_selectedDateOfBirth == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a date of birth.'), backgroundColor: Colors.red),
+        );
+        return;
+      }
+      setState(() => _isLoading = true);
+      
+      final birthdayData = Birthday(
+        id: _existingBirthday?.id,
+        name: _nameController.text.trim(),
+        dob: _selectedDateOfBirth!,
+        knownYear: _knownYear,
+        notes: _notesController.text.trim().isNotEmpty ? _notesController.text.trim() : null,
+      );
+
+      try {
+        final service = ref.read(birthdayServiceProvider);
+        if (_existingBirthday == null) {
+          await service.addBirthday(birthdayData);
+        } else {
+          await service.updateBirthday(birthdayData);
+        }
+        ref.refresh(familyBirthdaysProvider); // Refresh the list
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Birthday saved successfully!'), backgroundColor: AppColors.mediumTurquoise),
+          );
+          context.pop();
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error saving birthday: $e'), backgroundColor: Colors.red),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEditMode = _existingBirthday != null;
     return Scaffold(
-      appBar: VuetHeader(widget.isEditing ? 'Edit Birthday' : 'Add Birthday'),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Name field - required
-            VuetTextField(
-              'Name',
-              controller: _nameController,
-              validator: VuetValidators.required,
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Date of Birth field - required, date format
-            VuetDatePicker(
-              'Date of Birth (YYYY-MM-DD)',
-              controller: _dobController,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Required';
-                }
-                if (DateTime.tryParse(value) == null) {
-                  return 'yyyy-MM-dd';
-                }
-                return null;
-              },
-            ),
-            
-            const SizedBox(height: 16),
-            
-            // Known Year toggle
-            Row(
-              children: [
-                const Text(
-                  'Known Year',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.darkJungleGreen,
-                  ),
+      appBar: VuetHeader(isEditMode ? 'Edit Birthday' : 'Add Birthday'),
+      body: _isLoading && widget.birthdayId != null
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    _buildTextFormField(_nameController, "Person's Name", isRequired: true),
+                    const SizedBox(height: 16),
+                    _buildTextFormField(
+                      _dobController,
+                      'Date of Birth (YYYY-MM-DD)',
+                      isRequired: true,
+                      readOnly: true,
+                      onTap: () => _selectDate(context),
+                      suffixIcon: Icons.calendar_today,
+                    ),
+                    const SizedBox(height: 16),
+                    SwitchListTile(
+                      title: const Text('Year is known?'),
+                      value: _knownYear,
+                      onChanged: (bool value) {
+                        setState(() {
+                          _knownYear = value;
+                        });
+                      },
+                      activeColor: AppColors.mediumTurquoise,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextFormField(_notesController, 'Notes', maxLines: 3),
+                    const SizedBox(height: 32),
+                    VuetSaveButton(
+                      text: isEditMode ? 'Save Changes' : 'Add Birthday',
+                      onPressed: _isLoading ? () {} : () => _saveForm(),
+                    ),
+                  ],
                 ),
-                const Spacer(),
-                VuetToggle(
-                  value: _knownYear,
-                  onChanged: (value) {
-                    setState(() {
-                      _knownYear = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 8),
-            
-            Text(
-              _knownYear 
-                ? 'Birth year is known and will be used for age calculation'
-                : 'Birth year is unknown, only month/day will be used',
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.steel,
               ),
             ),
-            
-            // Form divider as specified in guide
-            const VuetDivider(),
-            
-            // Save button with Modern Palette styling
-            VuetSaveButton(
-              text: widget.isEditing ? 'Update' : 'Save',
-              onPressed: _saveBirthday,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
-  void _saveBirthday() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    try {
-      /* // Commenting out unused variable and its object creation for now
-      final birthday = Birthday(
-        id: widget.birthday?.id,
-        name: _nameController.text.trim(),
-        dob: DateTime.parse(_dobController.text),
-        knownYear: _knownYear,
-      );
-      */
-
-      // TODO: Save to Supabase using MCP tools
-      // For now, show success message and navigate back
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.isEditing 
-                ? 'Birthday updated successfully' 
-                : 'Birthday created successfully',
-            ),
-            backgroundColor: AppColors.mediumTurquoise,
-          ),
-        );
-        
-        // Navigate back to birthdays list
-        context.go('/categories/family/birthdays');
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving birthday: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+  Widget _buildTextFormField(
+    TextEditingController controller,
+    String label, {
+    bool isRequired = false,
+    int? maxLines = 1,
+    TextInputType? keyboardType,
+    bool readOnly = false,
+    VoidCallback? onTap,
+    IconData? suffixIcon,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label + (isRequired ? ' *' : ''),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: AppColors.mediumTurquoise, width: 2.0),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        suffixIcon: suffixIcon != null ? IconButton(icon: Icon(suffixIcon), onPressed: onTap) : null,
+      ),
+      validator: (value) {
+        if (isRequired && (value == null || value.trim().isEmpty)) {
+          return '$label is required';
+        }
+        return null;
+      },
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      readOnly: readOnly,
+      onTap: onTap,
+    );
   }
 }

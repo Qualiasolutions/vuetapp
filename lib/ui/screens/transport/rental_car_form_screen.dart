@@ -9,7 +9,7 @@ import '../../../providers/transport_providers.dart'; // Added import
 class RentalCarFormScreen extends ConsumerStatefulWidget {
   final RentalCar? rentalCar; // null for create, instance for edit
 
-  const RentalCarFormScreen({Key? key, this.rentalCar}) : super(key: key);
+  const RentalCarFormScreen({super.key, this.rentalCar});
 
   @override
   ConsumerState<RentalCarFormScreen> createState() => _RentalCarFormScreenState();

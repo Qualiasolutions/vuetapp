@@ -139,6 +139,15 @@ class VuetValidators {
   /// Positive integer validator
   static String? Function(String?) positiveInt = (v) =>
       int.tryParse(v ?? '') != null && int.parse(v!) > 0 ? null : '>0';
+
+  /// Generic validator for optional fields (always returns null)
+  static String? Function(String?) optional = (String? v) => null;
+
+  static String? Function(String?) emailOptional = (v) {
+    if (v == null || v.trim().isEmpty) return null; // Optional
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    return emailRegex.hasMatch(v.trim()) ? null : 'Enter a valid email';
+  };
 }
 
 /// Modern Save Button as specified in the guide

@@ -240,7 +240,7 @@ class SupabasePublicTransportRepository implements PublicTransportRepository {
   Future<List<PublicTransport>> getAllPublicTransport() async {
     final List<dynamic> responseData = await _supabase
         .from('entities')
-        .select('id, name, notes, ${_specificTableName}!inner(transport_type, route_number, operator)')
+        .select('id, name, notes, $_specificTableName!inner(transport_type, route_number, operator)')
         .eq('entity_type', _entityType);
 
     return responseData.map((rawData) {
@@ -263,7 +263,7 @@ class SupabasePublicTransportRepository implements PublicTransportRepository {
   Future<PublicTransport?> getPublicTransportById(int id) async {
      final rawData = await _supabase
         .from('entities')
-        .select('id, name, notes, ${_specificTableName}!inner(transport_type, route_number, operator)')
+        .select('id, name, notes, $_specificTableName!inner(transport_type, route_number, operator)')
         .eq('id', id)
         .eq('entity_type', _entityType)
         .maybeSingle();
@@ -364,7 +364,7 @@ class SupabaseTrainBusFerryRepository implements TrainBusFerryRepository {
   Future<List<TrainBusFerry>> getAllTrainBusFerries() async {
     final List<dynamic> responseData = await _supabase
         .from('entities')
-        .select('id, name, notes, ${_specificTableName}!inner(transport_type, operator, route_number, departure_station, arrival_station, departure_time, arrival_time)')
+        .select('id, name, notes, $_specificTableName!inner(transport_type, operator, route_number, departure_station, arrival_station, departure_time, arrival_time)')
         .eq('entity_type', _entityType);
 
     return responseData.map((rawData) {
@@ -391,7 +391,7 @@ class SupabaseTrainBusFerryRepository implements TrainBusFerryRepository {
   Future<TrainBusFerry?> getTrainBusFerryById(int id) async {
     final rawData = await _supabase
         .from('entities')
-        .select('id, name, notes, ${_specificTableName}!inner(transport_type, operator, route_number, departure_station, arrival_station, departure_time, arrival_time)')
+        .select('id, name, notes, $_specificTableName!inner(transport_type, operator, route_number, departure_station, arrival_station, departure_time, arrival_time)')
         .eq('id', id)
         .eq('entity_type', _entityType)
         .maybeSingle();
@@ -478,7 +478,7 @@ class SupabaseRentalCarRepository implements RentalCarRepository {
   Future<List<RentalCar>> getAllRentalCars() async {
     final List<dynamic> responseData = await _supabase
         .from('entities')
-        .select('id, name, notes, ${_specificTableName}!inner(rental_company, make, model, registration, pickup_date, return_date, pickup_location, return_location, total_cost)')
+        .select('id, name, notes, $_specificTableName!inner(rental_company, make, model, registration, pickup_date, return_date, pickup_location, return_location, total_cost)')
         .eq('entity_type', _entityType);
 
     return responseData.map((rawData) {
@@ -507,7 +507,7 @@ class SupabaseRentalCarRepository implements RentalCarRepository {
   Future<RentalCar?> getRentalCarById(int id) async {
     final rawData = await _supabase
         .from('entities')
-        .select('id, name, notes, ${_specificTableName}!inner(rental_company, make, model, registration, pickup_date, return_date, pickup_location, return_location, total_cost)')
+        .select('id, name, notes, $_specificTableName!inner(rental_company, make, model, registration, pickup_date, return_date, pickup_location, return_location, total_cost)')
         .eq('id', id)
         .eq('entity_type', _entityType)
         .maybeSingle();

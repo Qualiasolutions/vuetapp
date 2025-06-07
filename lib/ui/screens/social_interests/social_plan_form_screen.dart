@@ -5,6 +5,7 @@ import 'package:vuet_app/providers/auth_providers.dart';
 import 'package:vuet_app/providers/social_interest_providers.dart';
 import 'package:vuet_app/ui/shared/widgets.dart';
 import 'package:intl/intl.dart'; // For date/time formatting
+import 'package:vuet_app/utils/logger.dart'; // Import logger
 
 class SocialPlanFormScreen extends ConsumerStatefulWidget {
   final String? socialPlanId;
@@ -58,9 +59,9 @@ class _SocialPlanFormScreenState extends ConsumerState<SocialPlanFormScreen> {
           try {
             final timeParts = _editingSocialPlan!.planTime!.split(':');
             _planTime = TimeOfDay(hour: int.parse(timeParts[0]), minute: int.parse(timeParts[1]));
-          } catch (e) {
+          } catch (e, s) {
             // Handle parsing error if necessary
-            print('Error parsing plan time: $e');
+            log('Error parsing plan time: $e', name: '_SocialPlanFormScreenState', error: e, stackTrace: s);
           }
         }
       }

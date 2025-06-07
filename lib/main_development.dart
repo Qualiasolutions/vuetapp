@@ -23,14 +23,20 @@ import 'package:vuet_app/widgets/notification_badge.dart';
 import 'package:vuet_app/widgets/tab_notification_badge.dart';
 import 'package:vuet_app/utils/deep_link_handler.dart';
 import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart'; // Added RedesignedListsScreen
-import 'package:vuet_app/ui/screens/lana_ai_assistant_screen.dart'; // Added LanaAiAssistantScreen
+import 'package:vuet_app/ui/screens/lana_chat_screen.dart'; // Updated to use the real LANA chat screen
 import 'package:vuet_app/ui/screens/account/my_account_screen.dart'; // Added MyAccountScreen
 // Added SettingsScreen
 import 'package:go_router/go_router.dart';
 import 'package:vuet_app/ui/navigation/pets_navigator.dart';
 import 'package:vuet_app/ui/navigation/account_settings_navigator.dart'; // Assuming this should be used
 import 'package:vuet_app/ui/navigation/social_interests_navigator.dart'; // Import SocialInterestsNavigator
+import 'package:vuet_app/ui/navigation/education_navigator.dart'; // Import EducationNavigator
+import 'package:vuet_app/ui/navigation/career_navigator.dart'; // Import CareerNavigator
 // Added for /family route // Removed unused import: family_screen.dart
+import 'package:vuet_app/ui/screens/routines/routines_screen.dart'; // Added RoutinesScreen
+import 'package:vuet_app/ui/screens/timeblocks/timeblocks_screen.dart'; // Added TimeblocksScreen
+import 'package:vuet_app/ui/screens/timeblocks/create_edit_timeblock_screen.dart'; // Added for CreateEditTimeblockScreen
+import 'package:vuet_app/ui/screens/timeblocks/timeblock_detail_screen.dart'; // Added for TimeblockDetailScreen
 
 // Global navigator key for GoRouter
 final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -78,6 +84,36 @@ final GoRouter _router = GoRouter(
     ...AccountSettingsNavigator.routes(),
     ...PetsNavigator.routes(),
     ...SocialInterestsNavigator.routes(),
+    ...EducationNavigator.routes,
+    ...CareerNavigator.routes,
+    
+    // Define routes for Timeblocks feature
+    GoRoute(
+      path: '/timeblocks',
+      name: 'timeblocks',
+      builder: (context, state) => const TimeblocksScreen(),
+    ),
+    GoRoute(
+      path: '/timeblocks/create',
+      name: 'create-timeblock',
+      builder: (context, state) => const CreateEditTimeblockScreen(),
+    ),
+    GoRoute(
+      path: '/timeblocks/edit/:id',
+      name: 'edit-timeblock',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return CreateEditTimeblockScreen(timeblockId: id);
+      },
+    ),
+    GoRoute(
+      path: '/timeblocks/detail/:id',
+      name: 'timeblock-detail',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return TimeblockDetailScreen(timeblockId: id);
+      },
+    ),
   ],
   // Optional: Add errorBuilder and redirect logic as needed
   // errorBuilder: (context, state) => ErrorScreen(error: state.error),
@@ -240,7 +276,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       const CategoriesGrid(), // Second tab - Changed from ModernizedHomeScreen
       const RedesignedListsScreen(), // Third tab
       const TaskListScreen(), // Fourth tab (originally Profile, now Tasks to keep it)
-      const LanaAiAssistantScreen(), // Fifth tab
+      const LanaChatScreen(), // Fifth tab
     ];
   }
 
@@ -365,6 +401,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                         builder: (context) => const MyAccountScreen()));
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.repeat), // Icon for Routines
+              title: const Text('Routines'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RoutinesScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.access_time), // Icon for Timeblocks
+              title: const Text('Timeblocks'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                context.push('/timeblocks'); // Navigate using GoRouter
+              },
+            ),
             Consumer(builder: (context, ref, child) {
               // Access the global _isDarkMode state from _VuetAppState
               final isDarkModeGlobal = context
@@ -436,13 +491,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   children: [
                     const Icon(Icons.task_outlined),
                     if (taskNotificationCount > 0)
-                      Positioned(
-                        right: -6,
-                        top: -3,
-                        child: TabNotificationBadge(
-                          count: taskNotificationCount,
-                        ),
-                      ),
+                      TabNotificationBadge(count: taskNotificationCount),
                   ],
                 ),
                 activeIcon: Stack(
@@ -450,22 +499,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                   children: [
                     const Icon(Icons.task),
                     if (taskNotificationCount > 0)
-                      Positioned(
-                        right: -6,
-                        top: -3,
-                        child: TabNotificationBadge(
-                          count: taskNotificationCount,
-                        ),
-                      ),
+                      TabNotificationBadge(count: taskNotificationCount),
                   ],
                 ),
                 label: 'Tasks',
               ),
-              // Lana AI Assistant tab (replaces Profile tab)
               const BottomNavigationBarItem(
                 icon: Icon(Icons.assistant_outlined),
                 activeIcon: Icon(Icons.assistant),
-                label: 'Lana AI',
+                label: 'LANA Chat',
               ),
             ],
             currentIndex: _selectedIndex,

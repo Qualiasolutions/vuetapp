@@ -14,7 +14,7 @@ class ContactListScreen extends ConsumerStatefulWidget {
 
 class _ContactListScreenState extends ConsumerState<ContactListScreen> {
   // Sample data for now - will be replaced with Supabase MCP integration
-  List<Contact> _contacts = [
+  final List<Contact> _contacts = [
     Contact(
       id: 1,
       name: 'John Smith',

@@ -15,7 +15,9 @@ import 'package:vuet_app/ui/screens/categories/transport_category_screen.dart';
 import 'package:vuet_app/ui/screens/categories/health_beauty_category_screen.dart';
 import 'package:vuet_app/ui/screens/categories/home_garden_category_screen.dart';
 import 'package:vuet_app/ui/screens/categories/charity_religion_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/family_category_screen.dart'; // Added import
 import 'package:vuet_app/ui/theme/app_theme.dart'; // Add import for AppTheme
+import 'package:vuet_app/utils/logger.dart'; // Import the logger
 
 class CategoriesGrid extends ConsumerWidget {
   final String searchQuery;
@@ -24,15 +26,6 @@ class CategoriesGrid extends ConsumerWidget {
     super.key,
     this.searchQuery = '',
   });
-
-  // Helper to convert display name to a switch-case friendly ID
-  // This might still be useful for other logic or can be removed if not needed.
-  String _getGroupId(String displayName) {
-    return displayName
-        .toLowerCase()
-        .replaceAll(' & ', '_and_')
-        .replaceAll(' ', '_');
-  }
 
   // Maps string icon names from the database to Material IconData
   IconData _getIconFromString(String? iconName) {
@@ -317,7 +310,7 @@ class CategoriesGrid extends ConsumerWidget {
          return Icons.favorite_outlined;
 
       default:
-        print('Unknown iconName: $iconName, using default.'); // Optional: for debugging
+        log('Unknown iconName: $iconName, using default.', name: 'CategoriesGrid'); // Optional: for debugging
         return Icons.category; // Fallback icon
     }
   }
@@ -360,7 +353,7 @@ class CategoriesGrid extends ConsumerWidget {
 
     // Calculate padding to maximize screen usage
     final gridPadding = 10.0;
-    final gridSpacing = 10.0;
+    final gridSpacing = 15.0; // Increased spacing
 
     // Calculate icon size proportionally to screen width but ensure minimum size
     final iconSize =
@@ -432,7 +425,7 @@ class CategoriesGrid extends ConsumerWidget {
               crossAxisSpacing: gridSpacing,
               mainAxisSpacing: gridSpacing,
               // Expanded aspect ratio for better spacing
-              childAspectRatio: 1.0,
+              childAspectRatio: 0.9, // Adjusted aspect ratio
             ),
             itemCount: itemCount,
             itemBuilder: (context, index) {
@@ -622,6 +615,9 @@ class CategoriesGrid extends ConsumerWidget {
     // systemName is EntityCategory.name, e.g., "PETS", "SOCIAL_INTERESTS", "HOME_AND_GARDEN"
     // These should match the 'name' column in the entity_categories table.
     switch (systemName) { 
+      case 'FAMILY': // Added case for Family
+        screen = const FamilyCategoryScreen();
+        break;
       case 'PETS':
         screen = const PetsCategoryScreen(); // These screens might need displayName for their AppBar title
         break;

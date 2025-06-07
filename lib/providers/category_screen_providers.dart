@@ -35,8 +35,8 @@ final List<_CategoryGroupDefinition> _targetDisplayGroups = [
   _CategoryGroupDefinition(displayName: "Home & Garden", systemName: "HOME_AND_GARDEN", iconName: "home", constituentNames: ["HOME", "GARDEN", "FOOD", "LAUNDRY"], sortOrder: 7, isPremium: false),
   _CategoryGroupDefinition(displayName: "Finance", systemName: "FINANCE", iconName: "account_balance_wallet", constituentNames: ["FINANCE"], sortOrder: 8, isPremium: false),
   _CategoryGroupDefinition(displayName: "Transport", systemName: "TRANSPORT", iconName: "directions_car", constituentNames: ["TRANSPORT"], sortOrder: 9, isPremium: false),
-  // Add "Charity & Religion" or "References" here if confirmed and how they map.
-  // For now, sticking to the 9 derived from the detailed guide and app_categories.dart TODOs.
+  _CategoryGroupDefinition(displayName: "Charity & Religion", systemName: "CHARITY_AND_RELIGION", iconName: "church", constituentNames: ["CHARITY_RELIGION", "CHARITY & RELIGION"], sortOrder: 10, isPremium: false), // Added Charity & Religion
+  // Add "References" here if confirmed and how they map.
 ];
 
 // Provider for displaying personal categories as defined display groups

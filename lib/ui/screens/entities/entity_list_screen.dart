@@ -723,6 +723,7 @@ class _EntityListScreenState extends ConsumerState<EntityListScreen> {
                             final sortOrderB = catB.sortOrder ?? 999;
                             int compare = sortOrderA.compareTo(sortOrderB);
                             if (compare == 0) {
+                                // Fallback to name if displayName is null, as name is non-nullable
                                 return (catA.displayName ?? catA.name).compareTo(catB.displayName ?? catB.name);
                             }
                             return compare;

@@ -60,6 +60,8 @@ final autoTaskEngineProvider = Provider<AutoTaskEngine>((ref) {
   return AutoTaskEngine([
     CarAutoTaskRule(),
     PetVaccinationTaskRule(),
+    AcademicYearTaskRule(), // Added the new rule
+    EmployeeQuarterlyReviewTaskRule(), // Added career rule
     // Add other rules here as they are created
   ]);
 });

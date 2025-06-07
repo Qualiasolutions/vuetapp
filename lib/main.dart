@@ -36,6 +36,9 @@ import 'package:vuet_app/ui/screens/timeblocks/timeblocks_screen.dart'; // Impor
 import 'package:vuet_app/ui/screens/timeblocks/create_edit_timeblock_screen.dart'; // Import CreateEditTimeblockScreen
 import 'package:vuet_app/ui/screens/timeblocks/timeblock_detail_screen.dart'; // Import TimeblockDetailScreen
 import 'package:vuet_app/ui/navigation/social_interests_navigator.dart'; // Import SocialInterestsNavigator
+import 'package:vuet_app/ui/navigation/education_navigator.dart'; // Import EducationNavigator
+import 'package:vuet_app/ui/navigation/family_navigator.dart'; // Import FamilyNavigator
+import 'package:vuet_app/ui/navigation/career_navigator.dart'; // Import CareerNavigator
 
 // Category Screens
 import 'package:vuet_app/ui/screens/categories/family_category_screen.dart';
@@ -166,6 +169,12 @@ final GoRouter _router = GoRouter(
     ),
     // Add routes from SocialInterestsNavigator
     ...SocialInterestsNavigator.routes(),
+    // Add routes from EducationNavigator
+    ...EducationNavigator.routes,
+    // Add routes from FamilyNavigator
+    ...FamilyNavigator.routes,
+    // Add routes from CareerNavigator
+    ...CareerNavigator.routes,
   ],
 );
 
@@ -485,6 +494,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                 context.push('/my-account'); // Navigate using GoRouter
               },
             ),
+            const Divider(height: 1),
+            // Personal planning section
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+              child: Text(
+                'PLANNING',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
             ListTile(
               leading: const Icon(Icons.repeat), // Icon for Routines
               title: const Text('Routines'),
@@ -513,6 +535,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                 context.push('/family'); // Navigate using GoRouter
               },
             ),
+            const Divider(height: 1),
+            // Settings section
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, top: 8.0),
+              child: Text(
+                'SETTINGS',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
             Consumer(builder: (context, ref, child) {
               // Access the global _isDarkMode state from _VuetAppState
               final isDarkModeGlobal = context
@@ -532,17 +567,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                     isDarkModeGlobal ? Icons.brightness_3 : Icons.brightness_7),
               );
             }),
-            const Divider(),
+            const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
               onTap: () async {
                 Navigator.pop(context); // Close the drawer
                 await ref.read(authServiceProvider).signOut();
-                // Navigator.of(context).pushAndRemoveUntil(
-                //   MaterialPageRoute(builder: (context) => const AuthWrapper(child: HomePage(title: 'Vuet App'))),
-                //   (Route<dynamic> route) => false,
-                // );
                 // The AuthWrapper should handle navigation to the login screen upon logout.
               },
             ),

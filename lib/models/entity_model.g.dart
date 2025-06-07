@@ -161,6 +161,7 @@ const _$EntitySubtypeEnumMap = {
   EntitySubtype.prescription: 'Prescription',
   EntitySubtype.resume: 'Resume',
   EntitySubtype.certificate: 'Certificate',
+  EntitySubtype.familyMember: 'FamilyMember',
   EntitySubtype.other: 'other',
   EntitySubtype.general: 'general',
 };

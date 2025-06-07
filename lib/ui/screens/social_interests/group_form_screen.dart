@@ -26,9 +26,6 @@ class _GroupFormScreenState extends ConsumerState<GroupFormScreen> {
   final _contactEmailController = TextEditingController();
   final _notesController = TextEditingController();
 
-  String? _selectedGroupType;
-  String? _selectedMeetingFrequency;
-
   final List<String> _groupTypes = [
     'Club',
     'Society',
@@ -68,10 +65,8 @@ class _GroupFormScreenState extends ConsumerState<GroupFormScreen> {
     // For now, using sample data for edit mode demonstration
     if (widget.groupId == '1') {
       _nameController.text = 'Book Club';
-      _selectedGroupType = 'Club';
       _groupTypeController.text = 'Club';
       _descriptionController.text = 'Monthly book reading and discussion group';
-      _selectedMeetingFrequency = 'Monthly';
       _meetingFrequencyController.text = 'Monthly';
       _meetingLocationController.text = 'Community Library';
       _contactPersonController.text = 'Jane Smith';
@@ -263,7 +258,6 @@ class _GroupFormScreenState extends ConsumerState<GroupFormScreen> {
               ),
               onTap: () {
                 setState(() {
-                  _selectedGroupType = type;
                   _groupTypeController.text = type;
                 });
                 Navigator.pop(context);
@@ -305,7 +299,6 @@ class _GroupFormScreenState extends ConsumerState<GroupFormScreen> {
               ),
               onTap: () {
                 setState(() {
-                  _selectedMeetingFrequency = frequency;
                   _meetingFrequencyController.text = frequency;
                 });
                 Navigator.pop(context);
@@ -355,14 +348,13 @@ class _GroupFormScreenState extends ConsumerState<GroupFormScreen> {
       final group = Group(
         id: widget.groupId != null ? int.tryParse(widget.groupId!) : null,
         name: _nameController.text.trim(),
-        groupType: _selectedGroupType ?? _groupTypeController.text.trim(),
+        groupType: _groupTypeController.text.trim(),
         description: _descriptionController.text.trim().isNotEmpty 
             ? _descriptionController.text.trim() 
             : null,
-        meetingFrequency: _selectedMeetingFrequency ?? 
-            (_meetingFrequencyController.text.trim().isNotEmpty 
+        meetingFrequency: _meetingFrequencyController.text.trim().isNotEmpty 
                 ? _meetingFrequencyController.text.trim() 
-                : null),
+                : null,
         meetingLocation: _meetingLocationController.text.trim().isNotEmpty 
             ? _meetingLocationController.text.trim() 
             : null,

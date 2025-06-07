@@ -1,8 +1,9 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vuet_app/models/social_interest_models.dart';
 import 'package:vuet_app/repositories/social_interest_repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // For Ref
-import 'package:vuet_app/providers/auth_providers.dart'; // For supabaseClientProvider
+import 'package:vuet_app/utils/logger.dart'; // Import the logger
+// For Ref
+// For supabaseClientProvider
 
 // --- Supabase Hobby Repository ---
 class SupabaseHobbyRepository implements HobbyRepository {
@@ -17,9 +18,9 @@ class SupabaseHobbyRepository implements HobbyRepository {
   Future<void> createHobby(Hobby hobby) async {
     try {
       await _client.from('social_hobbies').insert(hobby.toJson());
-    } catch (e) {
+    } catch (e, s) {
       // Handle error appropriately
-      print('Error creating hobby: $e');
+      log('Error creating hobby: $e', error: e, stackTrace: s, name: 'SupabaseHobbyRepository');
       rethrow;
     }
   }
@@ -28,8 +29,8 @@ class SupabaseHobbyRepository implements HobbyRepository {
   Future<void> deleteHobby(String id) async {
     try {
       await _client.from('social_hobbies').delete().match({'id': id});
-    } catch (e) {
-      print('Error deleting hobby: $e');
+    } catch (e, s) {
+      log('Error deleting hobby: $e', error: e, stackTrace: s, name: 'SupabaseHobbyRepository');
       rethrow;
     }
   }
@@ -44,8 +45,8 @@ class SupabaseHobbyRepository implements HobbyRepository {
           .limit(1)
           .maybeSingle();
       return response == null ? null : Hobby.fromJson(response);
-    } catch (e) {
-      print('Error getting hobby by id: $e');
+    } catch (e, s) {
+      log('Error getting hobby by id: $e', error: e, stackTrace: s, name: 'SupabaseHobbyRepository');
       rethrow;
     }
   }
@@ -58,8 +59,8 @@ class SupabaseHobbyRepository implements HobbyRepository {
           .select()
           .match({'user_id': userId});
       return response.map((item) => Hobby.fromJson(item)).toList();
-    } catch (e) {
-      print('Error getting hobbies by user id: $e');
+    } catch (e, s) {
+      log('Error getting hobbies by user id: $e', error: e, stackTrace: s, name: 'SupabaseHobbyRepository');
       rethrow;
     }
   }
@@ -71,8 +72,8 @@ class SupabaseHobbyRepository implements HobbyRepository {
           .from('social_hobbies')
           .update(hobby.toJson())
           .match({'id': hobby.id});
-    } catch (e) {
-      print('Error updating hobby: $e');
+    } catch (e, s) {
+      log('Error updating hobby: $e', error: e, stackTrace: s, name: 'SupabaseHobbyRepository');
       rethrow;
     }
   }
@@ -88,8 +89,8 @@ class SupabaseSocialPlanRepository implements SocialPlanRepository {
   Future<void> createSocialPlan(SocialPlan socialPlan) async {
     try {
       await _client.from('social_plans').insert(socialPlan.toJson());
-    } catch (e) {
-      print('Error creating social plan: $e');
+    } catch (e, s) {
+      log('Error creating social plan: $e', error: e, stackTrace: s, name: 'SupabaseSocialPlanRepository');
       rethrow;
     }
   }
@@ -98,8 +99,8 @@ class SupabaseSocialPlanRepository implements SocialPlanRepository {
   Future<void> deleteSocialPlan(String id) async {
     try {
       await _client.from('social_plans').delete().match({'id': id});
-    } catch (e) {
-      print('Error deleting social plan: $e');
+    } catch (e, s) {
+      log('Error deleting social plan: $e', error: e, stackTrace: s, name: 'SupabaseSocialPlanRepository');
       rethrow;
     }
   }
@@ -114,8 +115,8 @@ class SupabaseSocialPlanRepository implements SocialPlanRepository {
           .limit(1)
           .maybeSingle();
       return response == null ? null : SocialPlan.fromJson(response);
-    } catch (e) {
-      print('Error getting social plan by id: $e');
+    } catch (e, s) {
+      log('Error getting social plan by id: $e', error: e, stackTrace: s, name: 'SupabaseSocialPlanRepository');
       rethrow;
     }
   }
@@ -128,8 +129,8 @@ class SupabaseSocialPlanRepository implements SocialPlanRepository {
           .select()
           .match({'user_id': userId});
       return response.map((item) => SocialPlan.fromJson(item)).toList();
-    } catch (e) {
-      print('Error getting social plans by user id: $e');
+    } catch (e, s) {
+      log('Error getting social plans by user id: $e', error: e, stackTrace: s, name: 'SupabaseSocialPlanRepository');
       rethrow;
     }
   }
@@ -141,8 +142,8 @@ class SupabaseSocialPlanRepository implements SocialPlanRepository {
           .from('social_plans')
           .update(socialPlan.toJson())
           .match({'id': socialPlan.id});
-    } catch (e) {
-      print('Error updating social plan: $e');
+    } catch (e, s) {
+      log('Error updating social plan: $e', error: e, stackTrace: s, name: 'SupabaseSocialPlanRepository');
       rethrow;
     }
   }
@@ -158,8 +159,8 @@ class SupabaseSocialEventRepository implements SocialEventRepository {
   Future<void> createSocialEvent(SocialEvent socialEvent) async {
     try {
       await _client.from('social_events').insert(socialEvent.toJson());
-    } catch (e) {
-      print('Error creating social event: $e');
+    } catch (e, s) {
+      log('Error creating social event: $e', error: e, stackTrace: s, name: 'SupabaseSocialEventRepository');
       rethrow;
     }
   }
@@ -168,8 +169,8 @@ class SupabaseSocialEventRepository implements SocialEventRepository {
   Future<void> deleteSocialEvent(String id) async {
     try {
       await _client.from('social_events').delete().match({'id': id});
-    } catch (e) {
-      print('Error deleting social event: $e');
+    } catch (e, s) {
+      log('Error deleting social event: $e', error: e, stackTrace: s, name: 'SupabaseSocialEventRepository');
       rethrow;
     }
   }
@@ -184,8 +185,8 @@ class SupabaseSocialEventRepository implements SocialEventRepository {
           .limit(1)
           .maybeSingle();
       return response == null ? null : SocialEvent.fromJson(response);
-    } catch (e) {
-      print('Error getting social event by id: $e');
+    } catch (e, s) {
+      log('Error getting social event by id: $e', error: e, stackTrace: s, name: 'SupabaseSocialEventRepository');
       rethrow;
     }
   }
@@ -198,8 +199,8 @@ class SupabaseSocialEventRepository implements SocialEventRepository {
           .select()
           .match({'user_id': userId});
       return response.map((item) => SocialEvent.fromJson(item)).toList();
-    } catch (e) {
-      print('Error getting social events by user id: $e');
+    } catch (e, s) {
+      log('Error getting social events by user id: $e', error: e, stackTrace: s, name: 'SupabaseSocialEventRepository');
       rethrow;
     }
   }
@@ -211,8 +212,8 @@ class SupabaseSocialEventRepository implements SocialEventRepository {
           .from('social_events')
           .update(socialEvent.toJson())
           .match({'id': socialEvent.id});
-    } catch (e) {
-      print('Error updating social event: $e');
+    } catch (e, s) {
+      log('Error updating social event: $e', error: e, stackTrace: s, name: 'SupabaseSocialEventRepository');
       rethrow;
     }
   }

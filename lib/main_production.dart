@@ -23,15 +23,18 @@ import 'package:vuet_app/widgets/notification_badge.dart';
 import 'package:vuet_app/widgets/tab_notification_badge.dart';
 import 'package:vuet_app/utils/deep_link_handler.dart';
 import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart'; // Added RedesignedListsScreen
-import 'package:vuet_app/ui/screens/lana_ai_assistant_screen.dart'; // Added LanaAiAssistantScreen
+import 'package:vuet_app/ui/screens/lana_chat_screen.dart'; // Updated to use the real LANA chat screen
 import 'package:vuet_app/ui/screens/account/my_account_screen.dart'; // Added MyAccountScreen
+import 'package:vuet_app/ui/screens/routines/routines_screen.dart'; // Added RoutinesScreen
+import 'package:vuet_app/ui/screens/timeblocks/timeblocks_screen.dart'; // Added TimeblocksScreen
+import 'package:vuet_app/ui/screens/timeblocks/create_edit_timeblock_screen.dart'; // Added for CreateEditTimeblockScreen
+import 'package:vuet_app/ui/screens/timeblocks/timeblock_detail_screen.dart'; // Added for TimeblockDetailScreen
 // Added SettingsScreen
 import 'package:vuet_app/ui/navigation/pets_navigator.dart'; // Import PetsNavigator
-import 'package:vuet_app/ui/screens/timeblocks/timeblocks_screen.dart';
-import 'package:vuet_app/ui/screens/timeblocks/create_edit_timeblock_screen.dart';
-import 'package:vuet_app/ui/screens/timeblocks/timeblock_detail_screen.dart';
 import 'package:vuet_app/ui/screens/family/family_screen.dart'; // Though not in routes, good for consistency if needed later
 import 'package:vuet_app/ui/navigation/social_interests_navigator.dart'; // Import SocialInterestsNavigator
+import 'package:vuet_app/ui/navigation/education_navigator.dart'; // Import EducationNavigator
+import 'package:vuet_app/ui/navigation/career_navigator.dart'; // Import CareerNavigator
 
 // Navigator key
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -92,6 +95,10 @@ final GoRouter _router = GoRouter(
     ),
     // Add routes from SocialInterestsNavigator
     ...SocialInterestsNavigator.routes(),
+    // Add routes from EducationNavigator
+    ...EducationNavigator.routes,
+    // Add routes from CareerNavigator
+    ...CareerNavigator.routes,
   ],
 );
 
@@ -231,7 +238,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       const CategoriesGrid(), // Second tab (Categories) - Changed from ModernizedHomeScreen
       const RedesignedListsScreen(), // Third tab
       const TaskListScreen(), // Fourth tab
-      const LanaAiAssistantScreen(), // Fifth tab
+      const LanaChatScreen(), // Fifth tab
     ];
   }
   
@@ -331,6 +338,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                 context.push('/my-account'); // Navigate using GoRouter
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.repeat), // Icon for Routines
+              title: const Text('Routines'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RoutinesScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.access_time), // Icon for Timeblocks
+              title: const Text('Timeblocks'),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+                context.push('/timeblocks'); // Navigate using GoRouter
+              },
+            ),
             // Example for adding other drawer items if needed with GoRouter
             // ListTile(
             //   leading: const Icon(Icons.family_restroom),
@@ -398,13 +424,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   children: [
                     const Icon(Icons.task_outlined),
                     if (taskNotificationCount > 0)
-                      Positioned(
-                        right: -6,
-                        top: -3,
-                        child: TabNotificationBadge(
-                          count: taskNotificationCount,
-                        ),
-                      ),
+                      TabNotificationBadge(count: taskNotificationCount),
                   ],
                 ),
                 activeIcon: Stack(
@@ -412,13 +432,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   children: [
                     const Icon(Icons.task),
                     if (taskNotificationCount > 0)
-                      Positioned(
-                        right: -6,
-                        top: -3,
-                        child: TabNotificationBadge(
-                          count: taskNotificationCount,
-                        ),
-                      ),
+                      TabNotificationBadge(count: taskNotificationCount),
                   ],
                 ),
                 label: 'Tasks',
@@ -426,7 +440,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               const BottomNavigationBarItem(
                 icon: Icon(Icons.assistant_outlined),
                 activeIcon: Icon(Icons.assistant),
-                label: 'Lana AI',
+                label: 'LANA Chat',
               ),
             ],
             currentIndex: _selectedIndex,

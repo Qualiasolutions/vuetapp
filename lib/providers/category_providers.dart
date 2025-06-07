@@ -1,6 +1,5 @@
 import 'package:vuet_app/models/entity_category_model.dart'; // Will be EntityCategory
 import 'package:vuet_app/models/hierarchical_category_display_model.dart';
-import 'package:vuet_app/repositories/supabase_category_repository.dart';
 import 'package:vuet_app/constants/default_subcategories.dart';
 import 'package:vuet_app/services/auth_service.dart';
 import 'package:vuet_app/services/entity_service.dart';

@@ -90,13 +90,13 @@ class _AnniversaryListScreenState extends State<AnniversaryListScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Column(
+        child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.favorite_outline,
             size: 64,
-            color: AppColors.steel.withOpacity(0.5),
+            color: AppColors.steel.withAlpha((255 * 0.5).round()),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -266,12 +266,12 @@ class _AnniversaryCard extends StatelessWidget {
     final isToday = nextAnniversary.contains('Today');
     
     return Card(
-      color: isToday ? AppColors.orange.withOpacity(0.1) : AppColors.white,
+      color: isToday ? AppColors.orange.withAlpha((255 * 0.1).round()) : AppColors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: isToday ? AppColors.orange : AppColors.steel.withOpacity(0.3),
+          color: isToday ? AppColors.orange : AppColors.steel.withAlpha((255 * 0.3).round()),
           width: isToday ? 2 : 0.5,
         ),
       ),
@@ -286,8 +286,8 @@ class _AnniversaryCard extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: isToday 
-                      ? AppColors.orange.withOpacity(0.2)
-                      : AppColors.mediumTurquoise.withOpacity(0.15),
+                      ? AppColors.orange.withAlpha((255 * 0.2).round())
+                      : AppColors.mediumTurquoise.withAlpha((255 * 0.15).round()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(

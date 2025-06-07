@@ -18,6 +18,9 @@ class AppColors {
   
   /// White - Background/text color
   static const Color white = Color(0xFFFFFFFF);
+
+  // Added for Birthday card
+  static const Color coralPink = Color(0xFFFF7F50); 
 }
 
 /// Theme configuration for the app

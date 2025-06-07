@@ -240,6 +240,10 @@ enum EntitySubtype {
   resume,
   @JsonValue('Certificate')
   certificate,
+
+  // Family entities (Category 1)
+  @JsonValue('FamilyMember')
+  familyMember,
   
   // Fallback/General types - if needed
   @JsonValue('other')
@@ -278,16 +282,19 @@ class BaseEntityModel with _$BaseEntityModel {
 class EntityTypeHelper {
   // Category ID mapping
   static const Map<EntitySubtype, int> categoryMapping = {
-    // Pets (Category 1)
-    EntitySubtype.pet: 1,
-    EntitySubtype.vet: 1,
-    EntitySubtype.walker: 1,
-    EntitySubtype.groomer: 1,
-    EntitySubtype.sitter: 1,
-    EntitySubtype.microchipCompany: 1,
-    EntitySubtype.insuranceCompany: 1,
-    EntitySubtype.insurancePolicy: 1,
-    EntitySubtype.petBirthday: 1, // Assuming pet birthdays fall under pets category
+    // Family (Category 1) - As per lib/config/app_categories.dart
+    EntitySubtype.familyMember: 1,
+
+    // Pets (Category 2) - Corrected from 1 to 2 as per lib/config/app_categories.dart
+    EntitySubtype.pet: 2,
+    EntitySubtype.vet: 2,
+    EntitySubtype.walker: 2,
+    EntitySubtype.groomer: 2,
+    EntitySubtype.sitter: 2,
+    EntitySubtype.microchipCompany: 2,
+    EntitySubtype.insuranceCompany: 2,
+    EntitySubtype.insurancePolicy: 2,
+    EntitySubtype.petBirthday: 2,
     
     // Social (Category 2)
     EntitySubtype.anniversary: 2,
@@ -412,6 +419,9 @@ class EntityTypeHelper {
   
   // Map from EntitySubtype to entity_type_id in the database
   static const Map<EntitySubtype, String> entityTypeIdMapping = {
+    // Family category
+    EntitySubtype.familyMember: 'family_member',
+
     // Pet category
     EntitySubtype.pet: 'pet',
     EntitySubtype.vet: 'vet',
@@ -568,6 +578,9 @@ class EntityTypeHelper {
     'Birthday': EntitySubtype.birthday,
     'Anniversary': EntitySubtype.anniversary,
     'Guest List Invite': EntitySubtype.guestListInvite,
+
+    // Family category
+    'Family Member': EntitySubtype.familyMember,
     
     // Add more mappings for all entity types as needed
   };
@@ -593,6 +606,9 @@ class EntityTypeHelper {
     'holiday': EntitySubtype.holiday,
     'holiday_plan': EntitySubtype.holidayPlan,
     'guest_list_invite': EntitySubtype.guestListInvite,
+
+    // Family category
+    'family_member': EntitySubtype.familyMember,
     
     // Add more mappings for all entity types as needed
   };
@@ -651,6 +667,9 @@ class EntityTypeHelper {
       case EntitySubtype.holiday: return 'Holiday';
       case EntitySubtype.holidayPlan: return 'Holiday Plan';
       case EntitySubtype.guestListInvite: return 'Guest List Invite';
+
+      // Family category
+      case EntitySubtype.familyMember: return 'Family Member';
       
       // Add cases for all other entity types
       default:
@@ -804,6 +823,9 @@ extension BaseEntityModelExtensions on BaseEntityModel {
       case EntitySubtype.holiday: return 'Holiday';
       case EntitySubtype.holidayPlan: return 'Holiday Plan';
       case EntitySubtype.guestListInvite: return 'Guest List Invite';
+
+      // Family category
+      case EntitySubtype.familyMember: return 'Family Member';
       
       // Add cases for all other EntitySubtype values...
       default:

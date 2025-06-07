@@ -99,13 +99,13 @@ class _AppointmentListScreenState extends State<AppointmentListScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Column(
+        child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
             Icons.event_outlined,
             size: 64,
-            color: AppColors.steel.withOpacity(0.5),
+            color: AppColors.steel.withAlpha((255 * 0.5).round()),
           ),
           const SizedBox(height: 16),
           const Text(
@@ -287,9 +287,9 @@ class _AppointmentCard extends StatelessWidget {
     
     return Card(
       color: isToday 
-          ? AppColors.orange.withOpacity(0.1) 
+          ? AppColors.orange.withAlpha((255 * 0.1).round()) 
           : isPast 
-              ? AppColors.steel.withOpacity(0.1)
+              ? AppColors.steel.withAlpha((255 * 0.1).round())
               : AppColors.white,
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -298,8 +298,8 @@ class _AppointmentCard extends StatelessWidget {
           color: isToday 
               ? AppColors.orange 
               : isPast 
-                  ? AppColors.steel.withOpacity(0.5)
-                  : AppColors.steel.withOpacity(0.3),
+                  ? AppColors.steel.withAlpha((255 * 0.5).round())
+                  : AppColors.steel.withAlpha((255 * 0.3).round()),
           width: isToday ? 2 : 0.5,
         ),
       ),
@@ -314,10 +314,10 @@ class _AppointmentCard extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: isToday 
-                      ? AppColors.orange.withOpacity(0.2)
+                      ? AppColors.orange.withAlpha((255 * 0.2).round())
                       : isPast
-                          ? AppColors.steel.withOpacity(0.2)
-                          : AppColors.mediumTurquoise.withOpacity(0.15),
+                          ? AppColors.steel.withAlpha((255 * 0.2).round())
+                          : AppColors.mediumTurquoise.withAlpha((255 * 0.15).round()),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(

@@ -196,13 +196,8 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
     }
 
     try {
-      // Parse optional date
-      DateTime? parseDate(String text) {
-        if (text.trim().isEmpty) return null;
-        return DateTime.tryParse(text);
-      }
-
       /* // Commenting out unused variable and its object creation for now
+      // If uncommented, ensure parseDate is defined or DateTime.tryParse is used directly.
       final contact = Contact(
         id: widget.contact?.id,
         name: _nameController.text.trim(),

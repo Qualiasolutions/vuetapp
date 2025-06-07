@@ -1,5 +1,7 @@
 import 'package:uuid/uuid.dart';
+import 'package:vuet_app/models/education_entities.dart'; // Added for SchoolTerm and AcademicPlan
 import 'package:vuet_app/models/transport_entities.dart';
+import 'package:vuet_app/models/career_entities.dart'; // Added for Employee
 import 'package:vuet_app/models/task_model.dart';
 import 'package:vuet_app/models/task_type_enums.dart'; // Assuming TaskType enum is here
 import 'package:vuet_app/models/pets_model.dart'; // Added for Pet model
@@ -127,3 +129,111 @@ class AutoTaskEngine {
 // final autoTaskEngine = AutoTaskEngine([CarAutoTaskRule(), PetVaccinationTaskRule()]);
 // final newTasks = autoTaskEngine.processEntityChange(savedPet, EntityChangeType.created);
 // // Then save newTasks to Supabase
+
+class EmployeeQuarterlyReviewTaskRule extends AutoTaskRule {
+  final Uuid _uuid = const Uuid();
+
+  @override
+  bool shouldTrigger(dynamic entity, EntityChangeType changeType) {
+    if (entity is! Employee) return false;
+    // Trigger on creation or update if next_review_date is set and is in the future (or today)
+    return (changeType == EntityChangeType.created || changeType == EntityChangeType.updated) &&
+        entity.nextReviewDate != null &&
+        !entity.nextReviewDate!.isBefore(DateTime.now().subtract(const Duration(days: 1))); // Allow today
+  }
+
+  @override
+  List<TaskModel> generateTasks(dynamic entity) {
+    if (entity is! Employee) return [];
+
+    final employee = entity;
+    final List<TaskModel> tasks = [];
+    final now = DateTime.now();
+    const String hiddenTag = 'QUARTERLY_REVIEW_DUE';
+
+    if (employee.nextReviewDate != null) {
+      tasks.add(TaskModel(
+        id: _uuid.v4(),
+        title: '🗓️ Quarterly Review Due for ${employee.jobTitle} at ${employee.companyName}',
+        dueDate: employee.nextReviewDate,
+        priority: 'medium', 
+        status: 'pending',
+        isRecurring: false, // Reviews are typically scheduled one by one
+        createdAt: now,
+        updatedAt: now,
+        entityId: employee.id, 
+        taskType: TaskType.task, 
+        tags: [hiddenTag.toLowerCase().replaceAll('_', '-')], // "quarterly-review-due"
+      ));
+    }
+    return tasks;
+  }
+}
+
+class AcademicYearTaskRule extends AutoTaskRule {
+  final Uuid _uuid = const Uuid();
+
+  @override
+  bool shouldTrigger(dynamic entity, EntityChangeType changeType) {
+    if (entity is! SchoolTerm && entity is! AcademicPlan) return false;
+
+    bool hasRelevantDates = false;
+    if (entity is SchoolTerm) {
+      // startDate and endDate are non-nullable for SchoolTerm
+      hasRelevantDates = true;
+    } else if (entity is AcademicPlan) {
+      // startDate and endDate are nullable for AcademicPlan
+      hasRelevantDates = entity.startDate != null || entity.endDate != null;
+    }
+
+    return (changeType == EntityChangeType.created || changeType == EntityChangeType.updated) &&
+        hasRelevantDates;
+  }
+
+  @override
+  List<TaskModel> generateTasks(dynamic entity) {
+    if (entity is! SchoolTerm && entity is! AcademicPlan) return [];
+
+    final List<TaskModel> tasks = [];
+    final now = DateTime.now();
+    String entityName = '';
+    String? entityIdValue;
+    DateTime? startDate;
+    DateTime? endDate;
+
+    if (entity is SchoolTerm) {
+      entityName = entity.termName; // Analyzer indicates termName is effectively non-null here
+      entityIdValue = entity.id;
+      startDate = entity.startDate;
+      endDate = entity.endDate;
+    } else if (entity is AcademicPlan) {
+      entityName = entity.planName; // Analyzer indicates planName is effectively non-null here
+      entityIdValue = entity.id;
+      startDate = entity.startDate;
+      endDate = entity.endDate;
+    }
+
+    void createTask(DateTime? date, String eventType, String hiddenTag) {
+      if (date != null) {
+        tasks.add(TaskModel(
+          id: _uuid.v4(),
+          title: '📚 $entityName $eventType',
+          dueDate: date,
+          priority: 'medium', // Default priority
+          status: 'pending', // Default status
+          isRecurring: false,
+          createdAt: now,
+          updatedAt: now,
+          entityId: entityIdValue,
+          taskType: TaskType.task, // General task type
+          tags: [hiddenTag.toLowerCase().replaceAll('_', '-')],
+        ));
+      }
+    }
+
+    createTask(startDate, 'Starts', 'ACADEMIC_YEAR_START');
+    createTask(endDate, 'Ends', 'ACADEMIC_YEAR_END');
+    
+    return tasks;
+  }
+}
