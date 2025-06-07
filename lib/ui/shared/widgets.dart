@@ -4,7 +4,7 @@ import '../../config/theme_config.dart';
 /// Global Widgets for Vuet App - Modern Palette Edition
 /// Dark Jungle Green #202827 · Medium Turquoise #55C6D6 · Orange #E49F2F · Steel #798D8E · White #FFFFFF
 
-class VuetHeader extends StatelessWidget {
+class VuetHeader extends StatelessWidget implements PreferredSizeWidget {
   const VuetHeader(this.title, {super.key});
   final String title;
   
@@ -16,6 +16,9 @@ class VuetHeader extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
       );
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
 class VuetTextField extends StatelessWidget {

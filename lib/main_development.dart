@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
-import 'package:provider/provider.dart' as legacy_provider; // Keep legacy provider for now
+import 'package:provider/provider.dart'
+    as legacy_provider; // Keep legacy provider for now
 import 'package:vuet_app/config/supabase_config.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:vuet_app/utils/logger.dart';
@@ -23,21 +24,21 @@ import 'package:vuet_app/utils/deep_link_handler.dart';
 import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart'; // Added RedesignedListsScreen
 import 'package:vuet_app/ui/screens/lana_ai_assistant_screen.dart'; // Added LanaAiAssistantScreen
 import 'package:vuet_app/ui/screens/account/my_account_screen.dart'; // Added MyAccountScreen
-import 'package:vuet_app/ui/screens/settings/settings_screen.dart'; // Added SettingsScreen
+// Added SettingsScreen
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Load environment variables and initialize Supabase
   try {
     // Load the .env.development file
     await dotenv.load(fileName: '.env.development');
-    
+
     // Initialize Supabase
     await SupabaseConfig.initialize(isProduction: false);
-    
+
     // Wrap with ProviderScope for Riverpod
-    runApp(const ProviderScope(child: VuetApp())); 
+    runApp(const ProviderScope(child: VuetApp()));
   } catch (error) {
     log('Error during initialization: $error', error: error);
     // Fallback app should also be wrapped if it uses Riverpod, but it's simple for now
@@ -64,15 +65,17 @@ class _VuetAppState extends ConsumerState<VuetApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authService = ref.read(supabaseAuthServiceProvider);
       // Ensure context is still valid if this callback is delayed
-      if (_navigatorKey.currentContext != null && _navigatorKey.currentContext!.mounted) {
-         DeepLinkHandler.initialize(_navigatorKey.currentContext, authService);
+      if (_navigatorKey.currentContext != null &&
+          _navigatorKey.currentContext!.mounted) {
+        DeepLinkHandler.initialize(_navigatorKey.currentContext, authService);
       } else {
         // Fallback or log if context is not available, though this is less likely for addPostFrameCallback
         // Potentially initialize without context if DeepLinkHandler can support it for non-navigational links
         // Or, store authService and context and try again if context becomes available.
         // For now, we assume it will usually be available.
         DeepLinkHandler.initialize(null, authService); // Cast needed
-        debugPrint("DeepLinkHandler initialized without BuildContext after frame.");
+        debugPrint(
+            "DeepLinkHandler initialized without BuildContext after frame.");
       }
     });
   }
@@ -98,15 +101,20 @@ class _VuetAppState extends ConsumerState<VuetApp> {
     // We only need MultiProvider for the remaining legacy providers.
     return legacy_provider.MultiProvider(
       providers: [
-        legacy_provider.ChangeNotifierProvider<TaskCategoryService>(create: (_) => TaskCategoryService()),
-        legacy_provider.ChangeNotifierProvider<TaskListProvider>(create: (_) => TaskListProvider()),
+        legacy_provider.ChangeNotifierProvider<TaskCategoryService>(
+            create: (_) => TaskCategoryService()),
+        legacy_provider.ChangeNotifierProvider<TaskListProvider>(
+            create: (_) => TaskListProvider()),
         // TaskService and TaskCommentService are removed as they are now Riverpod providers.
         // NotificationService was already a Riverpod provider.
       ],
-      child: MaterialApp( // MaterialApp is the direct child now
+      child: MaterialApp(
+        // MaterialApp is the direct child now
         title: 'Vuet App (Dev)', // Indicate Development
         debugShowCheckedModeBanner: true, // Show debug banner in dev
-        theme: _isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme, // Updated theme based on state
+        theme: _isDarkMode
+            ? AppTheme.darkTheme
+            : AppTheme.lightTheme, // Updated theme based on state
         navigatorKey: _navigatorKey, // _navigatorKey is part of _VuetAppState
         home: const AuthWrapper(
           child: HomePage(title: 'Vuet App (Dev)'),
@@ -132,8 +140,10 @@ class VuetAppFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Vuet App - Development Mode Fallback',
-      debugShowCheckedModeBanner: true, // Keep this true for fallback visibility
-      theme: ThemeData( // Use a distinct theme for fallback
+      debugShowCheckedModeBanner:
+          true, // Keep this true for fallback visibility
+      theme: ThemeData(
+        // Use a distinct theme for fallback
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
@@ -155,40 +165,44 @@ class VuetAppFallback extends StatelessWidget {
   }
 }
 
-class HomePage extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
+class HomePage extends ConsumerStatefulWidget {
+  // Changed to ConsumerStatefulWidget
   const HomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState(); // Changed to ConsumerState
+  ConsumerState<HomePage> createState() =>
+      _HomePageState(); // Changed to ConsumerState
 }
 
-class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerState<HomePage>
+class _HomePageState extends ConsumerState<HomePage> {
+  // Changed to ConsumerState<HomePage>
   int _selectedIndex = 0;
-  
+
   // _widgetOptions needs to be mutable if TaskListScreen is replaced
   late List<Widget> _widgetOptions;
 
   @override
   void initState() {
     super.initState();
-     _widgetOptions = <Widget>[
+    _widgetOptions = <Widget>[
       const CalendarScreen(), // First tab
-      const ModernizedHomeScreen(), // Second tab 
+      const ModernizedHomeScreen(), // Second tab
       const RedesignedListsScreen(), // Third tab
       const TaskListScreen(), // Fourth tab (originally Profile, now Tasks to keep it)
       const LanaAiAssistantScreen(), // Fifth tab
     ];
   }
-  
+
   void _onItemTapped(int index) {
     // If middle button (index 2, "Add Task") is pressed, special action.
     // Otherwise, navigate to the screen.
-    if (index == 2 && _originalMiddleButtonIsAddTask) { // Need a flag or check if we want to keep original "Add Task" functionality elsewhere. For now, assume it's replaced.
+    if (index == 2 && _originalMiddleButtonIsAddTask) {
+      // Need a flag or check if we want to keep original "Add Task" functionality elsewhere. For now, assume it's replaced.
       // _navigateToCreateTask(); // This was the original action for the middle button.
       // The 3rd button (index 2) is now "Lists", so it should navigate.
-       setState(() {
+      setState(() {
         _selectedIndex = index;
       });
     } else {
@@ -197,20 +211,20 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
       });
     }
   }
-  
+
   // A flag to keep track of the original middle button's purpose if we need to toggle
   // For now, we assume the middle button is permanently changed to "Lists".
   // If the middle button were to sometimes be "Add Task" and sometimes "Lists",
   // this logic would need to be more complex.
-  final bool _originalMiddleButtonIsAddTask = false; 
+  final bool _originalMiddleButtonIsAddTask = false;
 
   // Get task-related notifications count for the Tasks tab using Riverpod
   int _getTaskNotificationsCount(WidgetRef ref) {
-    final notificationService = ref.watch(notificationServiceProvider); // Watch Riverpod provider
+    final notificationService =
+        ref.watch(notificationServiceProvider); // Watch Riverpod provider
     return notificationService.notifications
-        .where((notification) => 
-            !notification.isRead && 
-            notification.isTaskRelated)
+        .where((notification) =>
+            !notification.isRead && notification.isTaskRelated)
         .length;
   }
 
@@ -247,7 +261,7 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
   }
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) {
     // final unreadCount = ref.watch(unreadNotificationCountProvider); // Not needed directly for NotificationBadge here
 
     return Scaffold(
@@ -257,15 +271,16 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
           // Notification badge (always visible)
           // NotificationBadge fetches its own count via Provider/Riverpod
           IconButton(
-            icon: const NotificationBadge(), 
+            icon: const NotificationBadge(),
             tooltip: 'Notifications',
             onPressed: () {
               Navigator.pushNamed(context, '/notifications');
             },
           ),
-          
+
           // Add task button (only visible on tasks tab, which is now _selectedIndex == 3)
-          if (_selectedIndex == 3) // Assuming Tasks tab is now the 4th item (index 3)
+          if (_selectedIndex ==
+              3) // Assuming Tasks tab is now the 4th item (index 3)
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: _navigateToCreateTask,
@@ -294,36 +309,31 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
               title: const Text('My Account'),
               onTap: () {
                 Navigator.pop(context); // Close the drawer
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const MyAccountScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const MyAccountScreen()));
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
-              },
-            ),
-            Consumer(
-              builder: (context, ref, child) {
-                // Access the global _isDarkMode state from _VuetAppState
-                final isDarkModeGlobal = context.findAncestorStateOfType<_VuetAppState>()?._isDarkMode ?? false;
-                return SwitchListTile(
-                  title: const Text('Dark Mode'),
-                  value: isDarkModeGlobal,
-                  onChanged: (bool value) {
-                    // Call _toggleTheme on the _VuetAppState instance
-                    context.findAncestorStateOfType<_VuetAppState>()?._toggleTheme(value);
-                  },
-                  secondary: Icon(
-                    isDarkModeGlobal 
-                        ? Icons.brightness_3 
-                        : Icons.brightness_7
-                  ),
-                );
-              }
-            ),
+            Consumer(builder: (context, ref, child) {
+              // Access the global _isDarkMode state from _VuetAppState
+              final isDarkModeGlobal = context
+                      .findAncestorStateOfType<_VuetAppState>()
+                      ?._isDarkMode ??
+                  false;
+              return SwitchListTile(
+                title: const Text('Dark Mode'),
+                value: isDarkModeGlobal,
+                onChanged: (bool value) {
+                  // Call _toggleTheme on the _VuetAppState instance
+                  context
+                      .findAncestorStateOfType<_VuetAppState>()
+                      ?._toggleTheme(value);
+                },
+                secondary: Icon(
+                    isDarkModeGlobal ? Icons.brightness_3 : Icons.brightness_7),
+              );
+            }),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout),
@@ -343,10 +353,11 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
       // Use Consumer for BottomNavigationBar to get task-specific count
-      bottomNavigationBar: Consumer( 
-        builder: (context, innerRef, child) { // Use innerRef for this specific Consumer
+      bottomNavigationBar: Consumer(
+        builder: (context, innerRef, child) {
+          // Use innerRef for this specific Consumer
           final taskNotificationCount = _getTaskNotificationsCount(innerRef);
-          
+
           return BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             items: <BottomNavigationBarItem>[

@@ -28,12 +28,6 @@ class AppDrawer extends ConsumerWidget {
           ),
           _buildDrawerItem(
             context,
-            icon: Icons.settings,
-            title: 'Settings',
-            onTap: () => _navigateToSettings(context),
-          ),
-          _buildDrawerItem(
-            context,
             icon: Icons.family_restroom,
             title: 'Family',
             onTap: () => _navigateToFamily(context),
@@ -52,8 +46,7 @@ class AppDrawer extends ConsumerWidget {
             onTap: () => _showAboutDialog(context),
           ),
           if (!isPremium) const Divider(),
-          if (!isPremium)
-            _buildPremiumUpgrade(context),
+          if (!isPremium) _buildPremiumUpgrade(context),
         ],
       ),
     );
@@ -89,7 +82,8 @@ class AppDrawer extends ConsumerWidget {
               if (isPremium) ...[
                 const SizedBox(width: 12),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.amber,
                     borderRadius: BorderRadius.circular(12),
@@ -137,9 +131,7 @@ class AppDrawer extends ConsumerWidget {
     return ListTile(
       leading: Icon(
         icon,
-        color: isHighlighted
-            ? Theme.of(context).colorScheme.secondary
-            : null,
+        color: isHighlighted ? Theme.of(context).colorScheme.secondary : null,
       ),
       title: Text(
         title,
@@ -228,14 +220,6 @@ class AppDrawer extends ConsumerWidget {
     );
   }
 
-  void _navigateToSettings(BuildContext context) {
-    Navigator.pop(context); // Close drawer
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SettingsScreen()),
-    );
-  }
-
   void _navigateToFamily(BuildContext context) {
     Navigator.pop(context); // Close drawer
     Navigator.pushNamed(context, '/family');
@@ -248,7 +232,7 @@ class AppDrawer extends ConsumerWidget {
 
   void _showAboutDialog(BuildContext context) {
     Navigator.pop(context); // Close drawer
-    
+
     showDialog(
       context: context,
       builder: (context) => AboutDialog(

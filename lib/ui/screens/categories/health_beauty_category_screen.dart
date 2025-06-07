@@ -1,187 +1,131 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vuet_app/models/entity_model.dart';
-import 'package:vuet_app/ui/screens/entities/entity_list_screen.dart';
-import 'package:vuet_app/utils/logger.dart';
+import 'package:go_router/go_router.dart';
+import '../../../ui/shared/widgets.dart';
+import '../../../config/theme_config.dart';
 
-class HealthBeautyCategoryScreen extends ConsumerWidget {
+/// Health & Beauty Category Screen - Shows all Health & Beauty entity types
+/// As specified in detailed guide: HealthGoal, Appointment, BeautyRoutine, Workout
+class HealthBeautyCategoryScreen extends StatelessWidget {
   const HealthBeautyCategoryScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Health & Beauty'),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      appBar: const VuetHeader('Health & Beauty'),
+      body: GridView.count(
+        crossAxisCount: 2,
+        padding: const EdgeInsets.all(16),
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        children: [
+          _HealthBeautyEntityTile(
+            title: 'Health Goals',
+            icon: Icons.favorite,
+            description: 'Track health goals',
+            onTap: () => context.go('/categories/health/goals'),
+          ),
+          _HealthBeautyEntityTile(
+            title: 'Appointments',
+            icon: Icons.medical_services,
+            description: 'Medical appointments',
+            onTap: () => context.go('/categories/health/appointments'),
+          ),
+          _HealthBeautyEntityTile(
+            title: 'Beauty Routines',
+            icon: Icons.spa,
+            description: 'Beauty & skincare',
+            onTap: () => context.go('/categories/health/beauty'),
+          ),
+          _HealthBeautyEntityTile(
+            title: 'Workouts',
+            icon: Icons.fitness_center,
+            description: 'Exercise routines',
+            onTap: () => context.go('/categories/health/workouts'),
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      floatingActionButton: VuetFAB(
+        onPressed: () => _showCreateOptions(context),
+        tooltip: 'Add Health Item',
+      ),
+    );
+  }
+
+  static void _showCreateOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Manage your health and beauty information',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            const Text(
+              'Add Health Item',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.darkJungleGreen,
               ),
             ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 1.2,
-                children: [
-                  _buildSubcategoryCard(
-                    context,
-                    title: 'Patients',
-                    description: 'Medical records and patient information',
-                    icon: Icons.person_outline,
-                    color: Colors.blue,
-                    onTap: () => _navigateToEntityList(
-                      context,
-                      entityTypes: [EntitySubtype.patient],
-                      title: 'Patients',
-                    ),
-                  ),
-                  _buildSubcategoryCard(
-                    context,
-                    title: 'Appointments',
-                    description: 'Medical and beauty appointments',
-                    icon: Icons.calendar_today,
-                    color: Colors.green,
-                    onTap: () => _navigateToEntityList(
-                      context,
-                      entityTypes: [EntitySubtype.appointment],
-                      title: 'Appointments',
-                    ),
-                  ),
-                  _buildSubcategoryCard(
-                    context,
-                    title: 'Health Goals',
-                    description: 'Fitness and wellness objectives',
-                    icon: Icons.flag_outlined,
-                    color: Colors.orange,
-                    onTap: () => _navigateToEntityList(
-                      context,
-                      entityTypes: [EntitySubtype.healthGoal],
-                      title: 'Health Goals',
-                    ),
-                  ),
-                  _buildSubcategoryCard(
-                    context,
-                    title: 'My Health Information',
-                    description: 'Personal health documents & references',
-                    icon: Icons.info_outline,
-                    color: Colors.purple,
-                    onTap: () => _navigateToTagScreen(
-                      context,
-                      tagName: 'HEALTH_BEAUTY__INFORMATION__PUBLIC',
-                    ),
-                  ),
-                ],
-              ),
+            const VuetDivider(),
+            ListTile(
+              leading: const Icon(Icons.favorite, color: AppColors.orange),
+              title: const Text('Health Goal'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/categories/health/goals/create');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.medical_services, color: AppColors.orange),
+              title: const Text('Appointment'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/categories/health/appointments/create');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.spa, color: AppColors.orange),
+              title: const Text('Beauty Routine'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/categories/health/beauty/create');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.fitness_center, color: AppColors.orange),
+              title: const Text('Workout'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/categories/health/workouts/create');
+              },
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildSubcategoryCard(
-    BuildContext context, {
-    required String title,
-    required String description,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  size: 32,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+class _HealthBeautyEntityTile extends StatelessWidget {
+  const _HealthBeautyEntityTile({
+    required this.title,
+    required this.icon,
+    required this.description,
+    required this.onTap,
+  });
 
-  void _navigateToEntityList(
-    BuildContext context, {
-    required List<EntitySubtype> entityTypes,
-    required String title,
-  }) {
-    log('Navigating to health & beauty subcategory: $title', name: 'HealthBeautyCategoryScreen');
-    
-    // Navigate to EntityList for entity-based subcategories
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EntityListScreen(
-          categoryId: '6', // Health & Beauty category ID
-          subcategoryId: title.toLowerCase().replaceAll(' ', '_'),
-          categoryName: 'Health & Beauty',
-          screenTitle: title,
-          appCategoryId: 6, // Health & Beauty category ID from app_categories.dart
-          defaultEntityType: entityTypes.first,
-        ),
-      ),
-    );
-  }
+  final String title;
+  final IconData icon;
+  final String description;
+  final VoidCallback onTap;
 
-  void _navigateToTagScreen(
-    BuildContext context, {
-    required String tagName,
-  }) {
-    // TODO: Implement tag screen navigation when TagScreen is available
-    // For now, show a placeholder
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Tag screen for $tagName - Coming soon!'),
-        duration: const Duration(seconds: 2),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return VuetCategoryTile(
+      title: title,
+      icon: icon,
+      onTap: onTap,
     );
   }
 }

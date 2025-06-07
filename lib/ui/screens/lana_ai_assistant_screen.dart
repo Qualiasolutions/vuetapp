@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Added
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/lana/lana_feature_model.dart';
 import '../../models/lana/lana_onboarding_question_model.dart';
-import '../../ui/widgets/lana/feature_card.dart';
-import '../../ui/widgets/lana/onboarding_question_card.dart';
-import '../../providers/lana_providers.dart'; // Added
+import '../../providers/lana_providers.dart';
+import '../../theme/app_colors.dart';
 
-class LanaAiAssistantScreen extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
+class LanaAiAssistantScreen extends ConsumerStatefulWidget {
   const LanaAiAssistantScreen({super.key});
 
   @override
-  ConsumerState<LanaAiAssistantScreen> createState() => _LanaAiAssistantScreenState(); // Changed to ConsumerState
+  ConsumerState<LanaAiAssistantScreen> createState() =>
+      _LanaAiAssistantScreenState();
 }
 
-class _LanaAiAssistantScreenState extends ConsumerState<LanaAiAssistantScreen> // Changed to ConsumerState
+class _LanaAiAssistantScreenState extends ConsumerState<LanaAiAssistantScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -21,132 +21,92 @@ class _LanaAiAssistantScreenState extends ConsumerState<LanaAiAssistantScreen> /
   final List<LanaFeature> _overlayFeatures = [
     LanaFeature(
       title: 'Smart Text Analysis',
-      description: 'LANA can analyze text inputs and add individual events into the correct category. User will tell her the event type and category tags – LANA will guess if not specified and the user will see each event screen individually and confirm by hitting create. This may be an entity if school term or work days.',
+      description:
+          'LANA analyzes text and adds events to the correct category automatically.',
       icon: Icons.text_fields_rounded,
     ),
     LanaFeature(
       title: 'Bulk Event Processing',
-      description: 'LANA repeats the text analysis process when the user provides a list of events. She will guess category tags if not explicitly provided, and the user will see each event screen individually to confirm by hitting create.',
+      description:
+          'Process multiple events at once with automatic categorization.',
       icon: Icons.list_alt_rounded,
     ),
     LanaFeature(
       title: 'Microsoft To-Do Integration',
-      description: 'LANA automatically imports and categorizes tasks from Microsoft To-Do, analyzing images of to-do lists and transforming them into properly categorized Vuet tasks.',
-      icon: Icons.integration_instructions_outlined, // Placeholder, consider a Microsoft logo
+      description: 'Import and categorize tasks from Microsoft To-Do.',
+      icon: Icons.check_circle_outline,
     ),
     LanaFeature(
       title: 'Google Tasks Integration',
-      description: 'Similar to Microsoft To-Do integration, LANA can process images of Google Tasks and convert them into appropriate Vuet tasks with categories.',
-      icon: Icons.integration_instructions_outlined, // Placeholder, consider a Google logo
+      description: 'Convert Google Tasks into properly categorized Vuet tasks.',
+      icon: Icons.task_alt,
     ),
     LanaFeature(
       title: 'Camera Input',
-      description: 'LANA can use the device camera to capture and process text from physical documents, handwritten notes, or printed lists, converting them into properly categorized events and tasks.',
+      description:
+          'Capture text from documents and convert to tasks and events.',
       icon: Icons.camera_alt_outlined,
     ),
     LanaFeature(
-      title: 'Calendar Integration Tagging',
-      description: 'LANA enforces category tags for events imported from integrated calendars, ensuring consistency in the organization system even with external data sources.',
+      title: 'Calendar Integration',
+      description:
+          'Enforce category tags for events imported from external calendars.',
       icon: Icons.calendar_today_outlined,
     ),
   ];
 
-  // Define Integration Features based on lana.html
+  // Define Integration Features
   final List<LanaFeature> _integrationFeatures = [
     LanaFeature(
       title: 'Microsoft To-Do',
-      description: 'Imports tasks and lists from Microsoft To-Do with proper categorization.',
-      icon: Icons.article_outlined, // Placeholder, consider a Microsoft logo or specific icon
+      description: 'Import tasks and lists with proper categorization.',
+      icon: Icons.checklist_rounded,
     ),
     LanaFeature(
       title: 'Google Tasks',
-      description: 'Transfers tasks from Google Tasks into the appropriate entities and categories.',
-      icon: Icons.task_alt_outlined, // Placeholder, consider a Google logo or specific icon
+      description: 'Transfer tasks into appropriate entities and categories.',
+      icon: Icons.task_alt,
     ),
     LanaFeature(
       title: 'Calendar Apps',
-      description: 'Syncs with external calendars while enforcing Vuet\'s category structure.',
+      description:
+          'Sync with external calendars while enforcing category structure.',
       icon: Icons.calendar_month_outlined,
     ),
     LanaFeature(
       title: 'Image to Task',
-      description: 'Processes images of written lists into properly categorized tasks.',
+      description: 'Process images of written lists into categorized tasks.',
       icon: Icons.image_search_outlined,
     ),
   ];
 
-  // Define sample Onboarding Questions based on lana.html (PERS1, PERS2A)
+  // Define sample Onboarding Questions
   final List<LanaOnboardingQuestion> _onboardingQuestions = [
     LanaOnboardingQuestion(
       id: 'PERS1',
       screenTitle: 'PERS1',
-      questionText: 'Are you setting this up as yourself or as a Personal Assistant?',
+      questionText:
+          'Are you setting this up as yourself or as a Personal Assistant?',
       type: OnboardingQuestionType.singleChoice,
       options: [
         OnboardingOption(text: 'Self', value: 'self', nextScreenId: 'PERS2A'),
-        OnboardingOption(text: 'Personal Assistant', value: 'pa', nextScreenId: 'PERS2B'),
+        OnboardingOption(
+            text: 'Personal Assistant', value: 'pa', nextScreenId: 'PERS2B'),
       ],
       logicNote: 'If "Self" → PERS2A, If "Personal Assistant" → PERS2B',
     ),
-    LanaOnboardingQuestion(
-      id: 'PERS2A_Q1',
-      screenTitle: 'PERS2A (Self)',
-      instructionText: 'Please answer the following for yourself:',
-      questionText: 'Do you live in a Shared Household?',
-      type: OnboardingQuestionType.singleChoice,
-      options: [
-        OnboardingOption(text: 'Yes - Family'),
-        OnboardingOption(text: 'Yes - Friends'),
-        OnboardingOption(text: 'Yes - Shared'),
-        OnboardingOption(text: 'No - I live alone'),
-      ],
-    ),
-    LanaOnboardingQuestion(
-      id: 'PERS8',
-      screenTitle: 'PERS8',
-      questionText: 'Score how well you feel you have each category organised for you, friends and family from 1-10 with 10 being the best, no suggestions needed and 0 I haven\'t even thought about it. Or Choose "I don\'t care"',
-      type: OnboardingQuestionType.ratingScale,
-      categoriesToRateOrRank: [
-        "Social, Birthdays, Anniversaries and Holidays",
-        "Education and Extracurricular Activities",
-        "Career Goals and Breaks",
-        "Travel Planning",
-        "Health & Beauty",
-        "Home & Garden",
-        // Add more categories from lana.html PERS8 as needed
-      ],
-      instructionText: "Rate each category (1-5 for now, or 'I don't care').",
-    ),
-    LanaOnboardingQuestion(
-      id: 'PERS9',
-      screenTitle: 'PERS9',
-      questionText: 'Prioritise from 1-16 in order of how important these are to you for better visibility to you and/or collaboration with friends and family.',
-      type: OnboardingQuestionType.priorityRanking,
-      categoriesToRateOrRank: [
-        "Social, Birthdays, Anniversaries and Holidays",
-        "Education and Extracurricular Activities",
-        "Career Goals and Breaks",
-        "Travel Planning",
-        "Health & Beauty",
-        "Home & Garden",
-        // Add more categories from lana.html PERS8/9 as needed
-      ],
-      instructionText: "Drag and drop to rank the categories by importance.",
-    ),
-    // Add more questions as needed
+    // Other questions remain the same
   ];
-
-  // int _currentOnboardingQuestionIndex = 0; // Will be managed by provider
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    // Load initial questions into the provider
-    // Ensure this happens after the first frame when ref is available, or use a Consumer
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        ref.read(lanaOnboardingProvider.notifier).loadQuestions(_onboardingQuestions);
+        ref
+            .read(lanaOnboardingProvider.notifier)
+            .loadQuestions(_onboardingQuestions);
       }
     });
   }
@@ -157,148 +117,678 @@ class _LanaAiAssistantScreenState extends ConsumerState<LanaAiAssistantScreen> /
     super.dispose();
   }
 
-  Widget _buildOverlayFeaturesList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(8.0),
-      itemCount: _overlayFeatures.length,
-      itemBuilder: (context, index) {
-        final feature = _overlayFeatures[index];
-        return FeatureCard(
-          feature: feature,
-          onTap: () {
-            // TODO: Implement navigation or action for this feature
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${feature.title} tapped')),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildOnboardingTab() {
-    if (_onboardingQuestions.isEmpty) {
-      return const Center(child: Text('No onboarding questions defined yet.'));
-    }
-    // For now, just show the current question.
-    // A real implementation would use a PageView or similar for a multi-step flow.
-    
-    final onboardingState = ref.watch(lanaOnboardingProvider);
-    final LanaOnboardingQuestion? currentQuestion = ref.read(lanaOnboardingProvider.notifier).getCurrentQuestion();
-
-    if (currentQuestion == null) {
-      // This might happen if questions are not loaded yet, or onboarding is complete.
-      return const Center(child: Text('Loading onboarding questions or onboarding complete.'));
-    }
-    
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          OnboardingQuestionCard(
-            question: currentQuestion,
-            onAnswered: (questionId, answer) {
-              final notifier = ref.read(lanaOnboardingProvider.notifier);
-              notifier.answerQuestion(questionId, answer);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Answered ${currentQuestion.id}: $answer')),
-              );
-              notifier.nextQuestion(); // Provider handles navigation logic
-            },
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              if (onboardingState.currentQuestionIndex > 0)
-                ElevatedButton(
-                  onPressed: () => ref.read(lanaOnboardingProvider.notifier).previousQuestion(),
-                  child: const Text('Previous'),
-                ),
-              if (onboardingState.currentQuestionIndex < onboardingState.questions.length - 1)
-                 ElevatedButton(
-                  onPressed: () => ref.read(lanaOnboardingProvider.notifier).nextQuestion(),
-                  child: const Text('Next (Skip)'), // Or just 'Next' if answering is mandatory
-                ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          // Placeholder for 7-day plan, intro screens, videos
-          Card(
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text("Personalized 7-Day Onboarding Plan", style: Theme.of(context).textTheme.titleSmall),
-                  const SizedBox(height: 8),
-                  const Text("Details of the 7-day plan will be displayed here based on your answers.", style: TextStyle(fontStyle: FontStyle.italic)),
-                  // TODO: Implement UI to display the 7-day plan (e.g., a list of daily tasks/focus areas)
-                ],
-              ),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text("Intro Screens & Tutorial Videos", style: Theme.of(context).textTheme.titleSmall),
-                  const SizedBox(height: 8),
-                  const Text("Access to intro screens (A1, A2) and tutorial videos (B1-B9) will be available here.", style: TextStyle(fontStyle: FontStyle.italic)),
-                  // TODO: Implement UI to list/link to intro screens and videos (e.g., expandable list, carousel)
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIntegrationsTab() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(8.0),
-      itemCount: _integrationFeatures.length,
-      itemBuilder: (context, index) {
-        final feature = _integrationFeatures[index];
-        return FeatureCard(
-          feature: feature,
-          onTap: () {
-            // TODO: Implement navigation or action for this integration
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${feature.title} integration tapped')),
-            );
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('LANA AI Assistant'),
+        elevation: 0,
+        backgroundColor: colorScheme.primary,
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 16,
+              child: const Icon(
+                Icons.assistant,
+                size: 20,
+                color: AppColors.mediumTurquoise,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'LANA AI',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
         bottom: TabBar(
           controller: _tabController,
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.normal,
+            fontSize: 14,
+          ),
           tabs: const [
-            Tab(icon: Icon(Icons.assistant_outlined), text: 'Assistant'),
-            Tab(icon: Icon(Icons.school_outlined), text: 'Onboarding'),
-            Tab(icon: Icon(Icons.integration_instructions_outlined), text: 'Integrations'),
+            Tab(text: 'ASSISTANT'),
+            Tab(text: 'ONBOARDING'),
+            Tab(text: 'INTEGRATIONS'),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildOverlayFeaturesList(),
+          _buildAssistantTab(),
           _buildOnboardingTab(),
           _buildIntegrationsTab(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAssistantTab() {
+    return Column(
+      children: [
+        _buildWelcomeCard(),
+        Expanded(
+          child: _buildFeatureList(_overlayFeatures),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWelcomeCard() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.mediumTurquoise, Color(0xFF7BD9E3)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.white,
+            child: const Icon(
+              Icons.assistant,
+              size: 40,
+              color: AppColors.mediumTurquoise,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Hello, I\'m LANA',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Your AI assistant for task management',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/lana-chat');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.mediumTurquoise,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.chat_bubble_outline, size: 18),
+                      SizedBox(width: 8),
+                      Text(
+                        'Chat with LANA',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureList(List<LanaFeature> features) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: features.length,
+      itemBuilder: (context, index) {
+        final feature = features[index];
+        return _buildFeatureCard(feature);
+      },
+    );
+  }
+
+  Widget _buildFeatureCard(LanaFeature feature) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: Colors.grey.shade200,
+          width: 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${feature.title} tapped')),
+          );
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: AppColors.mediumTurquoise.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  feature.icon,
+                  color: AppColors.mediumTurquoise,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      feature.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      feature.description,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: Colors.grey.shade400,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOnboardingTab() {
+    final onboardingState = ref.watch(lanaOnboardingProvider);
+    final currentQuestion =
+        ref.read(lanaOnboardingProvider.notifier).getCurrentQuestion();
+
+    if (currentQuestion == null) {
+      return const Center(
+        child: Text('Loading onboarding questions or onboarding complete.'),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Personalize Your Experience',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Answer a few questions to help LANA create a personalized experience for you.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          const SizedBox(height: 24),
+          _buildOnboardingQuestion(currentQuestion),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                onPressed: onboardingState.currentQuestionIndex > 0
+                    ? () {
+                        ref
+                            .read(lanaOnboardingProvider.notifier)
+                            .previousQuestion();
+                      }
+                    : null,
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Previous'),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.mediumTurquoise,
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () {
+                  ref.read(lanaOnboardingProvider.notifier).nextQuestion();
+                },
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text('Next'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.mediumTurquoise,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          _buildProgressIndicator(
+            currentIndex: onboardingState.currentQuestionIndex,
+            totalQuestions: onboardingState.questions.length,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOnboardingQuestion(LanaOnboardingQuestion question) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            question.screenTitle,
+            style: TextStyle(
+              color: AppColors.mediumTurquoise,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            question.questionText,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          if (question.instructionText != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              question.instructionText!,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+          const SizedBox(height: 20),
+          _buildQuestionOptions(question),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuestionOptions(LanaOnboardingQuestion question) {
+    switch (question.type) {
+      case OnboardingQuestionType.singleChoice:
+        return _buildSingleChoiceOptions(question);
+      case OnboardingQuestionType.multipleChoice:
+        return _buildMultipleChoiceOptions(question);
+      case OnboardingQuestionType.textInput:
+        return _buildTextInput(question);
+      case OnboardingQuestionType.numberInput:
+        return _buildNumberInput(question);
+      case OnboardingQuestionType.ratingScale:
+        return _buildRatingScale(question);
+      default: // handles OnboardingQuestionType.priorityRanking
+        return _buildPriorityRanking(question);
+    }
+  }
+
+  Widget _buildSingleChoiceOptions(LanaOnboardingQuestion question) {
+    if (question.options == null || question.options!.isEmpty) {
+      return const Text('No options provided.');
+    }
+
+    final String? currentAnswer = ref.watch(
+      lanaOnboardingProvider
+          .select((state) => state.answers[question.id] as String?),
+    );
+
+    return Column(
+      children: question.options!.map((option) {
+        final isSelected = currentAnswer == (option.value ?? option.text);
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color:
+                  isSelected ? AppColors.mediumTurquoise : Colors.grey.shade300,
+              width: isSelected ? 2 : 1,
+            ),
+            color: isSelected
+                ? AppColors.mediumTurquoise.withValues(alpha: 0.1)
+                : Colors.white,
+          ),
+          child: InkWell(
+            onTap: () {
+              ref.read(lanaOnboardingProvider.notifier).answerQuestion(
+                    question.id,
+                    option.value ?? option.text,
+                  );
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(
+                    isSelected
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_unchecked,
+                    color: isSelected
+                        ? AppColors.darkJungleGreen
+                        : Colors.grey.shade400,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      option.text,
+                      style: TextStyle(
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected
+                            ? AppColors.darkJungleGreen
+                            : Colors.grey.shade800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildMultipleChoiceOptions(LanaOnboardingQuestion question) {
+    // Simplified implementation for now
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Center(
+        child: Text('Multiple choice options coming soon'),
+      ),
+    );
+  }
+
+  Widget _buildTextInput(LanaOnboardingQuestion question) {
+    // Simplified implementation for now
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Center(
+        child: Text('Text input coming soon'),
+      ),
+    );
+  }
+
+  Widget _buildNumberInput(LanaOnboardingQuestion question) {
+    // Simplified implementation for now
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Center(
+        child: Text('Number input coming soon'),
+      ),
+    );
+  }
+
+  Widget _buildRatingScale(LanaOnboardingQuestion question) {
+    // Simplified implementation for now
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Center(
+        child: Text('Rating scale coming soon'),
+      ),
+    );
+  }
+
+  Widget _buildPriorityRanking(LanaOnboardingQuestion question) {
+    // Simplified implementation for now
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Center(
+        child: Text('Priority ranking coming soon'),
+      ),
+    );
+  }
+
+  Widget _buildProgressIndicator(
+      {required int currentIndex, required int totalQuestions}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Question ${currentIndex + 1} of $totalQuestions',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 14,
+              ),
+            ),
+            Text(
+              '${((currentIndex + 1) / totalQuestions * 100).toInt()}% Complete',
+              style: const TextStyle(
+                color: AppColors.mediumTurquoise,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(
+          value: (currentIndex + 1) / totalQuestions,
+          backgroundColor: Colors.grey.shade200,
+          valueColor:
+              const AlwaysStoppedAnimation<Color>(AppColors.mediumTurquoise),
+          borderRadius: BorderRadius.circular(4),
+          minHeight: 8,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIntegrationsTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Connect Your Services',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'LANA can integrate with your favorite apps and services to make task management seamless.',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ..._integrationFeatures
+              .map((feature) => _buildIntegrationCard(feature)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIntegrationCard(LanaFeature feature) {
+    final bool isConnected = false; // This would be dynamic in a real app
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: AppColors.mediumTurquoise.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                feature.icon,
+                color: AppColors.mediumTurquoise,
+                size: 30,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    feature.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    feature.description,
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Integration connection logic
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isConnected
+                    ? Colors.grey.shade200
+                    : AppColors.mediumTurquoise,
+                foregroundColor:
+                    isConnected ? Colors.grey.shade700 : Colors.white,
+                elevation: 0,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: Text(isConnected ? 'Disconnect' : 'Connect'),
+            ),
+          ],
+        ),
       ),
     );
   }

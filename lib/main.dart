@@ -1,7 +1,9 @@
-import 'package:flutter/foundation.dart' show kReleaseMode; // For environment check
+import 'package:flutter/foundation.dart'
+    show kReleaseMode; // For environment check
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // Import Riverpod
-import 'package:provider/provider.dart' as legacy_provider; // Keep legacy provider for now
+import 'package:provider/provider.dart'
+    as legacy_provider; // Keep legacy provider for now
 import 'package:vuet_app/config/supabase_config.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:vuet_app/providers/auth_providers.dart'; // Import auth providers
@@ -22,18 +24,14 @@ import 'package:vuet_app/widgets/notification_badge.dart';
 import 'package:vuet_app/utils/deep_link_handler.dart';
 import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart'; // Updated with new redesigned version
 import 'package:vuet_app/ui/screens/lana_chat_screen.dart'; // Updated to new LANA chat screen
-import 'package:vuet_app/ui/screens/account_settings/account_settings_screen.dart'; // New account settings
 import 'package:vuet_app/ui/screens/account/my_account_screen.dart'; // My Account screen
-import 'package:vuet_app/ui/screens/settings/settings_screen.dart'; // Added SettingsScreen
 import 'package:vuet_app/ui/screens/routines/routines_screen.dart'; // Added RoutinesScreen
 import 'package:vuet_app/ui/navigation/timeblock_navigator.dart'; // Added TimeblockNavigator
 import 'package:vuet_app/ui/screens/family/family_screen.dart'; // Added FamilyScreen
-import 'package:vuet_app/ui/screens/school_terms/school_terms_screen.dart';
-import 'package:vuet_app/ui/screens/alerts/alerts_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Load environment variables and initialize services
   try {
     // For web builds, we rely on env.js for environment detection
@@ -42,8 +40,9 @@ Future<void> main() async {
     bool isProduction;
 
     // Check for production flag via --dart-define or default to development
-    const productionFlag = String.fromEnvironment('FLUTTER_ENV', defaultValue: 'development');
-    
+    const productionFlag =
+        String.fromEnvironment('FLUTTER_ENV', defaultValue: 'development');
+
     if (productionFlag == 'production' || kReleaseMode) {
       envFileName = '.env.production';
       isProduction = true;
@@ -53,24 +52,24 @@ Future<void> main() async {
       isProduction = false;
       debugPrint('🔧 Running in DEVELOPMENT mode');
     }
-    
+
     debugPrint('Loading environment from: $envFileName');
     await dotenv.load(fileName: envFileName);
-    
+
     // Initialize Supabase for auth and data storage
     await SupabaseConfig.initialize(isProduction: isProduction);
-    
+
     // Initialize performance monitoring service (using Supabase)
     await PerformanceService.initialize();
-    
+
     // Log app startup
     await PerformanceService.logAppOpen();
     await PerformanceService.logMemoryUsage('app_startup');
-    
+
     debugPrint('✅ All services initialized successfully');
-    
+
     // Wrap with ProviderScope for Riverpod
-    runApp(const ProviderScope(child: VuetApp())); 
+    runApp(const ProviderScope(child: VuetApp()));
   } catch (error, stackTrace) {
     debugPrint('❌ Error during initialization: $error');
     debugPrint('Stack trace: $stackTrace');
@@ -97,15 +96,17 @@ class _VuetAppState extends ConsumerState<VuetApp> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authService = ref.read(authServiceProvider);
       // Ensure context is still valid if this callback is delayed
-      if (_navigatorKey.currentContext != null && _navigatorKey.currentContext!.mounted) {
-         DeepLinkHandler.initialize(_navigatorKey.currentContext, authService);
+      if (_navigatorKey.currentContext != null &&
+          _navigatorKey.currentContext!.mounted) {
+        DeepLinkHandler.initialize(_navigatorKey.currentContext, authService);
       } else {
         // Fallback or log if context is not available, though this is less likely for addPostFrameCallback
         // Potentially initialize without context if DeepLinkHandler can support it for non-navigational links
         // Or, store authService and context and try again if context becomes available.
         // For now, we assume it will usually be available.
         DeepLinkHandler.initialize(null, authService); // Or handle error
-        debugPrint("DeepLinkHandler initialized without BuildContext after frame.");
+        debugPrint(
+            "DeepLinkHandler initialized without BuildContext after frame.");
       }
     });
   }
@@ -131,15 +132,20 @@ class _VuetAppState extends ConsumerState<VuetApp> {
     // We only need MultiProvider for the remaining legacy providers.
     return legacy_provider.MultiProvider(
       providers: [
-        legacy_provider.ChangeNotifierProvider<TaskCategoryService>(create: (_) => TaskCategoryService()),
-        legacy_provider.ChangeNotifierProvider<TaskListProvider>(create: (_) => TaskListProvider()),
+        legacy_provider.ChangeNotifierProvider<TaskCategoryService>(
+            create: (_) => TaskCategoryService()),
+        legacy_provider.ChangeNotifierProvider<TaskListProvider>(
+            create: (_) => TaskListProvider()),
         // TaskService and TaskCommentService are removed as they are now Riverpod providers.
         // NotificationService was already a Riverpod provider.
       ],
-      child: MaterialApp( // MaterialApp is the direct child now
+      child: MaterialApp(
+        // MaterialApp is the direct child now
         title: 'Vuet App',
         debugShowCheckedModeBanner: false,
-        theme: _isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme, // Updated theme based on state
+        theme: _isDarkMode
+            ? AppTheme.darkTheme
+            : AppTheme.lightTheme, // Updated theme based on state
         navigatorKey: _navigatorKey, // _navigatorKey is part of _VuetAppState
         home: const AuthWrapper(
           child: HomePage(title: 'Vuet App'),
@@ -168,8 +174,10 @@ class VuetAppFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Vuet App - Environment Issue',
-      debugShowCheckedModeBanner: true, // Keep this true for fallback visibility
-      theme: ThemeData( // Use a distinct theme for fallback
+      debugShowCheckedModeBanner:
+          true, // Keep this true for fallback visibility
+      theme: ThemeData(
+        // Use a distinct theme for fallback
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
@@ -226,18 +234,21 @@ class VuetAppFallback extends StatelessWidget {
   }
 }
 
-class HomePage extends ConsumerStatefulWidget { // Changed to ConsumerStatefulWidget
+class HomePage extends ConsumerStatefulWidget {
+  // Changed to ConsumerStatefulWidget
   const HomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState(); // Changed to ConsumerState
+  ConsumerState<HomePage> createState() =>
+      _HomePageState(); // Changed to ConsumerState
 }
 
-class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerState<HomePage>
+class _HomePageState extends ConsumerState<HomePage> {
+  // Changed to ConsumerState<HomePage>
   int _selectedIndex = 0;
-  
+
   // _widgetOptions needs to be mutable if TaskListScreen is replaced
   late List<Widget> _widgetOptions;
 
@@ -251,7 +262,7 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
       const LanaChatScreen(), // LANA (fourth)
     ];
   }
-  
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -260,11 +271,11 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
 
   // Get task-related notifications count for the Tasks tab using Riverpod
   int _getTaskNotificationsCount(WidgetRef ref) {
-    final notificationService = ref.watch(notificationServiceProvider); // Watch Riverpod provider
+    final notificationService =
+        ref.watch(notificationServiceProvider); // Watch Riverpod provider
     return notificationService.notifications
-        .where((notification) => 
-            !notification.isRead && 
-            notification.isTaskRelated)
+        .where((notification) =>
+            !notification.isRead && notification.isTaskRelated)
         .length;
   }
 
@@ -301,7 +312,7 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
   }
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -309,13 +320,13 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
           // Notification badge (always visible)
           // NotificationBadge fetches its own count via Provider/Riverpod
           IconButton(
-            icon: const NotificationBadge(), 
+            icon: const NotificationBadge(),
             tooltip: 'Notifications',
             onPressed: () {
               Navigator.pushNamed(context, '/notifications');
             },
           ),
-          
+
           // Add task button (now always visible in AppBar)
           IconButton(
             icon: const Icon(Icons.add),
@@ -346,28 +357,10 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
               onTap: () {
                 Navigator.pop(context); // Close the drawer
                 Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => const MyAccountScreen()),
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MyAccountScreen()),
                 );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings_applications),
-              title: const Text('Account Settings'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => const AccountSettingsScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
               },
             ),
             ListTile(
@@ -376,8 +369,9 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
               onTap: () {
                 Navigator.pop(context); // Close the drawer
                 Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => const RoutinesScreen()),
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const RoutinesScreen()),
                 );
               },
             ),
@@ -387,8 +381,9 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
               onTap: () {
                 Navigator.pop(context); // Close the drawer
                 Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => const TimeblockNavigator()),
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TimeblockNavigator()),
                 );
               },
             ),
@@ -400,47 +395,25 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
                 Navigator.pushNamed(context, '/family');
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.school), // Icon for School Terms
-              title: const Text('School Terms'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => const SchoolTermsScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.notifications_active), // Icon for Alerts
-              title: const Text('Alerts'),
-              onTap: () {
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => const AlertsScreen()),
-                );
-              },
-            ),
-            Consumer(
-              builder: (context, ref, child) {
-                // Access the global _isDarkMode state from _VuetAppState
-                final isDarkModeGlobal = context.findAncestorStateOfType<_VuetAppState>()?._isDarkMode ?? false;
-                return SwitchListTile(
-                  title: const Text('Dark Mode'),
-                  value: isDarkModeGlobal,
-                  onChanged: (bool value) {
-                    // Call _toggleTheme on the _VuetAppState instance
-                    context.findAncestorStateOfType<_VuetAppState>()?._toggleTheme(value);
-                  },
-                  secondary: Icon(
-                    isDarkModeGlobal
-                        ? Icons.brightness_3
-                        : Icons.brightness_7
-                  ),
-                );
-              }
-            ),
+            Consumer(builder: (context, ref, child) {
+              // Access the global _isDarkMode state from _VuetAppState
+              final isDarkModeGlobal = context
+                      .findAncestorStateOfType<_VuetAppState>()
+                      ?._isDarkMode ??
+                  false;
+              return SwitchListTile(
+                title: const Text('Dark Mode'),
+                value: isDarkModeGlobal,
+                onChanged: (bool value) {
+                  // Call _toggleTheme on the _VuetAppState instance
+                  context
+                      .findAncestorStateOfType<_VuetAppState>()
+                      ?._toggleTheme(value);
+                },
+                secondary: Icon(
+                    isDarkModeGlobal ? Icons.brightness_3 : Icons.brightness_7),
+              );
+            }),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout),
@@ -461,14 +434,16 @@ class _HomePageState extends ConsumerState<HomePage> { // Changed to ConsumerSta
       body: _widgetOptions.elementAt(_selectedIndex),
       // Use Consumer for BottomNavigationBar to get task-specific count
       bottomNavigationBar: Consumer(
-        builder: (context, innerRef, child) { // Use innerRef for this specific Consumer
-          _getTaskNotificationsCount(innerRef); // Called for its side effects or future use
+        builder: (context, innerRef, child) {
+          // Use innerRef for this specific Consumer
+          _getTaskNotificationsCount(
+              innerRef); // Called for its side effects or future use
 
           return BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             elevation: 0, // Remove shadow
             items: const <BottomNavigationBarItem>[
-              // HOME (first) 
+              // HOME (first)
               BottomNavigationBarItem(
                 icon: Icon(Icons.home_outlined),
                 activeIcon: Icon(Icons.home),

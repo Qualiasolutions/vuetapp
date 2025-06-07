@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import '../widgets/lana/chat_message_bubble.dart';
-import '../widgets/lana/chat_input_widget.dart';
 import '../../providers/lana_chat_providers.dart';
 import '../../models/lana/chat_message_model.dart';
+import '../../theme/app_colors.dart';
 
 class LanaChatScreen extends ConsumerStatefulWidget {
   const LanaChatScreen({super.key});
@@ -23,15 +22,15 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
   late Animation<double> _welcomeAnimation;
   late Animation<Offset> _fabSlideAnimation;
   late Animation<double> _typingAnimation;
-  
+
   bool _showWelcome = true;
   bool _showScrollToBottom = false;
-  
-  // Enhanced TTS features
+
+  // TTS features
   final FlutterTts _flutterTts = FlutterTts();
   bool _isSpeaking = false;
-  
-  // Enhanced STT features
+
+  // STT features
   final stt.SpeechToText _speechToText = stt.SpeechToText();
   bool _isListening = false;
   String _recognizedText = '';
@@ -39,35 +38,35 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
   @override
   void initState() {
     super.initState();
-    
+
     _welcomeAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     _fabController = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
+
     _typingAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 800),
       vsync: this,
-    )..repeat();
-    
+    )..repeat(reverse: true);
+
     _welcomeAnimation = CurvedAnimation(
       parent: _welcomeAnimationController,
-      curve: Curves.elasticOut,
+      curve: Curves.easeOutBack,
     );
-    
+
     _fabSlideAnimation = Tween<Offset>(
       begin: const Offset(0, 1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _fabController,
-      curve: Curves.elasticOut,
+      curve: Curves.easeOut,
     ));
-    
+
     _typingAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -75,12 +74,12 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
       parent: _typingAnimationController,
       curve: Curves.easeInOut,
     ));
-    
+
     _scrollController.addListener(_onScroll);
-    
+
     // Start welcome animation
     _welcomeAnimationController.forward();
-    
+
     // Auto-hide welcome after timeout
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(seconds: 4), () {
@@ -89,7 +88,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
         }
       });
     });
-    
+
     _initTts();
     _initSpeech();
   }
@@ -99,7 +98,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
     await _flutterTts.setPitch(1.0);
     await _flutterTts.setSpeechRate(0.5);
     await _flutterTts.setVolume(0.8);
-    
+
     _flutterTts.setCompletionHandler(() {
       if (mounted) {
         setState(() {
@@ -108,7 +107,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
       }
     });
   }
-  
+
   Future<void> _initSpeech() async {
     await _speechToText.initialize(
       onError: (error) {
@@ -144,9 +143,9 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
   }
 
   void _onScroll() {
-    final showButton = _scrollController.hasClients &&
-        _scrollController.offset > 200;
-    
+    final showButton =
+        _scrollController.hasClients && _scrollController.offset > 200;
+
     if (showButton != _showScrollToBottom) {
       setState(() => _showScrollToBottom = showButton);
       if (showButton) {
@@ -176,7 +175,7 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
   void _handleSendMessage(String message) {
     _hideWelcome();
     ref.read(chatProvider.notifier).sendMessage(message);
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
@@ -185,23 +184,25 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
   Future<void> _speak(String text) async {
     if (_isSpeaking) {
       await _flutterTts.stop();
+      setState(() {
+        _isSpeaking = false;
+      });
       return;
     }
-    
+
     setState(() {
       _isSpeaking = true;
     });
-    
+
     await _flutterTts.speak(text);
   }
-  
+
   void _listen() async {
     if (!_isListening) {
       bool available = await _speechToText.initialize();
       if (available) {
         setState(() {
           _isListening = true;
-          _recognizedText = '';
         });
         _speechToText.listen(
           onResult: (result) {
@@ -209,8 +210,6 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
               _recognizedText = result.recognizedWords;
             });
           },
-          listenFor: const Duration(seconds: 30),
-          pauseFor: const Duration(seconds: 3),
         );
       }
     } else {
@@ -224,132 +223,260 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(chatMessagesProvider);
-    final isLoading = ref.watch(isChatLoadingProvider);
     final isTyping = ref.watch(isChatTypingProvider);
-    final error = ref.watch(chatErrorProvider);
-    final quickSuggestions = ref.watch(quickSuggestionsProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 120,
-            floating: false,
-            pinned: true,
-            snap: false,
-            backgroundColor: Colors.transparent,
-            flexibleSpace: FlexibleSpaceBar(
-              title: null,
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      theme.colorScheme.primary.withValues(alpha: 0.1),
-                      Colors.transparent,
-                    ],
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: AppColors.mediumTurquoise,
+        elevation: 0,
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 16,
+              child: const Icon(
+                Icons.assistant,
+                size: 20,
+                color: AppColors.mediumTurquoise,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'LANA AI',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        _buildEnhancedLanaAvatar(theme, size: 48),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'LANA AI',
-                                style: theme.textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-                              AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 500),
-                                child: Text(
-                                  isTyping ? 'Thinking...' : 
-                                  (_isSpeaking ? 'Speaking...' : 
-                                  (_isListening ? 'Listening...' : 'Your AI Assistant')),
-                                  key: ValueKey(isTyping ? 'typing' : 
-                                      (_isSpeaking ? 'speaking' : 
-                                      (_isListening ? 'listening' : 'idle'))),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        _buildActionButtons(theme),
-                      ],
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: Text(
+                    isTyping
+                        ? 'Thinking...'
+                        : (_isSpeaking
+                            ? 'Speaking...'
+                            : (_isListening ? 'Listening...' : 'AI Assistant')),
+                    key: ValueKey(isTyping
+                        ? 'typing'
+                        : (_isSpeaking
+                            ? 'speaking'
+                            : (_isListening ? 'listening' : 'idle'))),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.white70,
                     ),
                   ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(_isSpeaking ? Icons.volume_up : Icons.volume_off),
+            tooltip: _isSpeaking ? 'Stop Speaking' : 'Text to Speech',
+            onPressed: () {
+              if (messages.isNotEmpty) {
+                final lastMessage = messages.last;
+                if (lastMessage.sender == MessageSender.assistant) {
+                  _speak(lastMessage.content);
+                }
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: 'Clear Chat',
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Clear Chat'),
+                  content: const Text(
+                      'Are you sure you want to clear all messages?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        ref.read(chatProvider.notifier).startNewChat();
+                      },
+                      child: const Text('Clear'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  // Chat messages
+                  _showWelcome
+                      ? _buildModernWelcomeScreen(theme)
+                      : _buildChatMessages(messages, isTyping, theme),
+
+                  // Scroll to bottom button
+                  if (_showScrollToBottom && !_showWelcome)
+                    Positioned(
+                      right: 16,
+                      bottom: 16,
+                      child: SlideTransition(
+                        position: _fabSlideAnimation,
+                        child: FloatingActionButton(
+                          mini: true,
+                          backgroundColor: AppColors.mediumTurquoise,
+                          foregroundColor: Colors.white,
+                          elevation: 2,
+                          onPressed: _scrollToBottom,
+                          child: const Icon(Icons.arrow_downward),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            // Chat input
+            _buildModernChatInput(theme),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChatMessages(
+      List<ChatMessage> messages, bool isTyping, ThemeData theme) {
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.all(16),
+      itemCount: messages.length + (isTyping ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index == messages.length) {
+          // Typing indicator
+          return _buildTypingIndicator(theme);
+        }
+
+        final message = messages[index];
+        return _buildModernMessageBubble(message, theme);
+      },
+    );
+  }
+
+  Widget _buildModernMessageBubble(ChatMessage message, ThemeData theme) {
+    final isFromUser = message.sender == MessageSender.user;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        mainAxisAlignment:
+            isFromUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!isFromUser) ...[
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: AppColors.mediumTurquoise.withValues(alpha: 0.1),
+              child: const Icon(
+                Icons.assistant,
+                size: 18,
+                color: AppColors.mediumTurquoise,
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isFromUser ? AppColors.mediumTurquoise : theme.cardColor,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                message.content,
+                style: TextStyle(
+                  color: isFromUser
+                      ? Colors.white
+                      : theme.textTheme.bodyMedium?.color,
+                  fontSize: 14,
                 ),
               ),
             ),
           ),
-          SliverFillRemaining(
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    Expanded(
-                      child: Stack(
-                        children: [
-                          if (_showWelcome)
-                            AnimatedBuilder(
-                              animation: _welcomeAnimation,
-                              builder: (context, child) {
-                                return Transform.scale(
-                                  scale: _welcomeAnimation.value,
-                                  child: Opacity(
-                                    opacity: _welcomeAnimation.value,
-                                    child: _buildEnhancedWelcomeScreen(theme),
-                                  ),
-                                );
-                              },
-                            ),
-                          
-                          if (!_showWelcome)
-                            _buildEnhancedChatList(messages, isTyping, theme),
-                            
-                          if (_isListening)
-                            _buildListeningIndicator(theme),
-                        ],
-                      ),
-                    ),
-                    
-                    if (error != null)
-                      _buildErrorBanner(error, theme),
-                    
-                    _buildEnhancedInputArea(isLoading, quickSuggestions, theme),
-                  ],
-                ),
-                
-                if (_showScrollToBottom)
-                  Positioned(
-                    right: 16,
-                    bottom: 100,
-                    child: SlideTransition(
-                      position: _fabSlideAnimation,
-                      child: FloatingActionButton(
-                        onPressed: _scrollToBottom,
-                        mini: true,
-                        backgroundColor: theme.colorScheme.primary,
-                        child: const Icon(Icons.keyboard_arrow_down),
-                      ),
-                    ),
-                  ),
-              ],
+          if (isFromUser) ...[
+            const SizedBox(width: 8),
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: AppColors.mediumTurquoise,
+              child: const Icon(
+                Icons.person,
+                size: 18,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTypingIndicator(ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16, left: 40),
+      child: Row(
+        children: [
+          FadeTransition(
+            opacity: _typingAnimation,
+            child: Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.only(right: 4),
+              decoration: BoxDecoration(
+                color: AppColors.mediumTurquoise,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          FadeTransition(
+            opacity: _typingAnimation,
+            child: Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.only(right: 4),
+              decoration: BoxDecoration(
+                color: AppColors.mediumTurquoise.withValues(alpha: 0.8),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          FadeTransition(
+            opacity: _typingAnimation,
+            child: Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: AppColors.mediumTurquoise.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(4),
+              ),
             ),
           ),
         ],
@@ -357,170 +484,136 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
     );
   }
 
-  Widget _buildEnhancedLanaAvatar(ThemeData theme, {double size = 32}) {
+  Widget _buildModernChatInput(ThemeData theme) {
     return Container(
-      width: size,
-      height: size,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.secondary,
-            theme.colorScheme.tertiary,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        shape: BoxShape.circle,
+        color: theme.cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.primary.withValues(alpha: 0.3),
-            blurRadius: 12,
-            spreadRadius: 2,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
-      child: Stack(
+      child: Row(
         children: [
-          Center(
-            child: Icon(
-              Icons.psychology,
-              color: Colors.white,
-              size: size * 0.6,
+          IconButton(
+            icon: Icon(
+              _isListening ? Icons.mic : Icons.mic_none,
+              color: _isListening ? AppColors.mediumTurquoise : null,
             ),
+            onPressed: _listen,
+            tooltip: 'Voice Input',
           ),
-          if (_isSpeaking)
-            Positioned.fill(
-              child: AnimatedBuilder(
-                animation: _typingAnimation,
-                builder: (context, child) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: _typingAnimation.value * 0.5),
-                        width: 2,
-                      ),
-                    ),
-                  );
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: theme.scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Colors.grey.shade300,
+                  width: 1,
+                ),
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: _isListening ? 'Listening...' : 'Message LANA...',
+                  hintStyle: TextStyle(color: Colors.grey.shade500),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                onSubmitted: (value) {
+                  if (value.trim().isNotEmpty) {
+                    _handleSendMessage(value.trim());
+                  }
                 },
               ),
             ),
+          ),
+          const SizedBox(width: 8),
+          Material(
+            color: AppColors.mediumTurquoise,
+            borderRadius: BorderRadius.circular(24),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(24),
+              onTap: () {
+                // Get the text from the TextField
+                final textField = context.findRenderObject() as RenderBox?;
+                if (textField != null) {
+                  final textFieldFocus = FocusScope.of(context);
+                  if (textFieldFocus.focusedChild != null) {
+                    final controller =
+                        (textFieldFocus.focusedChild as TextField).controller;
+                    if (controller != null &&
+                        controller.text.trim().isNotEmpty) {
+                      _handleSendMessage(controller.text.trim());
+                      controller.clear();
+                    }
+                  }
+                }
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(10),
+                child: Icon(
+                  Icons.send,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildActionButtons(ThemeData theme) {
-    return Row(
-      children: [
-        IconButton(
-          icon: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            child: Icon(
-              _isListening ? Icons.mic : Icons.mic_none,
-              key: ValueKey(_isListening),
-              color: _isListening ? theme.colorScheme.primary : null,
-            ),
-          ),
-          onPressed: _listen,
-          tooltip: _isListening ? 'Stop listening' : 'Voice input',
-          style: IconButton.styleFrom(
-            backgroundColor: _isListening 
-                ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                : null,
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: () {
-            ref.read(chatProvider.notifier).startNewChat();
-            setState(() => _showWelcome = true);
-            _welcomeAnimationController.reset();
-            _welcomeAnimationController.forward();
-          },
-          tooltip: 'New Chat',
-        ),
-        PopupMenuButton<String>(
-          onSelected: (value) {
-            switch (value) {
-              case 'clear':
-                _showClearDialog();
-                break;
-              case 'help':
-                _showHelpDialog();
-                break;
-              case 'settings':
-                _showSettingsDialog();
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'clear',
-              child: Row(
-                children: [
-                  Icon(Icons.clear_all),
-                  SizedBox(width: 8),
-                  Text('Clear Chat'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'settings',
-              child: Row(
-                children: [
-                  Icon(Icons.settings),
-                  SizedBox(width: 8),
-                  Text('Settings'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'help',
-              child: Row(
-                children: [
-                  Icon(Icons.help_outline),
-                  SizedBox(width: 8),
-                  Text('Help'),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEnhancedWelcomeScreen(ThemeData theme) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(32.0),
+  Widget _buildModernWelcomeScreen(ThemeData theme) {
+    return ScaleTransition(
+      scale: _welcomeAnimation,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildEnhancedLanaAvatar(theme, size: 120),
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: AppColors.mediumTurquoise.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.assistant,
+                size: 60,
+                color: AppColors.mediumTurquoise,
+              ),
+            ),
             const SizedBox(height: 32),
-            Text(
-              'Hello! I\'m LANA',
-              style: theme.textTheme.headlineMedium?.copyWith(
+            const Text(
+              'Hello, I\'m LANA',
+              style: TextStyle(
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+                color: AppColors.mediumTurquoise,
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              'Your intelligent AI assistant for task management and productivity',
+              'Your AI assistant for task management and productivity',
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade600,
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
             _buildWelcomeFeatures(theme),
-            const SizedBox(height: 32),
-            _buildQuickActions(theme),
+            const SizedBox(height: 40),
+            _buildGetStartedButton(theme),
           ],
         ),
       ),
@@ -531,212 +624,63 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
     final features = [
       {
         'icon': Icons.task_alt,
-        'title': 'Smart Task Creation',
-        'subtitle': 'Create tasks with natural language',
+        'title': 'Task Creation',
+        'description': 'Create tasks with natural language',
       },
       {
         'icon': Icons.chat_bubble_outline,
-        'title': 'Intelligent Chat',
-        'subtitle': 'Get help with your productivity',
+        'title': 'Smart Chat',
+        'description': 'Get help with your productivity',
       },
       {
         'icon': Icons.mic,
         'title': 'Voice Commands',
-        'subtitle': 'Speak naturally to interact',
+        'description': 'Speak naturally to interact',
       },
     ];
 
     return Column(
-      children: features.map((feature) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: theme.colorScheme.outline.withValues(alpha: 0.2),
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  feature['icon'] as IconData,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      feature['title'] as String,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      feature['subtitle'] as String,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+      children:
+          features.map((feature) => _buildFeatureItem(feature, theme)).toList(),
     );
   }
 
-  Widget _buildQuickActions(ThemeData theme) {
-    final actions = [
-      'Create a shopping list',
-      'Set up a morning routine',
-      'Plan my week',
-      'Show my tasks',
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Try saying:',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: actions.map((action) {
-            return InkWell(
-              onTap: () => _handleSendMessage(action),
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Text(
-                  action,
-                  style: TextStyle(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEnhancedChatList(List<ChatMessage> messages, bool isTyping, ThemeData theme) {
-    return ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.all(16),
-      itemCount: messages.length + (isTyping ? 1 : 0),
-      itemBuilder: (context, index) {
-                 if (index < messages.length) {
-           final message = messages[index];
-           final isUser = message.sender == MessageSender.user;
-           return Padding(
-             padding: const EdgeInsets.only(bottom: 16),
-             child: Row(
-               crossAxisAlignment: CrossAxisAlignment.start,
-               children: [
-                 if (!isUser) ...[
-                   _buildEnhancedLanaAvatar(theme, size: 32),
-                   const SizedBox(width: 12),
-                 ],
-                 Expanded(
-                   child: ChatMessageBubble(
-                     message: message,
-                     onSpeakPressed: isUser ? null : () => _speak(message.content),
-                     isSpeaking: _isSpeaking,
-                   ),
-                 ),
-                 if (isUser) ...[
-                   const SizedBox(width: 12),
-                   CircleAvatar(
-                     radius: 16,
-                     backgroundColor: theme.colorScheme.primary,
-                     child: const Icon(
-                       Icons.person,
-                       color: Colors.white,
-                       size: 18,
-                     ),
-                   ),
-                 ],
-               ],
-             ),
-           );
-        } else {
-          return _buildTypingIndicator(theme);
-        }
-      },
-    );
-  }
-
-  Widget _buildTypingIndicator(ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+  Widget _buildFeatureItem(Map<String, dynamic> feature, ThemeData theme) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildEnhancedLanaAvatar(theme, size: 32),
-          const SizedBox(width: 12),
           Container(
-            padding: const EdgeInsets.all(16),
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(16),
+              color: AppColors.mediumTurquoise.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+            child: Icon(
+              feature['icon'] as IconData,
+              color: AppColors.mediumTurquoise,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnimatedBuilder(
-                  animation: _typingAnimation,
-                  builder: (context, child) {
-                    return Row(
-                      children: List.generate(3, (index) {
-                        return AnimatedContainer(
-                          duration: Duration(milliseconds: 300 + (index * 100)),
-                          margin: const EdgeInsets.only(right: 4),
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary.withValues(
-                              alpha: 0.3 + ((_typingAnimation.value + index * 0.3) % 1.0) * 0.7,
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                        );
-                      }),
-                    );
-                  },
-                ),
-                const SizedBox(width: 8),
                 Text(
-                  'Thinking...',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  feature['title'] as String,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  feature['description'] as String,
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 14,
                   ),
                 ),
               ],
@@ -747,175 +691,24 @@ class _LanaChatScreenState extends ConsumerState<LanaChatScreen>
     );
   }
 
-  Widget _buildListeningIndicator(ThemeData theme) {
-    return Positioned(
-      bottom: 20,
-      left: 0,
-      right: 0,
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(
-              color: theme.colorScheme.primary.withValues(alpha: 0.3),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedBuilder(
-                animation: _typingAnimation,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: 1.0 + (_typingAnimation.value * 0.3),
-                    child: Icon(
-                      Icons.mic,
-                      color: theme.colorScheme.primary,
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(width: 12),
-              Flexible(
-                child: Text(
-                  _recognizedText.isEmpty ? 'Listening...' : _recognizedText,
-                  style: TextStyle(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
+  Widget _buildGetStartedButton(ThemeData theme) {
+    return ElevatedButton(
+      onPressed: _hideWelcome,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.mediumTurquoise,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
         ),
       ),
-    );
-  }
-
-  Widget _buildErrorBanner(String error, ThemeData theme) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16.0),
-      color: theme.colorScheme.errorContainer,
-      child: Row(
-        children: [
-          Icon(
-            Icons.error_outline,
-            color: theme.colorScheme.onErrorContainer,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              error,
-              style: TextStyle(
-                color: theme.colorScheme.onErrorContainer,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => ref.read(chatProvider.notifier).clearError(),
-            child: const Text('Dismiss'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEnhancedInputArea(bool isLoading, List<String> quickSuggestions, ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: ChatInputWidget(
-        onSendMessage: _handleSendMessage,
-        isLoading: isLoading,
-        quickSuggestions: _showWelcome ? quickSuggestions : [],
-      ),
-    );
-  }
-
-  void _showClearDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear Chat'),
-        content: const Text('Are you sure you want to clear this conversation?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ref.read(chatProvider.notifier).startNewChat();
-            },
-            child: const Text('Clear'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showHelpDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('How to use LANA'),
-        content: const SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('LANA can help you with:'),
-              SizedBox(height: 8),
-              Text('• Creating and managing tasks'),
-              Text('• Setting up routines and schedules'),
-              Text('• Managing lists and categories'),
-              Text('• Answering questions about productivity'),
-              SizedBox(height: 16),
-              Text('Tips:'),
-              SizedBox(height: 8),
-              Text('• Use voice input for hands-free interaction'),
-              Text('• Be specific in your requests'),
-              Text('• Ask follow-up questions for clarification'),
-            ],
-          ),
+      child: const Text(
+        'Start Chatting',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Got it'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showSettingsDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Chat Settings'),
-        content: const Text('Chat settings will be available in a future update.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
   }

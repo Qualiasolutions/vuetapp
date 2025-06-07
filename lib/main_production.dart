@@ -23,7 +23,7 @@ import 'package:vuet_app/utils/deep_link_handler.dart';
 import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart'; // Added RedesignedListsScreen
 import 'package:vuet_app/ui/screens/lana_ai_assistant_screen.dart'; // Added LanaAiAssistantScreen
 import 'package:vuet_app/ui/screens/account/my_account_screen.dart'; // Added MyAccountScreen
-import 'package:vuet_app/ui/screens/settings/settings_screen.dart'; // Added SettingsScreen
+// Added SettingsScreen
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -266,14 +266,6 @@ class _HomePageState extends ConsumerState<HomePage> {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const MyAccountScreen()));
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
               },
             ),
             Consumer(

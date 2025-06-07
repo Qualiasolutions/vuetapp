@@ -1,175 +1,145 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vuet_app/models/entity_model.dart';
-import 'package:vuet_app/ui/screens/entities/entity_list_screen.dart';
-import 'package:vuet_app/utils/logger.dart';
+import 'package:go_router/go_router.dart';
+import '../../../ui/shared/widgets.dart';
+import '../../../config/theme_config.dart';
 
-class TravelCategoryScreen extends ConsumerWidget {
+/// Travel Category Screen - Shows all Travel entity types
+/// As specified in detailed guide: Trip, Flight, HotelOrRental, TaxiOrTransfer, DriveTime
+class TravelCategoryScreen extends StatelessWidget {
   const TravelCategoryScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Travel'),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      appBar: const VuetHeader('Travel'),
+      body: GridView.count(
+        crossAxisCount: 2,
+        padding: const EdgeInsets.all(16),
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        children: [
+          _TravelEntityTile(
+            title: 'Trips',
+            icon: Icons.luggage,
+            description: 'Plan your trips',
+            onTap: () => context.go('/categories/travel/trips'),
+          ),
+          _TravelEntityTile(
+            title: 'Flights',
+            icon: Icons.flight,
+            description: 'Manage flights',
+            onTap: () => context.go('/categories/travel/flights'),
+          ),
+          _TravelEntityTile(
+            title: 'Hotels & Rentals',
+            icon: Icons.hotel,
+            description: 'Book accommodations',
+            onTap: () => context.go('/categories/travel/hotels'),
+          ),
+          _TravelEntityTile(
+            title: 'Taxi & Transfer',
+            icon: Icons.local_taxi,
+            description: 'Arrange transport',
+            onTap: () => context.go('/categories/travel/transfers'),
+          ),
+          _TravelEntityTile(
+            title: 'Drive Time',
+            icon: Icons.directions_car,
+            description: 'Plan driving',
+            onTap: () => context.go('/categories/travel/driving'),
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      floatingActionButton: VuetFAB(
+        onPressed: () => _showCreateOptions(context),
+        tooltip: 'Add Travel Item',
+      ),
+    );
+  }
+
+  static void _showCreateOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Manage your travel plans and trips',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            const Text(
+              'Add Travel Item',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.darkJungleGreen,
               ),
             ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 1.1,
-                children: [
-                  _buildSubcategoryCard(
-                    context,
-                    title: 'My Trips',
-                    description: 'Trip records and travel history',
-                    icon: Icons.flight_takeoff,
-                    color: Colors.blue,
-                    onTap: () => _navigateToEntityList(
-                      context,
-                      entityTypes: [EntitySubtype.trip],
-                      title: 'My Trips',
-                    ),
-                  ),
-                  _buildSubcategoryCard(
-                    context,
-                    title: 'My Travel Plans',
-                    description: 'Upcoming travel plans and itineraries',
-                    icon: Icons.map,
-                    color: Colors.orange,
-                    onTap: () => _navigateToEntityList(
-                      context,
-                      entityTypes: [EntitySubtype.travelPlan],
-                      title: 'My Travel Plans',
-                    ),
-                  ),
-                  _buildSubcategoryCard(
-                    context,
-                    title: 'Traveller Info',
-                    description: 'Travel documents and information',
-                    icon: Icons.info_outline,
-                    color: Colors.green,
-                    onTap: () => _navigateToTagScreen(
-                      context,
-                      tagName: 'TRAVEL__INFORMATION__PUBLIC',
-                      title: 'Traveller Info',
-                    ),
-                  ),
-                ],
-              ),
+            const VuetDivider(),
+            ListTile(
+              leading: const Icon(Icons.luggage, color: AppColors.orange),
+              title: const Text('Trip'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/categories/travel/trips/create');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.flight, color: AppColors.orange),
+              title: const Text('Flight'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/categories/travel/flights/create');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.hotel, color: AppColors.orange),
+              title: const Text('Hotel & Rental'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/categories/travel/hotels/create');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.local_taxi, color: AppColors.orange),
+              title: const Text('Taxi & Transfer'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/categories/travel/transfers/create');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.directions_car, color: AppColors.orange),
+              title: const Text('Drive Time'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/categories/travel/driving/create');
+              },
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildSubcategoryCard(
-    BuildContext context, {
-    required String title,
-    required String description,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  size: 32,
-                  color: color,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+class _TravelEntityTile extends StatelessWidget {
+  const _TravelEntityTile({
+    required this.title,
+    required this.icon,
+    required this.description,
+    required this.onTap,
+  });
 
-  void _navigateToEntityList(
-    BuildContext context, {
-    required List<EntitySubtype> entityTypes,
-    required String title,
-  }) {
-    log('Navigating to travel subcategory: $title', name: 'TravelCategoryScreen');
-    
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EntityListScreen(
-          categoryId: '5', // Travel category ID
-          subcategoryId: title.toLowerCase().replaceAll(' ', '_'),
-          categoryName: 'Travel',
-          screenTitle: title,
-          appCategoryId: 5, // Travel category ID from app_categories.dart
-          defaultEntityType: entityTypes.first,
-        ),
-      ),
-    );
-  }
+  final String title;
+  final IconData icon;
+  final String description;
+  final VoidCallback onTap;
 
-  void _navigateToTagScreen(
-    BuildContext context, {
-    required String tagName,
-    required String title,
-  }) {
-    // TODO: Implement tag screen navigation when TagScreen is available
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Tag screen for $title ($tagName) - Coming soon!'),
-        duration: const Duration(seconds: 2),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    return VuetCategoryTile(
+      title: title,
+      icon: icon,
+      onTap: onTap,
     );
   }
 }

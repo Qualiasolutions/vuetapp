@@ -6,6 +6,15 @@ import 'package:vuet_app/providers/category_screen_providers.dart';
 import 'package:vuet_app/providers/setup_service_provider.dart';
 import 'package:vuet_app/ui/screens/onboarding/category_introduction_screen.dart';
 import 'package:vuet_app/ui/screens/categories/sub_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/pets_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/social_interests_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/education_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/travel_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/finance_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/transport_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/health_beauty_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/home_garden_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/charity_religion_category_screen.dart';
 import 'package:vuet_app/ui/theme/app_theme.dart'; // Add import for AppTheme
 
 class CategoriesGrid extends ConsumerWidget {
@@ -82,40 +91,39 @@ class CategoriesGrid extends ConsumerWidget {
     // Get the screen size for responsive layout
     final screenSize = MediaQuery.of(context).size;
     final isTablet = screenSize.width > 600;
-    final isLargePhone = screenSize.width > 400 && screenSize.width <= 600;
 
-    // Calculate cross axis count based on screen width
+    // Keep 3 columns on phones, 4 on tablets
     final crossAxisCount = isTablet ? 4 : 3;
 
-    // Calculate child aspect ratio and padding based on screen size
-    final childAspectRatio = isTablet ? 1.2 : (isLargePhone ? 1.1 : 1.0);
-    final gridPadding = isTablet ? 20.0 : (isLargePhone ? 18.0 : 16.0);
-    final gridSpacing = isTablet ? 20.0 : (isLargePhone ? 18.0 : 16.0);
+    // Calculate padding to maximize screen usage
+    final gridPadding = 10.0;
+    final gridSpacing = 10.0;
 
-    // Calculate icon size based on screen size
-    final iconSize = isTablet ? 56.0 : (isLargePhone ? 52.0 : 48.0);
+    // Calculate icon size proportionally to screen width but ensure minimum size
+    final iconSize =
+        (screenSize.width / (crossAxisCount * 2.8)).clamp(40.0, 56.0);
 
     // Directly watch the provider which now returns List<CategoryDisplayGroup>
     final List<CategoryDisplayGroup> allDisplayGroups =
         ref.watch(personalCategoryDisplayGroupsProvider);
 
-    final filteredDisplayGroups = searchQuery.isEmpty
-        ? allDisplayGroups
-        : allDisplayGroups
-            .where((group) => group.displayName
-                .toLowerCase()
-                .contains(searchQuery.toLowerCase()))
-            .toList();
+    // Filter out the family category and apply search query if any
+    final filteredDisplayGroups = allDisplayGroups
+        .where((group) =>
+            group.displayName.toLowerCase() !=
+                "family" && // Filter out family category
+            (searchQuery.isEmpty ||
+                group.displayName
+                    .toLowerCase()
+                    .contains(searchQuery.toLowerCase())))
+        .toList();
 
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(personalCategoryDisplayGroupsProvider);
-        // Even though it's sync, a small delay might be perceived as a refresh action if desired
         await Future.delayed(const Duration(milliseconds: 50));
       },
-      child: Builder(
-          // Added Builder to ensure context for ScaffoldMessenger is correct if needed immediately
-          builder: (context) {
+      child: Builder(builder: (context) {
         if (filteredDisplayGroups.isEmpty && searchQuery.isNotEmpty) {
           return Center(
             child: Column(
@@ -135,7 +143,6 @@ class CategoriesGrid extends ConsumerWidget {
         if (filteredDisplayGroups.isEmpty &&
             searchQuery.isEmpty &&
             allDisplayGroups.isEmpty) {
-          // Handles the case where allDisplayGroups itself is empty initially (e.g. error in config)
           return const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -152,182 +159,241 @@ class CategoriesGrid extends ConsumerWidget {
           );
         }
 
-        return GridView.builder(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.all(gridPadding), // Responsive padding
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount, // Responsive grid
-            crossAxisSpacing: gridSpacing, // Responsive spacing
-            mainAxisSpacing: gridSpacing, // Responsive spacing
-            childAspectRatio: childAspectRatio, // Responsive aspect ratio
-          ),
-          itemCount: filteredDisplayGroups.length,
-          itemBuilder: (context, index) {
-            final group = filteredDisplayGroups[index];
-            final groupId = _getGroupId(group.displayName);
-            final isReferences = group.displayName == 'References';
+        // Calculate rows needed for a perfect 3x3 grid if needed
+        final int itemCount = filteredDisplayGroups.length;
 
-            return FutureBuilder(
-              future: Future.delayed(Duration(milliseconds: 50 * index)),
-              builder: (context, snapshot) {
-                final isReady =
-                    snapshot.connectionState == ConnectionState.done;
-                return AnimatedOpacity(
-                  opacity: isReady ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeInOut,
-                  child: AnimatedScale(
-                    scale: isReady ? 1.0 : 0.7,
+        return Padding(
+          padding: EdgeInsets.all(gridPadding),
+          child: GridView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: gridSpacing,
+              mainAxisSpacing: gridSpacing,
+              // Expanded aspect ratio for better spacing
+              childAspectRatio: 1.0,
+            ),
+            itemCount: itemCount,
+            itemBuilder: (context, index) {
+              final group = filteredDisplayGroups[index];
+              final groupId = _getGroupId(group.displayName);
+              final isReferences = group.displayName == 'References';
+
+              return FutureBuilder(
+                future: Future.delayed(Duration(milliseconds: 50 * index)),
+                builder: (context, snapshot) {
+                  final isReady =
+                      snapshot.connectionState == ConnectionState.done;
+                  return AnimatedOpacity(
+                    opacity: isReady ? 1.0 : 0.0,
                     duration: const Duration(milliseconds: 500),
                     curve: Curves.easeInOut,
-                    child: InkWell(
-                      onTap: () async {
-                        if (isReferences) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    'References is a premium feature that will be available soon.')),
-                          );
-                        } else {
-                          final List<AppCategory> actualCategoriesInGroup =
-                              getCategoriesInGroup(group.displayName);
-                          String categorySetupKey =
-                              _getCategorySetupKey(group.displayName);
-
-                          // Check if setup is already completed
-                          final setupService = ref.read(setupServiceProvider);
-                          final isCompleted = await setupService
-                              .isCategorySetupCompleted(categorySetupKey);
-
-                          if (!context.mounted) return;
-
-                          if (isCompleted) {
-                            // Navigate directly to subcategory screen
-                            final subCategoryKeys = actualCategoriesInGroup
-                                .map((cat) => cat.id.toString())
-                                .toList();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SubCategoryScreen(
-                                  categoryId: categorySetupKey,
-                                  categoryName: group.displayName,
-                                  subCategoryKeys: subCategoryKeys,
-                                ),
-                              ),
+                    child: AnimatedScale(
+                      scale: isReady ? 1.0 : 0.7,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                      child: InkWell(
+                        onTap: () async {
+                          if (isReferences) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'References is a premium feature that will be available soon.')),
                             );
                           } else {
-                            // Show introduction screen
-                            final introScreen = CategoryIntroductionScreen(
-                              categoryId: categorySetupKey,
-                              categoryName: group.displayName,
-                              onComplete: () {
-                                // Optional completion callback
-                              },
-                            );
+                            final List<AppCategory> actualCategoriesInGroup =
+                                getCategoriesInGroup(group.displayName);
+                            String categorySetupKey =
+                                _getCategorySetupKey(group.displayName);
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => introScreen,
-                              ),
-                            );
+                            // Check if setup is already completed
+                            final setupService = ref.read(setupServiceProvider);
+                            final isCompleted = await setupService
+                                .isCategorySetupCompleted(categorySetupKey);
+
+                            if (!context.mounted) return;
+
+                            if (isCompleted) {
+                              // Navigate directly to category-specific screen
+                              _navigateToCategoryScreen(context, group.displayName);
+                            } else {
+                              // Show introduction screen
+                              final introScreen = CategoryIntroductionScreen(
+                                categoryId: categorySetupKey,
+                                categoryName: group.displayName,
+                                onComplete: () {
+                                  // Optional completion callback
+                                },
+                              );
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => introScreen,
+                                ),
+                              );
+                            }
                           }
-                        }
-                      },
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 6.0, // Increased elevation
-                        shadowColor: Colors.black.withOpacity(0.3), // Custom shadow
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0), // Slightly larger radius
-                        ),
-                        color: AppTheme.primary, // Dark teal background
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppTheme.primary,
-                                AppTheme.primary.withOpacity(0.85),
-                              ],
-                            ),
+                        },
+                        child: Card(
+                          clipBehavior: Clip.antiAlias,
+                          elevation: 6.0,
+                          shadowColor: Colors.black.withOpacity(0.3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
                           ),
-                          child: Stack(
-                            children: [
-                              // Decorative corner accent
-                              Positioned(
-                                top: -15,
-                                right: -15,
-                                child: Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.accent.withOpacity(0.15),
-                                    shape: BoxShape.circle,
+                          color: AppTheme.primary,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  AppTheme.primary,
+                                  AppTheme.primary.withOpacity(0.85),
+                                ],
+                              ),
+                            ),
+                            child: Stack(
+                              children: [
+                                // Decorative corner accent
+                                Positioned(
+                                  top: -15,
+                                  right: -15,
+                                  child: Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.accent.withOpacity(0.15),
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              // Center Icon
-                              Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: iconSize + 20,
-                                      height: iconSize + 20,
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.primary.withOpacity(0.7),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: AppTheme.accent.withOpacity(0.3),
-                                          width: 2,
+                                // Main content with perfectly centered icon and text
+                                Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      // Icon container with enhanced styling
+                                      Container(
+                                        width: iconSize + 16,
+                                        height: iconSize + 16,
+                                        decoration: BoxDecoration(
+                                          color:
+                                              AppTheme.primary.withOpacity(0.8),
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: AppTheme.accent
+                                                .withOpacity(0.5),
+                                            width: 2,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
+                                              blurRadius: 4,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Center(
+                                          child: Icon(
+                                            _getCategoryIcon(groupId),
+                                            color: AppTheme.accent,
+                                            size: iconSize,
+                                          ),
                                         ),
                                       ),
-                                      child: Icon(
-                                        _getCategoryIcon(groupId),
-                                        color: AppTheme.accent, // Orange icon
-                                        size: iconSize, // Responsive icon size
+                                      const SizedBox(height: 12),
+                                      // Category name with perfect centering
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
+                                        child: Text(
+                                          group.displayName,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14.0,
+                                            height: 1.2,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      group.displayName,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: isTablet
-                                            ? 16.0
-                                            : 14.0, // Responsive font size
-                                        letterSpacing: 0.3,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              // Premium Tag
-                              if (group.isPremium)
-                                const Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: PremiumTag(),
-                                ),
-                            ],
+                                // Premium Tag
+                                if (group.isPremium)
+                                  const Positioned(
+                                    top: 8,
+                                    right: 8,
+                                    child: PremiumTag(),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            );
-          },
+                  );
+                },
+              );
+            },
+          ),
         );
       }),
+    );
+  }
+
+  // Navigate to the appropriate category-specific screen
+  void _navigateToCategoryScreen(BuildContext context, String displayName) {
+    Widget screen;
+    
+    switch (displayName.toLowerCase()) {
+      case 'pets':
+        screen = const PetsCategoryScreen();
+        break;
+      case 'social interests':
+        screen = const SocialInterestsCategoryScreen();
+        break;
+      case 'education & career':
+        screen = const EducationCategoryScreen();
+        break;
+      case 'travel':
+        screen = const TravelCategoryScreen();
+        break;
+      case 'health & beauty':
+        screen = const HealthBeautyCategoryScreen();
+        break;
+      case 'home & garden':
+        screen = const HomeGardenCategoryScreen();
+        break;
+      case 'finance':
+        screen = const FinanceCategoryScreen();
+        break;
+      case 'transport':
+        screen = const TransportCategoryScreen();
+        break;
+      case 'charity & religion':
+        screen = const CharityReligionCategoryScreen();
+        break;
+      default:
+        screen = SubCategoryScreen(
+          categoryId: displayName.toLowerCase().replaceAll(' & ', '_').replaceAll(' ', '_'),
+          categoryName: displayName,
+          subCategoryKeys: const [],
+        );
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
     );
   }
 }
