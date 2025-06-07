@@ -124,7 +124,7 @@ class _CareerGoalFormScreenState extends ConsumerState<CareerGoalFormScreen> {
               VuetTextField(
                 'Title',
                 controller: _titleController,
-                validator: VuetValidators.required('Title'),
+                validator: VuetValidators.required,
               ),
               const SizedBox(height: 16),
               VuetTextField(

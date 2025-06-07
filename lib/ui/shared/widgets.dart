@@ -129,25 +129,25 @@ class VuetDatePicker extends StatelessWidget {
 /// Validation helpers as specified in the detailed guide
 class VuetValidators {
   /// Required string validator
-  static String? Function(String?) required = (v) =>
+  static String? required(String? v) =>
       v != null && v.trim().isNotEmpty ? null : 'Required';
   
   /// Date ISO validator (YYYY-MM-DD)
-  static String? Function(String?) dateIso = (v) =>
+  static String? dateIso(String? v) =>
       DateTime.tryParse(v ?? '') != null ? null : 'yyyy-MM-dd';
   
   /// Positive integer validator
-  static String? Function(String?) positiveInt = (v) =>
+  static String? positiveInt(String? v) =>
       int.tryParse(v ?? '') != null && int.parse(v!) > 0 ? null : '>0';
 
   /// Generic validator for optional fields (always returns null)
-  static String? Function(String?) optional = (String? v) => null;
+  static String? optional(String? v) => null;
 
-  static String? Function(String?) emailOptional = (v) {
+  static String? emailOptional(String? v) {
     if (v == null || v.trim().isEmpty) return null; // Optional
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
     return emailRegex.hasMatch(v.trim()) ? null : 'Enter a valid email';
-  };
+  }
 }
 
 /// Modern Save Button as specified in the guide

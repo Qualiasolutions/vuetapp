@@ -31,6 +31,48 @@ class PetsCategoryScreen extends StatelessWidget {
             description: 'Schedule vet visits',
             onTap: () => PetsNavigator.navigateToPetAppointmentList(context), // No petId for general list
           ),
+          _PetsEntityTile(
+            title: 'Vets',
+            icon: Icons.medical_services_outlined, // Or a more specific vet icon if available
+            description: 'Manage veterinary contacts',
+            onTap: () => PetsNavigator.navigateToVetList(context),
+          ),
+          _PetsEntityTile(
+            title: 'Pet Groomers',
+            icon: Icons.content_cut_outlined, // Or a more specific groomer icon
+            description: 'Find and manage groomers',
+            onTap: () => PetsNavigator.navigateToGroomerList(context),
+          ),
+          _PetsEntityTile(
+            title: 'Pet Sitters',
+            icon: Icons.home_work_outlined, // Or a more specific sitter icon
+            description: 'Organize pet sitting',
+            onTap: () => PetsNavigator.navigateToSitterList(context),
+          ),
+          _PetsEntityTile(
+            title: 'Pet Walkers',
+            icon: Icons.directions_walk_outlined,
+            description: 'Manage pet walkers',
+            onTap: () => PetsNavigator.navigateToWalkerList(context),
+          ),
+          _PetsEntityTile(
+            title: 'Microchip Companies',
+            icon: Icons.memory_outlined,
+            description: 'Track microchip info',
+            onTap: () => PetsNavigator.navigateToMicrochipCompanyList(context),
+          ),
+          _PetsEntityTile(
+            title: 'Pet Insurance',
+            icon: Icons.shield_outlined, // Combined for company & policy
+            description: 'Manage pet insurance',
+            onTap: () => PetsNavigator.navigateToInsuranceCompanyList(context), // Or a dedicated insurance hub
+          ),
+          _PetsEntityTile(
+            title: 'Pet Birthdays',
+            icon: Icons.cake_outlined,
+            description: 'Remember pet birthdays',
+            onTap: () => PetsNavigator.navigateToPetBirthdayList(context),
+          ),
         ],
       ),
       floatingActionButton: VuetFAB(
@@ -72,7 +114,73 @@ class PetsCategoryScreen extends StatelessWidget {
                 Navigator.pop(context);
                 // Navigating to create appointment without a specific petId
                 // The form screen is expected to handle this (e.g., show a pet selector)
-                PetsNavigator.navigateToPetAppointmentCreate(context); 
+                PetsNavigator.navigateToPetAppointmentCreate(context);
+              },
+            ),
+            const VuetDivider(), // Added by Cline
+            ListTile(
+              leading: const Icon(Icons.medical_services_outlined, color: AppColors.orange), // Added by Cline
+              title: const Text('Vet'), // Added by Cline
+              onTap: () { // Added by Cline
+                Navigator.pop(context); // Added by Cline
+                PetsNavigator.navigateToVetCreate(context); // Added by Cline
+              }, // Added by Cline
+            ),
+            ListTile(
+              leading: const Icon(Icons.content_cut_outlined, color: AppColors.orange), // Added by Cline
+              title: const Text('Pet Groomer'), // Added by Cline
+              onTap: () { // Added by Cline
+                Navigator.pop(context); // Added by Cline
+                PetsNavigator.navigateToGroomerCreate(context); // Added by Cline
+              }, // Added by Cline
+            ),
+            ListTile(
+              leading: const Icon(Icons.home_work_outlined, color: AppColors.orange), // Added by Cline
+              title: const Text('Pet Sitter'), // Added by Cline
+              onTap: () { // Added by Cline
+                Navigator.pop(context); // Added by Cline
+                PetsNavigator.navigateToSitterCreate(context); // Added by Cline
+              }, // Added by Cline
+            ),
+            // Further additions by Cline
+            ListTile(
+              leading: const Icon(Icons.directions_walk_outlined, color: AppColors.orange),
+              title: const Text('Pet Walker'),
+              onTap: () {
+                Navigator.pop(context);
+                PetsNavigator.navigateToWalkerCreate(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.memory_outlined, color: AppColors.orange),
+              title: const Text('Microchip Company'),
+              onTap: () {
+                Navigator.pop(context);
+                PetsNavigator.navigateToMicrochipCompanyCreate(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.shield_outlined, color: AppColors.orange),
+              title: const Text('Pet Insurance Company'),
+              onTap: () {
+                Navigator.pop(context);
+                PetsNavigator.navigateToInsuranceCompanyCreate(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.article_outlined, color: AppColors.orange),
+              title: const Text('Pet Insurance Policy'),
+              onTap: () {
+                Navigator.pop(context);
+                PetsNavigator.navigateToInsurancePolicyCreate(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cake_outlined, color: AppColors.orange),
+              title: const Text('Pet Birthday'),
+              onTap: () {
+                Navigator.pop(context);
+                PetsNavigator.navigateToPetBirthdayCreate(context);
               },
             ),
           ],

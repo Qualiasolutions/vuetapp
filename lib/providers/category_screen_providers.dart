@@ -88,10 +88,10 @@ final personalCategoryDisplayGroupsProvider = Provider<List<CategoryDisplayGroup
         return groupDefA.sortOrder.compareTo(groupDefB.sortOrder);
       });
 
-      // Filter out the "Family" category before returning
-      final filteredResultGroups = resultGroups.where((group) => group.systemName != "FAMILY").toList();
+      // Filter out the "Family" category before returning // Cline: Removed this filter to display Family category
+      // final filteredResultGroups = resultGroups.where((group) => group.systemName != "FAMILY").toList();
 
-      return filteredResultGroups;
+      return resultGroups; // Cline: Return all groups including Family
     },
     loading: () => [], // Return empty list while loading
     error: (error, stackTrace) {

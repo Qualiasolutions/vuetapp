@@ -5,6 +5,7 @@ import 'package:vuet_app/ui/screens/pets/pet_form_screen.dart';
 import 'package:vuet_app/ui/screens/pets/pet_appointment_list_screen.dart';
 import 'package:vuet_app/ui/screens/pets/pet_appointment_form_screen.dart';
 import 'package:vuet_app/ui/screens/categories/pets_category_screen.dart';
+import 'package:vuet_app/ui/screens/shared/placeholder_screen.dart'; // Added by Cline
 
 // TODO: Import PetsCategoryScreen if it's the entry point for '/categories/pets'
 // import 'package:vuet_app/ui/screens/categories/pets_category_screen.dart';
@@ -20,6 +21,46 @@ class PetsNavigator {
       'pets/create'; // Relative to petsCategoryBasePath
   static const String petEditPath =
       'pets/edit/:petId'; // Relative to petsCategoryBasePath, petId is a path parameter
+
+  // Paths for Vet screens (Added by Cline)
+  static const String vetListPath = 'vets';
+  static const String vetCreatePath = 'vets/create';
+  static const String vetEditPath = 'vets/edit/:vetId';
+
+  // Paths for PetGroomer screens (Added by Cline)
+  static const String groomerListPath = 'groomers';
+  static const String groomerCreatePath = 'groomers/create';
+  static const String groomerEditPath = 'groomers/edit/:groomerId';
+
+  // Paths for PetSitter screens (Added by Cline)
+  static const String sitterListPath = 'sitters';
+  static const String sitterCreatePath = 'sitters/create';
+  static const String sitterEditPath = 'sitters/edit/:sitterId';
+
+  // Paths for PetWalker screens (Added by Cline)
+  static const String walkerListPath = 'walkers';
+  static const String walkerCreatePath = 'walkers/create';
+  static const String walkerEditPath = 'walkers/edit/:walkerId';
+
+  // Paths for MicrochipCompany screens (Added by Cline)
+  static const String microchipCompanyListPath = 'microchip_companies';
+  static const String microchipCompanyCreatePath = 'microchip_companies/create';
+  static const String microchipCompanyEditPath = 'microchip_companies/edit/:companyId';
+
+  // Paths for InsuranceCompany (Pet) screens (Added by Cline)
+  static const String insuranceCompanyListPath = 'insurance_companies';
+  static const String insuranceCompanyCreatePath = 'insurance_companies/create';
+  static const String insuranceCompanyEditPath = 'insurance_companies/edit/:companyId';
+
+  // Paths for InsurancePolicy (Pet) screens (Added by Cline)
+  static const String insurancePolicyListPath = 'insurance_policies';
+  static const String insurancePolicyCreatePath = 'insurance_policies/create';
+  static const String insurancePolicyEditPath = 'insurance_policies/edit/:policyId';
+  
+  // Paths for PetBirthday screens (Added by Cline)
+  static const String petBirthdayListPath = 'pet_birthdays';
+  static const String petBirthdayCreatePath = 'pet_birthdays/create';
+  static const String petBirthdayEditPath = 'pet_birthdays/edit/:birthdayId';
 
   // Paths for PetAppointment screens
   // According to task: base is /categories/pets/appointments
@@ -64,13 +105,128 @@ class PetsNavigator {
               ),
             ],
           ),
-          // Routes for Pet Appointments, also under /categories/pets
-          // This structure assumes /categories/pets is a common parent for both pets and their appointments.
-          // If appointments are truly at /categories/pets/appointments (parallel to /categories/pets/pets),
-          // then these routes should not be nested under the GoRoute for petsCategoryBasePath,
-          // or the paths need to be adjusted.
-          // Sticking to the provided paths from the task description for now.
-          // The task implies /categories/pets/appointments is a separate top-level-ish path.
+          // Vet Routes (Added by Cline)
+          GoRoute(
+            name: 'vetList',
+            path: vetListPath, // /categories/pets/vets
+            builder: (BuildContext context, GoRouterState state) {
+              return const PlaceholderScreen(title: 'Vets');
+            },
+            routes: [
+              GoRoute(
+                name: 'vetCreate',
+                path: 'create', // /categories/pets/vets/create
+                builder: (BuildContext context, GoRouterState state) {
+                  return const PlaceholderScreen(title: 'Create Vet');
+                },
+              ),
+              GoRoute(
+                name: 'vetEdit',
+                path: 'edit/:vetId', // /categories/pets/vets/edit/:vetId
+                builder: (BuildContext context, GoRouterState state) {
+                  return PlaceholderScreen(title: 'Edit Vet', entityId: state.pathParameters['vetId']);
+                },
+              ),
+            ],
+          ),
+          // PetGroomer Routes (Added by Cline)
+          GoRoute(
+            name: 'groomerList',
+            path: groomerListPath, // /categories/pets/groomers
+            builder: (BuildContext context, GoRouterState state) {
+              return const PlaceholderScreen(title: 'Pet Groomers');
+            },
+            routes: [
+              GoRoute(
+                name: 'groomerCreate',
+                path: 'create', // /categories/pets/groomers/create
+                builder: (BuildContext context, GoRouterState state) {
+                  return const PlaceholderScreen(title: 'Create Pet Groomer');
+                },
+              ),
+              GoRoute(
+                name: 'groomerEdit',
+                path: 'edit/:groomerId', // /categories/pets/groomers/edit/:groomerId
+                builder: (BuildContext context, GoRouterState state) {
+                  return PlaceholderScreen(title: 'Edit Pet Groomer', entityId: state.pathParameters['groomerId']);
+                },
+              ),
+            ],
+          ),
+          // PetSitter Routes (Added by Cline)
+          GoRoute(
+            name: 'sitterList',
+            path: sitterListPath, // /categories/pets/sitters
+            builder: (BuildContext context, GoRouterState state) {
+              return const PlaceholderScreen(title: 'Pet Sitters');
+            },
+            routes: [
+              GoRoute(
+                name: 'sitterCreate',
+                path: 'create', // /categories/pets/sitters/create
+                builder: (BuildContext context, GoRouterState state) {
+                  return const PlaceholderScreen(title: 'Create Pet Sitter');
+                },
+              ),
+              GoRoute(
+                name: 'sitterEdit',
+                path: 'edit/:sitterId', // /categories/pets/sitters/edit/:sitterId
+                builder: (BuildContext context, GoRouterState state) {
+                  return PlaceholderScreen(title: 'Edit Pet Sitter', entityId: state.pathParameters['sitterId']);
+                },
+              ),
+            ],
+          ),
+          // PetWalker Routes (Added by Cline)
+          GoRoute(
+            name: 'walkerList',
+            path: walkerListPath, // /categories/pets/walkers
+            builder: (BuildContext context, GoRouterState state) => const PlaceholderScreen(title: 'Pet Walkers'),
+            routes: [
+              GoRoute(name: 'walkerCreate', path: 'create', builder: (context, state) => const PlaceholderScreen(title: 'Add Pet Walker')),
+              GoRoute(name: 'walkerEdit', path: 'edit/:walkerId', builder: (context, state) => PlaceholderScreen(title: 'Edit Pet Walker', entityId: state.pathParameters['walkerId'])),
+            ],
+          ),
+          // MicrochipCompany Routes (Added by Cline)
+          GoRoute(
+            name: 'microchipCompanyList',
+            path: microchipCompanyListPath, // /categories/pets/microchip_companies
+            builder: (BuildContext context, GoRouterState state) => const PlaceholderScreen(title: 'Microchip Companies'),
+            routes: [
+              GoRoute(name: 'microchipCompanyCreate', path: 'create', builder: (context, state) => const PlaceholderScreen(title: 'Add Microchip Company')),
+              GoRoute(name: 'microchipCompanyEdit', path: 'edit/:companyId', builder: (context, state) => PlaceholderScreen(title: 'Edit Microchip Company', entityId: state.pathParameters['companyId'])),
+            ],
+          ),
+          // InsuranceCompany (Pet) Routes (Added by Cline)
+          GoRoute(
+            name: 'insuranceCompanyList',
+            path: insuranceCompanyListPath, // /categories/pets/insurance_companies
+            builder: (BuildContext context, GoRouterState state) => const PlaceholderScreen(title: 'Pet Insurance Companies'),
+            routes: [
+              GoRoute(name: 'insuranceCompanyCreate', path: 'create', builder: (context, state) => const PlaceholderScreen(title: 'Add Pet Insurance Company')),
+              GoRoute(name: 'insuranceCompanyEdit', path: 'edit/:companyId', builder: (context, state) => PlaceholderScreen(title: 'Edit Pet Insurance Company', entityId: state.pathParameters['companyId'])),
+            ],
+          ),
+          // InsurancePolicy (Pet) Routes (Added by Cline)
+          GoRoute(
+            name: 'insurancePolicyList',
+            path: insurancePolicyListPath, // /categories/pets/insurance_policies
+            builder: (BuildContext context, GoRouterState state) => const PlaceholderScreen(title: 'Pet Insurance Policies'),
+            routes: [
+              GoRoute(name: 'insurancePolicyCreate', path: 'create', builder: (context, state) => const PlaceholderScreen(title: 'Add Pet Insurance Policy')),
+              GoRoute(name: 'insurancePolicyEdit', path: 'edit/:policyId', builder: (context, state) => PlaceholderScreen(title: 'Edit Pet Insurance Policy', entityId: state.pathParameters['policyId'])),
+            ],
+          ),
+          // PetBirthday Routes (Added by Cline)
+          GoRoute(
+            name: 'petBirthdayList',
+            path: petBirthdayListPath, // /categories/pets/pet_birthdays
+            builder: (BuildContext context, GoRouterState state) => const PlaceholderScreen(title: 'Pet Birthdays'),
+            routes: [
+              GoRoute(name: 'petBirthdayCreate', path: 'create', builder: (context, state) => const PlaceholderScreen(title: 'Add Pet Birthday')),
+              GoRoute(name: 'petBirthdayEdit', path: 'edit/:birthdayId', builder: (context, state) => PlaceholderScreen(title: 'Edit Pet Birthday', entityId: state.pathParameters['birthdayId'])),
+            ],
+          ),
         ],
       ),
       // Standalone routes for Pet Appointments as per task description paths
@@ -131,6 +287,70 @@ class PetsNavigator {
     // Or context.go('$petsCategoryBasePath/$petEditPath'.replaceFirst(':petId', petId));
   }
 
+  // Vets (Added by Cline)
+  static void navigateToVetList(BuildContext context) {
+    context.goNamed('vetList');
+  }
+
+  static void navigateToVetCreate(BuildContext context) {
+    context.goNamed('vetCreate');
+  }
+
+  static void navigateToVetEdit(BuildContext context, String vetId) {
+    context.goNamed('vetEdit', pathParameters: {'vetId': vetId});
+  }
+
+  // Pet Groomers (Added by Cline)
+  static void navigateToGroomerList(BuildContext context) {
+    context.goNamed('groomerList');
+  }
+
+  static void navigateToGroomerCreate(BuildContext context) {
+    context.goNamed('groomerCreate');
+  }
+
+  static void navigateToGroomerEdit(BuildContext context, String groomerId) {
+    context.goNamed('groomerEdit', pathParameters: {'groomerId': groomerId});
+  }
+
+  // Pet Sitters (Added by Cline)
+  static void navigateToSitterList(BuildContext context) {
+    context.goNamed('sitterList');
+  }
+
+  static void navigateToSitterCreate(BuildContext context) {
+    context.goNamed('sitterCreate');
+  }
+
+  static void navigateToSitterEdit(BuildContext context, String sitterId) {
+    context.goNamed('sitterEdit', pathParameters: {'sitterId': sitterId});
+  }
+
+  // Pet Walkers (Added by Cline)
+  static void navigateToWalkerList(BuildContext context) => context.goNamed('walkerList');
+  static void navigateToWalkerCreate(BuildContext context) => context.goNamed('walkerCreate');
+  static void navigateToWalkerEdit(BuildContext context, String walkerId) => context.goNamed('walkerEdit', pathParameters: {'walkerId': walkerId});
+
+  // Microchip Companies (Added by Cline)
+  static void navigateToMicrochipCompanyList(BuildContext context) => context.goNamed('microchipCompanyList');
+  static void navigateToMicrochipCompanyCreate(BuildContext context) => context.goNamed('microchipCompanyCreate');
+  static void navigateToMicrochipCompanyEdit(BuildContext context, String companyId) => context.goNamed('microchipCompanyEdit', pathParameters: {'companyId': companyId});
+
+  // Insurance Companies (Pet) (Added by Cline)
+  static void navigateToInsuranceCompanyList(BuildContext context) => context.goNamed('insuranceCompanyList');
+  static void navigateToInsuranceCompanyCreate(BuildContext context) => context.goNamed('insuranceCompanyCreate');
+  static void navigateToInsuranceCompanyEdit(BuildContext context, String companyId) => context.goNamed('insuranceCompanyEdit', pathParameters: {'companyId': companyId});
+
+  // Insurance Policies (Pet) (Added by Cline)
+  static void navigateToInsurancePolicyList(BuildContext context) => context.goNamed('insurancePolicyList');
+  static void navigateToInsurancePolicyCreate(BuildContext context) => context.goNamed('insurancePolicyCreate');
+  static void navigateToInsurancePolicyEdit(BuildContext context, String policyId) => context.goNamed('insurancePolicyEdit', pathParameters: {'policyId': policyId});
+
+  // Pet Birthdays (Added by Cline)
+  static void navigateToPetBirthdayList(BuildContext context) => context.goNamed('petBirthdayList');
+  static void navigateToPetBirthdayCreate(BuildContext context) => context.goNamed('petBirthdayCreate');
+  static void navigateToPetBirthdayEdit(BuildContext context, String birthdayId) => context.goNamed('petBirthdayEdit', pathParameters: {'birthdayId': birthdayId});
+  
   // Pet Appointments
   static void navigateToPetAppointmentList(BuildContext context,
       {String? petId}) {

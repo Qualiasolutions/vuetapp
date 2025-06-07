@@ -133,9 +133,9 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              VuetTextField('Company Name', controller: _companyNameController, validator: VuetValidators.required('Company Name')),
+              VuetTextField('Company Name', controller: _companyNameController, validator: VuetValidators.required),
               const SizedBox(height: 16),
-              VuetTextField('Job Title', controller: _jobTitleController, validator: VuetValidators.required('Job Title')),
+              VuetTextField('Job Title', controller: _jobTitleController, validator: VuetValidators.required),
               const SizedBox(height: 16),
               VuetDatePicker('Start Date', controller: _startDateController, validator: VuetValidators.dateIso),
               const SizedBox(height: 16),
