@@ -19,21 +19,38 @@ import 'package:vuet_app/ui/screens/tasks/task_detail_screen.dart';
 import 'package:vuet_app/ui/screens/auth/auth_wrapper.dart';
 import 'package:vuet_app/ui/screens/auth/update_password_screen.dart';
 import 'package:vuet_app/ui/screens/notifications/notifications_screen.dart';
-import 'package:vuet_app/ui/screens/home/modernized_home_screen.dart'; // Updated for modernized version
-import 'package:vuet_app/ui/screens/categories/categories_screen.dart'; // Updated to use categories screen with toggle
+import 'package:vuet_app/ui/screens/calendar/calendar_screen.dart'; // Changed to CalendarScreen for Home
+import 'package:vuet_app/ui/screens/categories/categories_grid.dart'; // Changed to CategoriesGrid for Categories
+// import 'package:vuet_app/ui/screens/home/modernized_home_screen.dart'; // No longer needed
+// import 'package:vuet_app/ui/screens/categories/categories_screen.dart'; // No longer needed
 import 'package:vuet_app/widgets/notification_badge.dart';
 import 'package:vuet_app/utils/deep_link_handler.dart';
 import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart'; // Updated with new redesigned version
 import 'package:vuet_app/ui/screens/lana_chat_screen.dart'; // Updated to new LANA chat screen
 import 'package:vuet_app/ui/screens/account/my_account_screen.dart'; // My Account screen
 import 'package:vuet_app/ui/screens/routines/routines_screen.dart'; // Added RoutinesScreen
-import 'package:vuet_app/ui/navigation/timeblock_navigator.dart'; // Added TimeblockNavigator
+// Added TimeblockNavigator
 import 'package:vuet_app/ui/screens/family/family_screen.dart'; // Added FamilyScreen
 import 'package:vuet_app/ui/navigation/pets_navigator.dart'; // Import PetsNavigator
 import 'package:vuet_app/ui/screens/timeblocks/timeblocks_screen.dart'; // Import TimeblocksScreen
 import 'package:vuet_app/ui/screens/timeblocks/create_edit_timeblock_screen.dart'; // Import CreateEditTimeblockScreen
 import 'package:vuet_app/ui/screens/timeblocks/timeblock_detail_screen.dart'; // Import TimeblockDetailScreen
 import 'package:vuet_app/ui/navigation/social_interests_navigator.dart'; // Import SocialInterestsNavigator
+
+// Category Screens
+import 'package:vuet_app/ui/screens/categories/family_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/social_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/education_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/career_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/travel_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/health_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/home_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/garden_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/food_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/laundry_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/finance_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/charity_category_screen.dart';
+import 'package:vuet_app/ui/screens/categories/transport_category_screen.dart';
 
 
 // Navigator key
@@ -68,7 +85,61 @@ final GoRouter _router = GoRouter(
       path: '/my-account', // Added route for MyAccountScreen
       builder: (context, state) => const MyAccountScreen(),
     ),
+    // Category Detail Routes
+    GoRoute(
+      path: '/categories/family',
+      builder: (context, state) => const FamilyCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/social',
+      builder: (context, state) => const SocialCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/education',
+      builder: (context, state) => const EducationCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/career',
+      builder: (context, state) => const CareerCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/travel',
+      builder: (context, state) => const TravelCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/health',
+      builder: (context, state) => const HealthCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/home',
+      builder: (context, state) => const HomeCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/garden',
+      builder: (context, state) => const GardenCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/food',
+      builder: (context, state) => const FoodCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/laundry',
+      builder: (context, state) => const LaundryCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/finance',
+      builder: (context, state) => const FinanceCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/charity',
+      builder: (context, state) => const CharityCategoryScreen(),
+    ),
+    GoRoute(
+      path: '/categories/transport',
+      builder: (context, state) => const TransportCategoryScreen(),
+    ),
     // Add routes from PetsNavigator
+    // Note: PetsNavigator already handles /categories/pets
     ...PetsNavigator.routes(),
     // Define routes for Timeblocks feature
     GoRoute(
@@ -311,8 +382,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
     _widgetOptions = <Widget>[
-      const ModernizedHomeScreen(), // HOME (first)
-      const CategoriesScreen(), // CATEGORIES (second)
+      const CalendarScreen(), // HOME (first) - Changed from ModernizedHomeScreen
+      const CategoriesGrid(), // CATEGORIES (second) - Changed from CategoriesScreen
       const RedesignedListsScreen(), // LISTS (third)
       const LanaChatScreen(), // LANA (fourth)
     ];

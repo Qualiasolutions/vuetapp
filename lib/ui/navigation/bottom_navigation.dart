@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/ui/screens/lists/redesigned_lists_screen.dart';
-import 'package:vuet_app/ui/screens/categories/categories_screen.dart';
+// import 'package:vuet_app/ui/screens/categories/categories_screen.dart'; // No longer needed
+import 'package:vuet_app/ui/screens/categories/categories_grid.dart'; // Use CategoriesGrid
 import 'package:vuet_app/ui/screens/calendar/calendar_screen.dart';
 import 'package:vuet_app/providers/category_screen_providers.dart';
 // import 'package:vuet_app/ui/navigation/timeblock_navigator.dart'; // Removed TimeblockNavigator
@@ -47,7 +48,7 @@ class BottomNavigation extends ConsumerWidget {
           Placeholder(
             child: Center(child: Text('Dashboard - Coming Soon!')),
           ),
-          CategoriesScreen(),
+          CategoriesGrid(), // Changed from CategoriesScreen
           RedesignedListsScreen(),
           // TimeblockNavigator removed
           CalendarScreen(),

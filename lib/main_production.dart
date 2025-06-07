@@ -16,8 +16,9 @@ import 'package:vuet_app/ui/screens/tasks/task_detail_screen.dart';
 import 'package:vuet_app/ui/screens/auth/auth_wrapper.dart';
 import 'package:vuet_app/ui/screens/auth/update_password_screen.dart';
 import 'package:vuet_app/ui/screens/notifications/notifications_screen.dart';
-import 'package:vuet_app/ui/screens/home/modernized_home_screen.dart'; // Added ModernizedHomeScreen
+// import 'package:vuet_app/ui/screens/home/modernized_home_screen.dart'; // No longer needed here
 import 'package:vuet_app/ui/screens/calendar/calendar_screen.dart'; // Added CalendarScreen
+import 'package:vuet_app/ui/screens/categories/categories_grid.dart'; // Added CategoriesGrid
 import 'package:vuet_app/widgets/notification_badge.dart';
 import 'package:vuet_app/widgets/tab_notification_badge.dart';
 import 'package:vuet_app/utils/deep_link_handler.dart';
@@ -226,11 +227,11 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
      _widgetOptions = <Widget>[
-      const CalendarScreen(),
-      const ModernizedHomeScreen(), 
-      const RedesignedListsScreen(),
-      const TaskListScreen(),
-      const LanaAiAssistantScreen(),
+      const CalendarScreen(), // First tab (Calendar/Home)
+      const CategoriesGrid(), // Second tab (Categories) - Changed from ModernizedHomeScreen
+      const RedesignedListsScreen(), // Third tab
+      const TaskListScreen(), // Fourth tab
+      const LanaAiAssistantScreen(), // Fifth tab
     ];
   }
   
