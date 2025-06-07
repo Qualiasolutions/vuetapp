@@ -4,7 +4,7 @@ import 'package:vuet_app/models/social_interest_models.dart';
 import 'package:vuet_app/providers/social_interest_providers.dart';
 import 'package:vuet_app/ui/shared/widgets.dart';
 import 'package:intl/intl.dart'; // For date formatting
-// import 'package:vuet_app/ui/navigation/social_interests_navigator.dart'; // Will be created later
+import 'package:vuet_app/ui/navigation/social_interests_navigator.dart';
 
 class SocialEventListScreen extends ConsumerWidget {
   const SocialEventListScreen({super.key});
@@ -70,7 +70,7 @@ class SocialEventListScreen extends ConsumerWidget {
                   },
                 ),
                 onTap: () {
-                  // SocialInterestsNavigator.navigateToSocialEventForm(context, eventId: event.id);
+                  SocialInterestsNavigator.navigateToSocialEventForm(context, eventId: event.id);
                 },
               );
             },
@@ -81,7 +81,7 @@ class SocialEventListScreen extends ConsumerWidget {
       ),
       floatingActionButton: VuetFAB(
         onPressed: () {
-          // SocialInterestsNavigator.navigateToSocialEventForm(context);
+          SocialInterestsNavigator.navigateToSocialEventForm(context);
         },
         tooltip: 'Add Social Event',
       ),

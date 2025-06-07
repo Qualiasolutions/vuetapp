@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/social_interest_models.dart';
 import 'package:vuet_app/providers/social_interest_providers.dart';
 import 'package:vuet_app/ui/shared/widgets.dart'; // For VuetHeader, VuetFAB
-// import 'package:vuet_app/ui/navigation/social_interests_navigator.dart'; // Will be created later
+import 'package:vuet_app/ui/navigation/social_interests_navigator.dart';
 
 class HobbyListScreen extends ConsumerWidget {
   const HobbyListScreen({super.key});
@@ -65,7 +65,7 @@ class HobbyListScreen extends ConsumerWidget {
                   },
                 ),
                 onTap: () {
-                  // SocialInterestsNavigator.navigateToHobbyForm(context, hobbyId: hobby.id); // For editing
+                  SocialInterestsNavigator.navigateToHobbyForm(context, hobbyId: hobby.id); // For editing
                 },
               );
             },
@@ -76,7 +76,7 @@ class HobbyListScreen extends ConsumerWidget {
       ),
       floatingActionButton: VuetFAB(
         onPressed: () {
-          // SocialInterestsNavigator.navigateToHobbyForm(context); // For creating
+          SocialInterestsNavigator.navigateToHobbyForm(context); // For creating
         },
         tooltip: 'Add Hobby',
       ),

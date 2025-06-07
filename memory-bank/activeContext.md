@@ -410,3 +410,87 @@ Supabase Schema:
 
 ---
 *This context reflects the implementation of specific UI refinements for the Pets category.*
+---
+## Current Session Focus (June 7, 2025 - Continued from previous handoff)
+**Primary Objectives**:
+1.  **GoRouter Refactor (Main & Production)**: Apply GoRouter refactoring to `lib/main.dart` and `lib/main_production.dart`.
+2.  **"Social Interests" Category - Phase 1 Implementation**:
+    *   Define Supabase schema for Hobby, SocialPlan, and Event entities.
+    *   Create Flutter models, repositories, and providers.
+    *   Develop basic List and Form screens for these entities.
+    *   Implement GoRouter navigation for Social Interests.
+
+## Session Accomplishments (June 7, 2025 - This Session)
+
+### ⚙️ GoRouter Refactor for Main App Entry Points ✅ COMPLETED
+- [x] **`lib/main.dart` Refactored**: Updated to use `MaterialApp.router` with a global `GoRouter` instance, incorporating routes from `PetsNavigator` and defining routes for `Timeblocks`.
+- [x] **`lib/main_production.dart` Refactored**: Updated similarly to `lib/main.dart` to use `MaterialApp.router` and the global `GoRouter` instance.
+
+### ⚙️ "Social Interests" Category Implementation (Phase 1 - Core Infrastructure) ✅ COMPLETED
+- [x] **Entity Types Defined**: Confirmed "Hobby", "SocialPlan", and "Event" as per `flutter-vuet-detailed-category-by-category-guide.md`.
+- [x] **Supabase Schema for Social Interests**:
+    - Created `social_hobbies`, `social_plans`, and `social_events` tables with appropriate columns, RLS policies, and `updated_at` triggers.
+    - Applied migration: `create_social_interests_tables` to project `xrloafqzfdzewdoawysh`.
+- [x] **Flutter Models for Social Interests**:
+    - Created `Hobby`, `SocialPlan`, and `SocialEvent` Freezed models in `lib/models/social_interest_models.dart`.
+    - Successfully ran `dart run build_runner build --delete-conflicting-outputs`.
+- [x] **Flutter Repositories for Social Interests**:
+    - Defined `HobbyRepository`, `SocialPlanRepository`, and `SocialEventRepository` interfaces in `lib/repositories/social_interest_repository.dart`.
+    - Implemented `SupabaseHobbyRepository`, `SupabaseSocialPlanRepository`, and `SupabaseSocialEventRepository` in `lib/repositories/supabase_social_interest_repository.dart`.
+- [x] **Flutter Providers for Social Interests**:
+    - Created Riverpod providers for repositories and data fetching (e.g., `userHobbiesProvider`, `userSocialPlansProvider`, `userSocialEventsProvider`) in `lib/providers/social_interest_providers.dart`.
+    - Corrected user ID access in providers to use `ref.watch(currentUserProvider)?.id`.
+- [x] **Flutter UI Screens for Social Interests (Initial Versions)**:
+    - Created `HobbyListScreen` (`lib/ui/screens/social_interests/hobby_list_screen.dart`).
+    - Created `HobbyFormScreen` (`lib/ui/screens/social_interests/hobby_form_screen.dart`).
+    - Created `SocialPlanListScreen` (`lib/ui/screens/social_interests/social_plan_list_screen.dart`).
+    - Created `SocialPlanFormScreen` (`lib/ui/screens/social_interests/social_plan_form_screen.dart`).
+    - Created `SocialEventListScreen` (`lib/ui/screens/social_interests/social_event_list_screen.dart`).
+    - Created `SocialEventFormScreen` (`lib/ui/screens/social_interests/social_event_form_screen.dart`).
+- [x] **Navigation for Social Interests**:
+    - Created `SocialInterestsNavigator` (`lib/ui/navigation/social_interests_navigator.dart`) with GoRouter routes and static navigation methods.
+    - Integrated `SocialInterestsNavigator.routes()` into `lib/main.dart`, `lib/main_development.dart`, and `lib/main_production.dart`.
+    - Updated `SocialInterestsCategoryScreen` (`lib/ui/screens/categories/social_interests_category_screen.dart`) to use `SocialInterestsNavigator`.
+    - Updated list and form screens for Hobbies, Social Plans, and Events to use `SocialInterestsNavigator` for navigation.
+
+### File Structure ✅ UPDATED
+- `lib/main.dart` ✅ UPDATED (GoRouter, SocialInterestsNavigator integration)
+- `lib/main_development.dart` ✅ UPDATED (SocialInterestsNavigator integration)
+- `lib/main_production.dart` ✅ UPDATED (GoRouter, SocialInterestsNavigator integration)
+- `lib/models/social_interest_models.dart` ✅ CREATED
+- `lib/models/social_interest_models.freezed.dart` ✅ GENERATED
+- `lib/models/social_interest_models.g.dart` ✅ GENERATED
+- `lib/repositories/social_interest_repository.dart` ✅ CREATED
+- `lib/repositories/supabase_social_interest_repository.dart` ✅ CREATED
+- `lib/providers/social_interest_providers.dart` ✅ CREATED & UPDATED
+- `lib/ui/screens/social_interests/hobby_list_screen.dart` ✅ CREATED & UPDATED
+- `lib/ui/screens/social_interests/hobby_form_screen.dart` ✅ CREATED
+- `lib/ui/screens/social_interests/social_plan_list_screen.dart` ✅ CREATED & UPDATED
+- `lib/ui/screens/social_interests/social_plan_form_screen.dart` ✅ CREATED
+- `lib/ui/screens/social_interests/social_event_list_screen.dart` ✅ CREATED & UPDATED
+- `lib/ui/screens/social_interests/social_event_form_screen.dart` ✅ CREATED
+- `lib/ui/navigation/social_interests_navigator.dart` ✅ CREATED
+- `lib/ui/screens/categories/social_interests_category_screen.dart` ✅ UPDATED
+
+Supabase Schema:
+- `public.social_hobbies` table ✅ CREATED
+- `public.social_plans` table ✅ CREATED
+- `public.social_events` table ✅ CREATED
+
+## Context for Next Session
+**Next session should focus on**:
+1.  **Testing "Social Interests" Category**: User to test CRUD operations and navigation for Hobbies, Social Plans, and Events.
+2.  **Populate `parent_id` Data (User Task)**: User to update `parent_id` values in the `entity_categories` table in Supabase to define actual category hierarchies if not already done.
+3.  **Proceed with Next Entity Category Implementation**: Based on `progress.md`, identify and implement the next highest priority entity category.
+4.  **Update Memory Bank**: Ensure all memory bank files accurately reflect the current project state after these changes.
+
+## Current Status: ✅ SOCIAL INTERESTS CATEGORY (PHASE 1 - HOBBY, SOCIALPLAN, EVENT) IMPLEMENTED
+- ✅ GoRouter refactoring for main app entry points completed.
+- ✅ Core infrastructure for "Social Interests" (DB tables, Flutter models, repositories, providers, basic screens, navigation) is complete.
+- ❗ User testing of the new "Social Interests" category features is pending.
+- ❗ `parent_id` data in `entity_categories` table still needs to be populated by the user for full hierarchy display.
+
+## No Current Blockers (pending user testing of Social Interests and `parent_id` data population)
+
+---
+*This context reflects the implementation of Phase 1 for the Social Interests category.*

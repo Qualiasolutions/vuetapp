@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+// import 'package:go_router/go_router.dart'; // Not directly used for navigation here anymore
 import '../../../ui/shared/widgets.dart';
 import '../../../config/theme_config.dart';
+import '../../navigation/social_interests_navigator.dart'; // Import the navigator
 
 /// Social Interests Category Screen - Shows all Social Interests entity types
 /// As specified in detailed guide: Hobby, SocialPlan, Event
@@ -22,19 +23,19 @@ class SocialInterestsCategoryScreen extends StatelessWidget {
             title: 'Hobbies',
             icon: Icons.sports_esports,
             description: 'Track your hobbies',
-            onTap: () => context.go('/categories/social/hobbies'),
+            onTap: () => SocialInterestsNavigator.navigateToHobbyList(context),
           ),
           _SocialEntityTile(
             title: 'Social Plans',
             icon: Icons.event_available,
             description: 'Plan social activities',
-            onTap: () => context.go('/categories/social/plans'),
+            onTap: () => SocialInterestsNavigator.navigateToSocialPlanList(context),
           ),
           _SocialEntityTile(
             title: 'Events',
             icon: Icons.celebration,
             description: 'Manage events',
-            onTap: () => context.go('/categories/social/events'),
+            onTap: () => SocialInterestsNavigator.navigateToSocialEventList(context),
           ),
         ],
       ),
@@ -67,7 +68,7 @@ class SocialInterestsCategoryScreen extends StatelessWidget {
               title: const Text('Hobby'),
               onTap: () {
                 Navigator.pop(context);
-                context.go('/categories/social/hobbies/create');
+                SocialInterestsNavigator.navigateToHobbyForm(context);
               },
             ),
             ListTile(
@@ -75,7 +76,7 @@ class SocialInterestsCategoryScreen extends StatelessWidget {
               title: const Text('Social Plan'),
               onTap: () {
                 Navigator.pop(context);
-                context.go('/categories/social/plans/create');
+                SocialInterestsNavigator.navigateToSocialPlanForm(context);
               },
             ),
             ListTile(
@@ -83,7 +84,7 @@ class SocialInterestsCategoryScreen extends StatelessWidget {
               title: const Text('Event'),
               onTap: () {
                 Navigator.pop(context);
-                context.go('/categories/social/events/create');
+                SocialInterestsNavigator.navigateToSocialEventForm(context);
               },
             ),
           ],

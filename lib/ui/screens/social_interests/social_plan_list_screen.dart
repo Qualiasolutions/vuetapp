@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/social_interest_models.dart';
 import 'package:vuet_app/providers/social_interest_providers.dart';
 import 'package:vuet_app/ui/shared/widgets.dart';
-// import 'package:vuet_app/ui/navigation/social_interests_navigator.dart'; // Will be created later
+import 'package:vuet_app/ui/navigation/social_interests_navigator.dart';
 
 class SocialPlanListScreen extends ConsumerWidget {
   const SocialPlanListScreen({super.key});
@@ -64,7 +64,7 @@ class SocialPlanListScreen extends ConsumerWidget {
                   },
                 ),
                 onTap: () {
-                  // SocialInterestsNavigator.navigateToSocialPlanForm(context, planId: plan.id);
+                  SocialInterestsNavigator.navigateToSocialPlanForm(context, planId: plan.id);
                 },
               );
             },
@@ -75,7 +75,7 @@ class SocialPlanListScreen extends ConsumerWidget {
       ),
       floatingActionButton: VuetFAB(
         onPressed: () {
-          // SocialInterestsNavigator.navigateToSocialPlanForm(context);
+          SocialInterestsNavigator.navigateToSocialPlanForm(context);
         },
         tooltip: 'Add Social Plan',
       ),

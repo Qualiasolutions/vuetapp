@@ -30,6 +30,7 @@ import 'package:vuet_app/ui/screens/timeblocks/timeblocks_screen.dart';
 import 'package:vuet_app/ui/screens/timeblocks/create_edit_timeblock_screen.dart';
 import 'package:vuet_app/ui/screens/timeblocks/timeblock_detail_screen.dart';
 import 'package:vuet_app/ui/screens/family/family_screen.dart'; // Though not in routes, good for consistency if needed later
+import 'package:vuet_app/ui/navigation/social_interests_navigator.dart'; // Import SocialInterestsNavigator
 
 // Navigator key
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -88,6 +89,8 @@ final GoRouter _router = GoRouter(
         child: FamilyScreen(),
       ),
     ),
+    // Add routes from SocialInterestsNavigator
+    ...SocialInterestsNavigator.routes(),
   ],
 );
 

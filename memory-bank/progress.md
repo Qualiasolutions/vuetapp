@@ -77,8 +77,8 @@
 ### Entity Categories (14 total)
 | Category | Backend ID | Guide Status | Implementation |
 |----------|------------|--------------|----------------|
-| Pets | 1 | ✅ Match | ✅ Phase 1 (Core Infra) Completed. Phase 2 (Routing for Dev ✅, Auto-Tasks ✅, Specific UI Refinements ✅) COMPLETED. General UI Review ⏳ PENDING. |
-| Social Interests | 2 | ✅ Match | Ready |
+| Pets | 1 | ✅ Match | ✅ Phase 1 (Core Infra) Completed. Phase 2 (Routing for Dev ✅, Auto-Tasks ✅, Specific UI Refinements ✅) COMPLETED. General UI Review ⏳ PENDING. User Testing ⏳ PENDING. |
+| Social Interests | 2 | ✅ Match | ✅ Phase 1 (Core Infra: DB, Models, Repos, Providers, Basic Screens, Navigation) COMPLETED. User Testing ⏳ PENDING. |
 | Education | 3 | ✅ Match | Ready |
 | Career | 4 | ✅ Match | Ready |
 | Travel | 5 | ✅ Match | Ready |
@@ -129,16 +129,15 @@
 
 ## Next Session Priorities
 1.  **Testing Current Changes (User Task)**: 
-    *   Test GoRouter setup by running `flutter run lib/main_development.dart` and navigating within Pets category and other GoRouter-integrated routes.
+    *   Test GoRouter setup (now applied to all main files) by running the app and navigating within Pets category and other GoRouter-integrated routes.
     *   Test automatic task generation for Pet vaccinations by creating/updating Pets with `vaccinationDue` dates and checking for task creation.
-2.  **"Pets" Category - Phase 2 Implementation (Continued)**:
-    *   **Routing:** ✅ COMPLETED (for `main_development.dart`).
-    *   **Automatic Task Generation:** ✅ COMPLETED.
-    *   **UI Refinements:** ✅ COMPLETED (Icons in `PetListScreen` updated, multiline notes in `PetAppointmentFormScreen` addressed). General review pending specific feedback.
-3.  **GoRouter Refactor (Production & Main)**: If development testing is successful, apply similar GoRouter refactoring to `lib/main.dart` and `lib/main_production.dart`.
+    *   Review UI refinements for Pets category.
+2.  **"Social Interests" Category - Testing (User Task)**:
+    *   Test CRUD operations and navigation for Hobbies, Social Plans, and Events.
+3.  **GoRouter Refactor (Production & Main)**: ✅ COMPLETED.
 4.  **Populate `parent_id` Data (User Task)**: User to update `parent_id` values in the `entity_categories` table in Supabase to define actual category hierarchies.
-5.  **Proceed with Next Entity Category Implementation**: After "Pets" Phase 2 is complete, identify and implement the next highest priority entity category (e.g., Social Interests).
-6.  **Update Memory Bank**: Ensure all memory bank files accurately reflect the current project state after these changes (this is ongoing).
+5.  **Proceed with Next Entity Category Implementation**: After "Social Interests" Phase 1 is tested, identify and implement the next highest priority entity category (e.g., Education).
+6.  **Update Memory Bank**: ✅ COMPLETED for this session.
 
 ## Blockers & Decisions Needed
 - (Resolved in this session) ~~FAMILY Category: How to handle missing FAMILY category in backend?~~
