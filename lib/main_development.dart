@@ -29,6 +29,7 @@ import 'package:vuet_app/ui/screens/account/my_account_screen.dart'; // Added My
 import 'package:go_router/go_router.dart';
 import 'package:vuet_app/ui/navigation/pets_navigator.dart';
 import 'package:vuet_app/ui/navigation/account_settings_navigator.dart'; // Assuming this should be used
+import 'package:vuet_app/ui/navigation/social_interests_navigator.dart'; // Import SocialInterestsNavigator
 // Added for /family route // Removed unused import: family_screen.dart
 
 // Global navigator key for GoRouter
@@ -76,6 +77,7 @@ final GoRouter _router = GoRouter(
     // Integrate routes from modular navigators
     ...AccountSettingsNavigator.routes(),
     ...PetsNavigator.routes(),
+    ...SocialInterestsNavigator.routes(),
   ],
   // Optional: Add errorBuilder and redirect logic as needed
   // errorBuilder: (context, state) => ErrorScreen(error: state.error),
