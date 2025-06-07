@@ -14,94 +14,86 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-EntityCategoryModel _$EntityCategoryModelFromJson(Map<String, dynamic> json) {
-  return _EntityCategoryModel.fromJson(json);
+EntityCategory _$EntityCategoryFromJson(Map<String, dynamic> json) {
+  return _EntityCategory.fromJson(json);
 }
 
 /// @nodoc
-mixin _$EntityCategoryModel {
-  String get id => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  String? get description => throw _privateConstructorUsedError;
-  String? get icon => throw _privateConstructorUsedError;
-  @JsonKey(name: 'owner_id')
-  String? get ownerId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'created_at')
-  DateTime? get createdAt => throw _privateConstructorUsedError;
-  @JsonKey(name: 'updated_at')
-  DateTime? get updatedAt => throw _privateConstructorUsedError;
-  String? get color => throw _privateConstructorUsedError;
-  int? get priority => throw _privateConstructorUsedError;
-  DateTime? get lastAccessedAt => throw _privateConstructorUsedError;
-  @JsonKey(name: 'is_professional')
-  bool get isProfessional => throw _privateConstructorUsedError;
+mixin _$EntityCategory {
+  String get id => throw _privateConstructorUsedError; // UUID from Supabase
+  String get name =>
+      throw _privateConstructorUsedError; // Internal name, e.g., "pets", "social_interests"
+  String get displayName =>
+      throw _privateConstructorUsedError; // User-facing name, e.g., "My Pets"
+  String? get iconName =>
+      throw _privateConstructorUsedError; // String identifier for Flutter Icon
+  String? get colorHex =>
+      throw _privateConstructorUsedError; // Hex color string, e.g., "#FF5733"
+  int get sortOrder => throw _privateConstructorUsedError;
+  bool get isDisplayedOnGrid => throw _privateConstructorUsedError;
+  int? get appCategoryIntId =>
+      throw _privateConstructorUsedError; // Legacy integer ID
   String? get parentId =>
-      throw _privateConstructorUsedError; // New field for hierarchy
-// Add the integer appCategoryId, assuming it can be fetched from the database
-// If the database column name is different, adjust the @JsonKey accordingly.
-// For example, if the column is 'int_id', use @JsonKey(name: 'int_id') int? appCategoryId,
-  int? get appCategoryId => throw _privateConstructorUsedError;
+      throw _privateConstructorUsedError; // For hierarchical categories
+  DateTime? get createdAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
 
-  /// Serializes this EntityCategoryModel to a JSON map.
+  /// Serializes this EntityCategory to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of EntityCategoryModel
+  /// Create a copy of EntityCategory
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $EntityCategoryModelCopyWith<EntityCategoryModel> get copyWith =>
+  $EntityCategoryCopyWith<EntityCategory> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $EntityCategoryModelCopyWith<$Res> {
-  factory $EntityCategoryModelCopyWith(
-          EntityCategoryModel value, $Res Function(EntityCategoryModel) then) =
-      _$EntityCategoryModelCopyWithImpl<$Res, EntityCategoryModel>;
+abstract class $EntityCategoryCopyWith<$Res> {
+  factory $EntityCategoryCopyWith(
+          EntityCategory value, $Res Function(EntityCategory) then) =
+      _$EntityCategoryCopyWithImpl<$Res, EntityCategory>;
   @useResult
   $Res call(
       {String id,
       String name,
-      String? description,
-      String? icon,
-      @JsonKey(name: 'owner_id') String? ownerId,
-      @JsonKey(name: 'created_at') DateTime? createdAt,
-      @JsonKey(name: 'updated_at') DateTime? updatedAt,
-      String? color,
-      int? priority,
-      DateTime? lastAccessedAt,
-      @JsonKey(name: 'is_professional') bool isProfessional,
+      String displayName,
+      String? iconName,
+      String? colorHex,
+      int sortOrder,
+      bool isDisplayedOnGrid,
+      int? appCategoryIntId,
       String? parentId,
-      int? appCategoryId});
+      DateTime? createdAt,
+      DateTime? updatedAt});
 }
 
 /// @nodoc
-class _$EntityCategoryModelCopyWithImpl<$Res, $Val extends EntityCategoryModel>
-    implements $EntityCategoryModelCopyWith<$Res> {
-  _$EntityCategoryModelCopyWithImpl(this._value, this._then);
+class _$EntityCategoryCopyWithImpl<$Res, $Val extends EntityCategory>
+    implements $EntityCategoryCopyWith<$Res> {
+  _$EntityCategoryCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of EntityCategoryModel
+  /// Create a copy of EntityCategory
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? description = freezed,
-    Object? icon = freezed,
-    Object? ownerId = freezed,
+    Object? displayName = null,
+    Object? iconName = freezed,
+    Object? colorHex = freezed,
+    Object? sortOrder = null,
+    Object? isDisplayedOnGrid = null,
+    Object? appCategoryIntId = freezed,
+    Object? parentId = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
-    Object? color = freezed,
-    Object? priority = freezed,
-    Object? lastAccessedAt = freezed,
-    Object? isProfessional = null,
-    Object? parentId = freezed,
-    Object? appCategoryId = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -112,17 +104,33 @@ class _$EntityCategoryModelCopyWithImpl<$Res, $Val extends EntityCategoryModel>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
+      displayName: null == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String,
+      iconName: freezed == iconName
+          ? _value.iconName
+          : iconName // ignore: cast_nullable_to_non_nullable
               as String?,
-      icon: freezed == icon
-          ? _value.icon
-          : icon // ignore: cast_nullable_to_non_nullable
+      colorHex: freezed == colorHex
+          ? _value.colorHex
+          : colorHex // ignore: cast_nullable_to_non_nullable
               as String?,
-      ownerId: freezed == ownerId
-          ? _value.ownerId
-          : ownerId // ignore: cast_nullable_to_non_nullable
+      sortOrder: null == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int,
+      isDisplayedOnGrid: null == isDisplayedOnGrid
+          ? _value.isDisplayedOnGrid
+          : isDisplayedOnGrid // ignore: cast_nullable_to_non_nullable
+              as bool,
+      appCategoryIntId: freezed == appCategoryIntId
+          ? _value.appCategoryIntId
+          : appCategoryIntId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      parentId: freezed == parentId
+          ? _value.parentId
+          : parentId // ignore: cast_nullable_to_non_nullable
               as String?,
       createdAt: freezed == createdAt
           ? _value.createdAt
@@ -132,86 +140,58 @@ class _$EntityCategoryModelCopyWithImpl<$Res, $Val extends EntityCategoryModel>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      color: freezed == color
-          ? _value.color
-          : color // ignore: cast_nullable_to_non_nullable
-              as String?,
-      priority: freezed == priority
-          ? _value.priority
-          : priority // ignore: cast_nullable_to_non_nullable
-              as int?,
-      lastAccessedAt: freezed == lastAccessedAt
-          ? _value.lastAccessedAt
-          : lastAccessedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      isProfessional: null == isProfessional
-          ? _value.isProfessional
-          : isProfessional // ignore: cast_nullable_to_non_nullable
-              as bool,
-      parentId: freezed == parentId
-          ? _value.parentId
-          : parentId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      appCategoryId: freezed == appCategoryId
-          ? _value.appCategoryId
-          : appCategoryId // ignore: cast_nullable_to_non_nullable
-              as int?,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$EntityCategoryModelImplCopyWith<$Res>
-    implements $EntityCategoryModelCopyWith<$Res> {
-  factory _$$EntityCategoryModelImplCopyWith(_$EntityCategoryModelImpl value,
-          $Res Function(_$EntityCategoryModelImpl) then) =
-      __$$EntityCategoryModelImplCopyWithImpl<$Res>;
+abstract class _$$EntityCategoryImplCopyWith<$Res>
+    implements $EntityCategoryCopyWith<$Res> {
+  factory _$$EntityCategoryImplCopyWith(_$EntityCategoryImpl value,
+          $Res Function(_$EntityCategoryImpl) then) =
+      __$$EntityCategoryImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
       {String id,
       String name,
-      String? description,
-      String? icon,
-      @JsonKey(name: 'owner_id') String? ownerId,
-      @JsonKey(name: 'created_at') DateTime? createdAt,
-      @JsonKey(name: 'updated_at') DateTime? updatedAt,
-      String? color,
-      int? priority,
-      DateTime? lastAccessedAt,
-      @JsonKey(name: 'is_professional') bool isProfessional,
+      String displayName,
+      String? iconName,
+      String? colorHex,
+      int sortOrder,
+      bool isDisplayedOnGrid,
+      int? appCategoryIntId,
       String? parentId,
-      int? appCategoryId});
+      DateTime? createdAt,
+      DateTime? updatedAt});
 }
 
 /// @nodoc
-class __$$EntityCategoryModelImplCopyWithImpl<$Res>
-    extends _$EntityCategoryModelCopyWithImpl<$Res, _$EntityCategoryModelImpl>
-    implements _$$EntityCategoryModelImplCopyWith<$Res> {
-  __$$EntityCategoryModelImplCopyWithImpl(_$EntityCategoryModelImpl _value,
-      $Res Function(_$EntityCategoryModelImpl) _then)
+class __$$EntityCategoryImplCopyWithImpl<$Res>
+    extends _$EntityCategoryCopyWithImpl<$Res, _$EntityCategoryImpl>
+    implements _$$EntityCategoryImplCopyWith<$Res> {
+  __$$EntityCategoryImplCopyWithImpl(
+      _$EntityCategoryImpl _value, $Res Function(_$EntityCategoryImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityCategoryModel
+  /// Create a copy of EntityCategory
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? description = freezed,
-    Object? icon = freezed,
-    Object? ownerId = freezed,
+    Object? displayName = null,
+    Object? iconName = freezed,
+    Object? colorHex = freezed,
+    Object? sortOrder = null,
+    Object? isDisplayedOnGrid = null,
+    Object? appCategoryIntId = freezed,
+    Object? parentId = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
-    Object? color = freezed,
-    Object? priority = freezed,
-    Object? lastAccessedAt = freezed,
-    Object? isProfessional = null,
-    Object? parentId = freezed,
-    Object? appCategoryId = freezed,
   }) {
-    return _then(_$EntityCategoryModelImpl(
+    return _then(_$EntityCategoryImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -220,17 +200,33 @@ class __$$EntityCategoryModelImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      description: freezed == description
-          ? _value.description
-          : description // ignore: cast_nullable_to_non_nullable
+      displayName: null == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String,
+      iconName: freezed == iconName
+          ? _value.iconName
+          : iconName // ignore: cast_nullable_to_non_nullable
               as String?,
-      icon: freezed == icon
-          ? _value.icon
-          : icon // ignore: cast_nullable_to_non_nullable
+      colorHex: freezed == colorHex
+          ? _value.colorHex
+          : colorHex // ignore: cast_nullable_to_non_nullable
               as String?,
-      ownerId: freezed == ownerId
-          ? _value.ownerId
-          : ownerId // ignore: cast_nullable_to_non_nullable
+      sortOrder: null == sortOrder
+          ? _value.sortOrder
+          : sortOrder // ignore: cast_nullable_to_non_nullable
+              as int,
+      isDisplayedOnGrid: null == isDisplayedOnGrid
+          ? _value.isDisplayedOnGrid
+          : isDisplayedOnGrid // ignore: cast_nullable_to_non_nullable
+              as bool,
+      appCategoryIntId: freezed == appCategoryIntId
+          ? _value.appCategoryIntId
+          : appCategoryIntId // ignore: cast_nullable_to_non_nullable
+              as int?,
+      parentId: freezed == parentId
+          ? _value.parentId
+          : parentId // ignore: cast_nullable_to_non_nullable
               as String?,
       createdAt: freezed == createdAt
           ? _value.createdAt
@@ -240,121 +236,91 @@ class __$$EntityCategoryModelImplCopyWithImpl<$Res>
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      color: freezed == color
-          ? _value.color
-          : color // ignore: cast_nullable_to_non_nullable
-              as String?,
-      priority: freezed == priority
-          ? _value.priority
-          : priority // ignore: cast_nullable_to_non_nullable
-              as int?,
-      lastAccessedAt: freezed == lastAccessedAt
-          ? _value.lastAccessedAt
-          : lastAccessedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      isProfessional: null == isProfessional
-          ? _value.isProfessional
-          : isProfessional // ignore: cast_nullable_to_non_nullable
-              as bool,
-      parentId: freezed == parentId
-          ? _value.parentId
-          : parentId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      appCategoryId: freezed == appCategoryId
-          ? _value.appCategoryId
-          : appCategoryId // ignore: cast_nullable_to_non_nullable
-              as int?,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$EntityCategoryModelImpl implements _EntityCategoryModel {
-  const _$EntityCategoryModelImpl(
+class _$EntityCategoryImpl implements _EntityCategory {
+  const _$EntityCategoryImpl(
       {required this.id,
       required this.name,
-      this.description,
-      this.icon,
-      @JsonKey(name: 'owner_id') this.ownerId,
-      @JsonKey(name: 'created_at') this.createdAt,
-      @JsonKey(name: 'updated_at') this.updatedAt,
-      this.color,
-      this.priority,
-      this.lastAccessedAt,
-      @JsonKey(name: 'is_professional') this.isProfessional = false,
+      required this.displayName,
+      this.iconName,
+      this.colorHex,
+      this.sortOrder = 0,
+      this.isDisplayedOnGrid = true,
+      this.appCategoryIntId,
       this.parentId,
-      this.appCategoryId});
+      this.createdAt,
+      this.updatedAt});
 
-  factory _$EntityCategoryModelImpl.fromJson(Map<String, dynamic> json) =>
-      _$$EntityCategoryModelImplFromJson(json);
+  factory _$EntityCategoryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$EntityCategoryImplFromJson(json);
 
   @override
   final String id;
+// UUID from Supabase
   @override
   final String name;
+// Internal name, e.g., "pets", "social_interests"
   @override
-  final String? description;
+  final String displayName;
+// User-facing name, e.g., "My Pets"
   @override
-  final String? icon;
+  final String? iconName;
+// String identifier for Flutter Icon
   @override
-  @JsonKey(name: 'owner_id')
-  final String? ownerId;
+  final String? colorHex;
+// Hex color string, e.g., "#FF5733"
   @override
-  @JsonKey(name: 'created_at')
-  final DateTime? createdAt;
+  @JsonKey()
+  final int sortOrder;
   @override
-  @JsonKey(name: 'updated_at')
-  final DateTime? updatedAt;
+  @JsonKey()
+  final bool isDisplayedOnGrid;
   @override
-  final String? color;
-  @override
-  final int? priority;
-  @override
-  final DateTime? lastAccessedAt;
-  @override
-  @JsonKey(name: 'is_professional')
-  final bool isProfessional;
+  final int? appCategoryIntId;
+// Legacy integer ID
   @override
   final String? parentId;
-// New field for hierarchy
-// Add the integer appCategoryId, assuming it can be fetched from the database
-// If the database column name is different, adjust the @JsonKey accordingly.
-// For example, if the column is 'int_id', use @JsonKey(name: 'int_id') int? appCategoryId,
+// For hierarchical categories
   @override
-  final int? appCategoryId;
+  final DateTime? createdAt;
+  @override
+  final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'EntityCategoryModel(id: $id, name: $name, description: $description, icon: $icon, ownerId: $ownerId, createdAt: $createdAt, updatedAt: $updatedAt, color: $color, priority: $priority, lastAccessedAt: $lastAccessedAt, isProfessional: $isProfessional, parentId: $parentId, appCategoryId: $appCategoryId)';
+    return 'EntityCategory(id: $id, name: $name, displayName: $displayName, iconName: $iconName, colorHex: $colorHex, sortOrder: $sortOrder, isDisplayedOnGrid: $isDisplayedOnGrid, appCategoryIntId: $appCategoryIntId, parentId: $parentId, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$EntityCategoryModelImpl &&
+            other is _$EntityCategoryImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.description, description) ||
-                other.description == description) &&
-            (identical(other.icon, icon) || other.icon == icon) &&
-            (identical(other.ownerId, ownerId) || other.ownerId == ownerId) &&
+            (identical(other.displayName, displayName) ||
+                other.displayName == displayName) &&
+            (identical(other.iconName, iconName) ||
+                other.iconName == iconName) &&
+            (identical(other.colorHex, colorHex) ||
+                other.colorHex == colorHex) &&
+            (identical(other.sortOrder, sortOrder) ||
+                other.sortOrder == sortOrder) &&
+            (identical(other.isDisplayedOnGrid, isDisplayedOnGrid) ||
+                other.isDisplayedOnGrid == isDisplayedOnGrid) &&
+            (identical(other.appCategoryIntId, appCategoryIntId) ||
+                other.appCategoryIntId == appCategoryIntId) &&
+            (identical(other.parentId, parentId) ||
+                other.parentId == parentId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt) &&
-            (identical(other.color, color) || other.color == color) &&
-            (identical(other.priority, priority) ||
-                other.priority == priority) &&
-            (identical(other.lastAccessedAt, lastAccessedAt) ||
-                other.lastAccessedAt == lastAccessedAt) &&
-            (identical(other.isProfessional, isProfessional) ||
-                other.isProfessional == isProfessional) &&
-            (identical(other.parentId, parentId) ||
-                other.parentId == parentId) &&
-            (identical(other.appCategoryId, appCategoryId) ||
-                other.appCategoryId == appCategoryId));
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -363,92 +329,77 @@ class _$EntityCategoryModelImpl implements _EntityCategoryModel {
       runtimeType,
       id,
       name,
-      description,
-      icon,
-      ownerId,
-      createdAt,
-      updatedAt,
-      color,
-      priority,
-      lastAccessedAt,
-      isProfessional,
+      displayName,
+      iconName,
+      colorHex,
+      sortOrder,
+      isDisplayedOnGrid,
+      appCategoryIntId,
       parentId,
-      appCategoryId);
+      createdAt,
+      updatedAt);
 
-  /// Create a copy of EntityCategoryModel
+  /// Create a copy of EntityCategory
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$EntityCategoryModelImplCopyWith<_$EntityCategoryModelImpl> get copyWith =>
-      __$$EntityCategoryModelImplCopyWithImpl<_$EntityCategoryModelImpl>(
+  _$$EntityCategoryImplCopyWith<_$EntityCategoryImpl> get copyWith =>
+      __$$EntityCategoryImplCopyWithImpl<_$EntityCategoryImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$EntityCategoryModelImplToJson(
+    return _$$EntityCategoryImplToJson(
       this,
     );
   }
 }
 
-abstract class _EntityCategoryModel implements EntityCategoryModel {
-  const factory _EntityCategoryModel(
+abstract class _EntityCategory implements EntityCategory {
+  const factory _EntityCategory(
       {required final String id,
       required final String name,
-      final String? description,
-      final String? icon,
-      @JsonKey(name: 'owner_id') final String? ownerId,
-      @JsonKey(name: 'created_at') final DateTime? createdAt,
-      @JsonKey(name: 'updated_at') final DateTime? updatedAt,
-      final String? color,
-      final int? priority,
-      final DateTime? lastAccessedAt,
-      @JsonKey(name: 'is_professional') final bool isProfessional,
+      required final String displayName,
+      final String? iconName,
+      final String? colorHex,
+      final int sortOrder,
+      final bool isDisplayedOnGrid,
+      final int? appCategoryIntId,
       final String? parentId,
-      final int? appCategoryId}) = _$EntityCategoryModelImpl;
+      final DateTime? createdAt,
+      final DateTime? updatedAt}) = _$EntityCategoryImpl;
 
-  factory _EntityCategoryModel.fromJson(Map<String, dynamic> json) =
-      _$EntityCategoryModelImpl.fromJson;
+  factory _EntityCategory.fromJson(Map<String, dynamic> json) =
+      _$EntityCategoryImpl.fromJson;
 
   @override
-  String get id;
+  String get id; // UUID from Supabase
   @override
-  String get name;
+  String get name; // Internal name, e.g., "pets", "social_interests"
   @override
-  String? get description;
+  String get displayName; // User-facing name, e.g., "My Pets"
   @override
-  String? get icon;
+  String? get iconName; // String identifier for Flutter Icon
   @override
-  @JsonKey(name: 'owner_id')
-  String? get ownerId;
+  String? get colorHex; // Hex color string, e.g., "#FF5733"
   @override
-  @JsonKey(name: 'created_at')
+  int get sortOrder;
+  @override
+  bool get isDisplayedOnGrid;
+  @override
+  int? get appCategoryIntId; // Legacy integer ID
+  @override
+  String? get parentId; // For hierarchical categories
+  @override
   DateTime? get createdAt;
   @override
-  @JsonKey(name: 'updated_at')
   DateTime? get updatedAt;
-  @override
-  String? get color;
-  @override
-  int? get priority;
-  @override
-  DateTime? get lastAccessedAt;
-  @override
-  @JsonKey(name: 'is_professional')
-  bool get isProfessional;
-  @override
-  String? get parentId; // New field for hierarchy
-// Add the integer appCategoryId, assuming it can be fetched from the database
-// If the database column name is different, adjust the @JsonKey accordingly.
-// For example, if the column is 'int_id', use @JsonKey(name: 'int_id') int? appCategoryId,
-  @override
-  int? get appCategoryId;
 
-  /// Create a copy of EntityCategoryModel
+  /// Create a copy of EntityCategory
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$EntityCategoryModelImplCopyWith<_$EntityCategoryModelImpl> get copyWith =>
+  _$$EntityCategoryImplCopyWith<_$EntityCategoryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -5,7 +5,7 @@ import 'package:vuet_app/utils/logger.dart';
 
 class HierarchicalCategorySelectorDialog extends StatefulWidget {
   final List<HierarchicalCategoryDisplayModel> topLevelCategories;
-  final Function(EntityCategoryModel) onCategorySelected;
+  final Function(EntityCategory) onCategorySelected;
 
   const HierarchicalCategorySelectorDialog({
     super.key,
@@ -86,13 +86,11 @@ class _HierarchicalCategorySelectorDialogState extends State<HierarchicalCategor
                   final hierarchicalCategory = _currentCategories[index];
                   final category = hierarchicalCategory.category;
                   return ListTile(
-                    leading: category.icon != null && category.icon!.isNotEmpty
-                        ? Image.asset(category.icon!, width: 24, height: 24, errorBuilder: (context, error, stackTrace) {
-                            log('Error loading category icon in dialog: ${category.icon}', name: 'HierarchicalCategorySelectorDialog');
-                            return const Icon(Icons.folder_open, size: 24);
-                          })
+                    leading: category.iconName != null && category.iconName!.isNotEmpty
+                        // TODO: Implement proper icon display based on iconName (e.g., map to IconData)
+                        ? Icon(Icons.folder, size: 24) // Placeholder for now
                         : const Icon(Icons.folder_open, size: 24),
-                    title: Text(category.name),
+                    title: Text(category.displayName), // Using displayName for UI
                     trailing: hierarchicalCategory.children.isNotEmpty ? const Icon(Icons.chevron_right) : null,
                     onTap: () {
                       if (hierarchicalCategory.children.isNotEmpty) {
@@ -116,11 +114,11 @@ class _HierarchicalCategorySelectorDialogState extends State<HierarchicalCategor
   }
 }
 
-Future<EntityCategoryModel?> showHierarchicalCategorySelectorDialog(
+Future<EntityCategory?> showHierarchicalCategorySelectorDialog(
   BuildContext context, 
   List<HierarchicalCategoryDisplayModel> topLevelCategories
 ) async {
-  EntityCategoryModel? selectedCategory;
+  EntityCategory? selectedCategory;
   if (topLevelCategories.isEmpty) {
     log("HierarchicalCategorySelectorDialog: No categories to display.", name: 'showHierarchicalCategorySelectorDialog');
     ScaffoldMessenger.of(context).showSnackBar(
@@ -128,7 +126,7 @@ Future<EntityCategoryModel?> showHierarchicalCategorySelectorDialog(
     );
     return null;
   }
-  await showDialog<EntityCategoryModel>(
+  await showDialog<EntityCategory>(
     context: context,
     builder: (BuildContext dialogContext) {
       return HierarchicalCategorySelectorDialog(

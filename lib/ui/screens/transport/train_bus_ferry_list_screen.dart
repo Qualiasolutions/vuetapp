@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/theme_config.dart';
 import '../../../ui/shared/widgets.dart';
 import '../../../models/transport_entities.dart';
+import '../../../providers/transport_providers.dart'; // Added import
 import 'package:go_router/go_router.dart';
 
 class TrainBusFerryListScreen extends ConsumerStatefulWidget {
@@ -13,47 +14,35 @@ class TrainBusFerryListScreen extends ConsumerStatefulWidget {
 }
 
 class _TrainBusFerryListScreenState extends ConsumerState<TrainBusFerryListScreen> {
-  // Sample data for now - will be replaced with Supabase MCP integration
-  List<TrainBusFerry> _journeys = [
-    TrainBusFerry(
-      id: 1,
-      name: 'London to Paris',
-      transportType: 'Train',
-      operator: 'Eurostar',
-      routeNumber: 'ES9142',
-      departureStation: 'London St Pancras',
-      arrivalStation: 'Paris Gare du Nord',
-      departureTime: DateTime(2025, 7, 15, 9, 30),
-      arrivalTime: DateTime(2025, 7, 15, 12, 47),
-    ),
-    TrainBusFerry(
-      id: 2,
-      name: 'Dover to Calais Ferry',
-      transportType: 'Ferry',
-      operator: 'P&O Ferries',
-      departureStation: 'Dover',
-      arrivalStation: 'Calais',
-      departureTime: DateTime(2025, 8, 20, 14, 15),
-      arrivalTime: DateTime(2025, 8, 20, 16, 45),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final allJourneysAsyncValue = ref.watch(allTrainBusFerriesProvider);
+
     return Scaffold(
       appBar: const VuetHeader('Train/Bus/Ferry'),
       floatingActionButton: VuetFAB(
-        onPressed: () => context.go('/categories/transport/transit/create'),
+        onPressed: () {
+          context.go('/categories/transport/transit/create');
+        },
         tooltip: 'Add Journey',
       ),
-      body: _journeys.isEmpty
-          ? _buildEmptyState()
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: _journeys.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) => _buildJourneyCard(_journeys[index]),
-            ),
+      body: allJourneysAsyncValue.when(
+        data: (journeys) {
+          if (journeys.isEmpty) {
+            return _buildEmptyState();
+          }
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: journeys.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) => _buildJourneyCard(journeys[index]),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(
+          child: Text('Error fetching journeys: $error'),
+        ),
+      ),
     );
   }
 
@@ -504,25 +493,29 @@ class _TrainBusFerryListScreenState extends ConsumerState<TrainBusFerryListScree
     );
   }
 
-  void _deleteJourney(TrainBusFerry journey) {
-    setState(() {
-      _journeys.removeWhere((j) => j.id == journey.id);
-    });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${journey.name} deleted'),
-        backgroundColor: AppColors.mediumTurquoise,
-        action: SnackBarAction(
-          label: 'Undo',
-          textColor: AppColors.white,
-          onPressed: () {
-            setState(() {
-              _journeys.add(journey);
-            });
-          },
-        ),
-      ),
-    );
+  void _deleteJourney(TrainBusFerry journey) async {
+    if (journey.id == null) return;
+
+    try {
+      await ref.read(trainBusFerryRepositoryProvider).deleteTrainBusFerry(journey.id!);
+      ref.invalidate(allTrainBusFerriesProvider); // Refresh the list
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${journey.name} deleted successfully!'),
+            backgroundColor: AppColors.mediumTurquoise,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting journey: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

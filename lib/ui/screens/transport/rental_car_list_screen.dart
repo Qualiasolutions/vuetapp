@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/theme_config.dart';
 import '../../../ui/shared/widgets.dart';
 import '../../../models/transport_entities.dart';
+import '../../../providers/transport_providers.dart'; // Added import
 import 'package:go_router/go_router.dart';
 
 class RentalCarListScreen extends ConsumerStatefulWidget {
@@ -13,51 +14,35 @@ class RentalCarListScreen extends ConsumerStatefulWidget {
 }
 
 class _RentalCarListScreenState extends ConsumerState<RentalCarListScreen> {
-  // Sample data for now - will be replaced with Supabase MCP integration
-  List<RentalCar> _rentalCars = [
-    RentalCar(
-      id: 1,
-      name: 'Holiday Car Rental',
-      rentalCompany: 'Hertz',
-      make: 'Toyota',
-      model: 'Corolla',
-      registration: 'RNT123',
-      pickupDate: DateTime(2025, 7, 10),
-      returnDate: DateTime(2025, 7, 17),
-      pickupLocation: 'London Heathrow Airport',
-      returnLocation: 'London Heathrow Airport',
-      totalCost: 280.50,
-    ),
-    RentalCar(
-      id: 2,
-      name: 'Business Trip Car',
-      rentalCompany: 'Enterprise',
-      make: 'BMW',
-      model: '3 Series',
-      pickupDate: DateTime(2025, 8, 5),
-      returnDate: DateTime(2025, 8, 8),
-      pickupLocation: 'Manchester City Centre',
-      returnLocation: 'Manchester Airport',
-      totalCost: 450.00,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final allRentalCarsAsyncValue = ref.watch(allRentalCarsProvider);
+
     return Scaffold(
       appBar: const VuetHeader('Rental Cars'),
       floatingActionButton: VuetFAB(
-        onPressed: () => context.go('/categories/transport/rentals/create'),
+        onPressed: () {
+          context.go('/categories/transport/rentals/create');
+        },
         tooltip: 'Add Rental Car',
       ),
-      body: _rentalCars.isEmpty
-          ? _buildEmptyState()
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: _rentalCars.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) => _buildRentalCarCard(_rentalCars[index]),
-            ),
+      body: allRentalCarsAsyncValue.when(
+        data: (rentalCars) {
+          if (rentalCars.isEmpty) {
+            return _buildEmptyState();
+          }
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: rentalCars.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) => _buildRentalCarCard(rentalCars[index]),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(
+          child: Text('Error fetching rental cars: $error'),
+        ),
+      ),
     );
   }
 
@@ -474,25 +459,29 @@ class _RentalCarListScreenState extends ConsumerState<RentalCarListScreen> {
     );
   }
 
-  void _deleteRental(RentalCar rental) {
-    setState(() {
-      _rentalCars.removeWhere((r) => r.id == rental.id);
-    });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${rental.name} deleted'),
-        backgroundColor: AppColors.mediumTurquoise,
-        action: SnackBarAction(
-          label: 'Undo',
-          textColor: AppColors.white,
-          onPressed: () {
-            setState(() {
-              _rentalCars.add(rental);
-            });
-          },
-        ),
-      ),
-    );
+  void _deleteRental(RentalCar rental) async {
+    if (rental.id == null) return;
+
+    try {
+      await ref.read(rentalCarRepositoryProvider).deleteRentalCar(rental.id!);
+      ref.invalidate(allRentalCarsProvider); // Refresh the list
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${rental.name} deleted successfully!'),
+            backgroundColor: AppColors.mediumTurquoise,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting rental car: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/theme_config.dart';
 import '../../../ui/shared/widgets.dart';
 import '../../../models/transport_entities.dart';
+import '../../../providers/transport_providers.dart'; // Added import for providers
 import 'package:go_router/go_router.dart';
 
 class CarFormScreen extends ConsumerStatefulWidget {
@@ -194,8 +195,8 @@ class _CarFormScreenState extends ConsumerState<CarFormScreen> {
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
       );
 
-      // TODO: Save to Supabase using MCP tools
-      // For now, just show success and navigate back
+      // Use the carRepositoryProvider to save the car
+      await ref.read(carRepositoryProvider).saveCar(car);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

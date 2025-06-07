@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/theme_config.dart';
 import '../../../ui/shared/widgets.dart';
 import '../../../models/transport_entities.dart';
+import '../../../providers/transport_providers.dart'; // Added import
 import 'package:go_router/go_router.dart';
 
 class CarListScreen extends ConsumerStatefulWidget {
@@ -13,45 +14,36 @@ class CarListScreen extends ConsumerStatefulWidget {
 }
 
 class _CarListScreenState extends ConsumerState<CarListScreen> {
-  // Sample data for now - will be replaced with Supabase MCP integration
-  List<Car> _cars = [
-    Car(
-      id: 1,
-      name: 'Family Car',
-      make: 'Toyota',
-      model: 'Camry',
-      registration: 'ABC123',
-      motDueDate: DateTime(2025, 6, 15),
-      insuranceDueDate: DateTime(2025, 8, 20),
-      serviceDueDate: DateTime(2025, 4, 10),
-    ),
-    Car(
-      id: 2,
-      name: 'Work Car',
-      make: 'Honda',
-      model: 'Civic',
-      registration: 'XYZ789',
-      motDueDate: DateTime(2025, 9, 30),
-      insuranceDueDate: DateTime(2025, 12, 5),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final allCarsAsyncValue = ref.watch(allCarsProvider);
+
     return Scaffold(
       appBar: const VuetHeader('Cars'),
       floatingActionButton: VuetFAB(
-        onPressed: () => context.go('/categories/transport/cars/create'),
+        onPressed: () {
+          // Ensure the form screen is prepared to handle null car for creation
+          context.go('/categories/transport/cars/create');
+        },
         tooltip: 'Add Car',
       ),
-      body: _cars.isEmpty
-          ? _buildEmptyState()
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: _cars.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) => _buildCarCard(_cars[index]),
-            ),
+      body: allCarsAsyncValue.when(
+        data: (cars) {
+          if (cars.isEmpty) {
+            return _buildEmptyState();
+          }
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: cars.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) => _buildCarCard(cars[index]),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(
+          child: Text('Error fetching cars: $error'),
+        ),
+      ),
     );
   }
 
@@ -424,25 +416,29 @@ class _CarListScreenState extends ConsumerState<CarListScreen> {
     );
   }
 
-  void _deleteCar(Car car) {
-    setState(() {
-      _cars.removeWhere((c) => c.id == car.id);
-    });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${car.name} deleted'),
-        backgroundColor: AppColors.mediumTurquoise,
-        action: SnackBarAction(
-          label: 'Undo',
-          textColor: AppColors.white,
-          onPressed: () {
-            setState(() {
-              _cars.add(car);
-            });
-          },
-        ),
-      ),
-    );
+  void _deleteCar(Car car) async {
+    if (car.id == null) return; // Should not happen for an existing car
+
+    try {
+      await ref.read(carRepositoryProvider).deleteCar(car.id!);
+      ref.invalidate(allCarsProvider); // Refresh the list
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${car.name} deleted successfully!'),
+            backgroundColor: AppColors.mediumTurquoise,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting car: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

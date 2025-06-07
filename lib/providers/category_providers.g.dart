@@ -7,12 +7,12 @@ part of 'category_providers.dart';
 // **************************************************************************
 
 String _$allEntityCategoriesHash() =>
-    r'c19374f03eef227681047a088bbd486363fa269a';
+    r'e4c4be4c31aea273e7943740ee57df7374d54266';
 
 /// See also [allEntityCategories].
 @ProviderFor(allEntityCategories)
 final allEntityCategoriesProvider =
-    AutoDisposeFutureProvider<List<EntityCategoryModel>>.internal(
+    AutoDisposeFutureProvider<List<EntityCategory>>.internal(
   allEntityCategories,
   name: r'allEntityCategoriesProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -25,7 +25,7 @@ final allEntityCategoriesProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AllEntityCategoriesRef
-    = AutoDisposeFutureProviderRef<List<EntityCategoryModel>>;
+    = AutoDisposeFutureProviderRef<List<EntityCategory>>;
 String _$entitySubcategoriesHash() =>
     r'f880870e6b9434f88d6e1d23db6658aa9ce77a79';
 

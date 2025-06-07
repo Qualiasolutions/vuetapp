@@ -3,15 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:vuet_app/utils/logger.dart';
 
-import '../models/entity_category_model.dart';
+import '../models/entity_category_model.dart'; // Will be EntityCategory
 import 'category_repository.dart';
 
 part 'supabase_category_repository.g.dart';
 
 @Riverpod(keepAlive: true)
 // Changed function name to match expected provider name
-CategoryRepository supabaseCategoryRepository( 
-    Ref ref) {
+CategoryRepository supabaseCategoryRepository(Ref ref) {
   return SupabaseCategoryRepository(Supabase.instance.client);
 }
 
@@ -21,93 +20,59 @@ class SupabaseCategoryRepository implements CategoryRepository {
   SupabaseCategoryRepository(this._supabaseClient); 
 
   @override
-  Future<EntityCategoryModel> createCategory(
-      EntityCategoryModel category) async {
+  Future<EntityCategory> createCategory( // Updated
+      EntityCategory category) async { // Updated
     final response = await _supabaseClient
         .from('entity_categories')
         .insert(category.toJson())
         .select()
         .single();
-    return EntityCategoryModel.fromJson(response);
+    return EntityCategory.fromJson(response); // Updated
   }
 
   @override
-  Future<EntityCategoryModel> fetchCategoryById(String id) async {
+  Future<EntityCategory> fetchCategoryById(String id) async { // Updated
     final response = await _supabaseClient
         .from('entity_categories')
         .select()
         .eq('id', id)
         .single();
-    return EntityCategoryModel.fromJson(response);
+    return EntityCategory.fromJson(response); // Updated
   }
 
   @override
-  Future<List<EntityCategoryModel>> fetchCategories() async {
+  Future<List<EntityCategory>> fetchCategories() async { // Updated
     final userId = _supabaseClient.auth.currentUser?.id;
 
     // Build query to fetch both global categories (owner_id=null) AND user-owned categories
-    final queryBuilder = _supabaseClient
-        .from('entity_categories')
-        .select();
+    final queryBuilder = _supabaseClient.from('entity_categories').select();
 
     // If user is authenticated, get both global and user-owned categories
     // If not authenticated, get only global categories
     if (userId != null) {
-      queryBuilder.or('user_id.is.null,user_id.eq.$userId'); // Changed owner_id to user_id
+      queryBuilder.or(
+          'user_id.is.null,user_id.eq.$userId'); // Changed owner_id to user_id
     } else {
       queryBuilder.filter('user_id', 'is', null); // Changed owner_id to user_id
     }
 
-    final topLevelResponse = await queryBuilder;
+    // Fetches all categories from the new 'entity_categories' table.
+    // RLS policies on the table will handle user-specific access if defined.
+    // For now, it fetches all, assuming RLS allows general read.
+    // The old logic for user_id filtering and subcategories is removed as
+    // the new 'entity_categories' table is the single source of truth for main categories.
+    final response = await _supabaseClient
+        .from('entity_categories') // Correct table name
+        .select()
+        .order('sort_order', ascending: true); // Order by sort_order
 
-    final List<EntityCategoryModel> topLevelCategories = topLevelResponse
-        .map((json) => EntityCategoryModel.fromJson(json))
+    return response
+        .map((json) => EntityCategory.fromJson(json)) // Updated
         .toList();
-
-    // 2. Fetch all subcategories from entity_subcategories
-    // These are global/shared, not filtered by owner_id directly in this table.
-    // Their parent (entity_categories) might be user-owned or global.
-    final subcategoriesResponse = await _supabaseClient
-        .from('entity_subcategories')
-        .select();
-
-    final List<EntityCategoryModel> subCategoryModels = [];
-    for (final subJson in subcategoriesResponse) {
-      // Ensure all necessary fields for EntityCategoryModel are present or handled with defaults
-      subCategoryModels.add(EntityCategoryModel(
-        id: subJson['id'] as String, // PK of entity_subcategories
-        name: subJson['display_name'] as String, // Human-readable name
-        description: subJson['description'] as String? ?? '', // entity_subcategories doesn't have description, use default
-        icon: subJson['icon'] as String?,
-        ownerId: null, // Subcategories might not have a direct owner_id; they belong to a parent.
-                       // Or, this could be the parent's owner_id if needed for RLS elsewhere.
-                       // For now, keeping it simple.
-        createdAt: subJson['created_at'] != null ? DateTime.parse(subJson['created_at'] as String) : null,
-        updatedAt: subJson['updated_at'] != null ? DateTime.parse(subJson['updated_at'] as String) : null,
-        color: subJson['color'] as String?,
-        priority: subJson['priority'] as int?, // entity_subcategories doesn't have priority, use default
-        isProfessional: false, // Default, or derive from parent if necessary
-        parentId: subJson['category_id'] as String?, // This is the FK to entity_categories.id
-      ));
-    }
-    
-    // Combine top-level user categories and all subcategories
-    // The EntityService will handle merging these with the hardcoded defaultCategories
-    final combinedList = <EntityCategoryModel>[];
-    combinedList.addAll(topLevelCategories);
-    combinedList.addAll(subCategoryModels);
-    
-    // Deduplicate based on ID, preferring user-specific if conflicts (though IDs should be unique UUIDs)
-    final uniqueCategories = <String, EntityCategoryModel>{};
-    for (var cat in combinedList) {
-      uniqueCategories[cat.id] = cat;
-    }
-
-    return uniqueCategories.values.toList();
   }
-  
+
   @override
-  Future<List<EntityCategoryModel>> fetchPersonalCategories() async {
+  Future<List<EntityCategory>> fetchPersonalCategories() async { // Updated
     final userId = _supabaseClient.auth.currentUser?.id;
 
     // Build query to fetch personal categories
@@ -119,17 +84,23 @@ class SupabaseCategoryRepository implements CategoryRepository {
     // If user is authenticated, get both global and user-owned categories
     // If not authenticated, get only global categories
     if (userId != null) {
-      queryBuilder.or('user_id.is.null,user_id.eq.$userId'); // Changed owner_id to user_id
+      queryBuilder.or(
+          'user_id.is.null,user_id.eq.$userId'); // Changed owner_id to user_id
     } else {
       queryBuilder.filter('user_id', 'is', null); // Changed owner_id to user_id
     }
 
-    final response = await queryBuilder;
-    return response.map((json) => EntityCategoryModel.fromJson(json)).toList();
+    // This method might need re-evaluation.
+    // For now, it fetches all and filters if 'is_professional' concept is added to EntityCategory.
+    // Or, it could filter by some other criteria if 'personal' has a new meaning.
+    // Currently, our EntityCategory doesn't have 'is_professional'.
+    // Returning all categories for now, same as fetchCategories.
+    log('fetchPersonalCategories called, returning all categories. Review if specific filtering is needed.', name: 'SupabaseCategoryRepository');
+    return fetchCategories();
   }
 
   @override
-  Future<List<EntityCategoryModel>> fetchProfessionalCategories() async {
+  Future<List<EntityCategory>> fetchProfessionalCategories() async { // Updated
     final userId = _supabaseClient.auth.currentUser?.id;
 
     // Build query to fetch professional categories
@@ -141,25 +112,28 @@ class SupabaseCategoryRepository implements CategoryRepository {
     // If user is authenticated, get both global and user-owned categories
     // If not authenticated, get only global categories
     if (userId != null) {
-      queryBuilder.or('user_id.is.null,user_id.eq.$userId'); // Changed owner_id to user_id
+      queryBuilder.or(
+          'user_id.is.null,user_id.eq.$userId'); // Changed owner_id to user_id
     } else {
       queryBuilder.filter('user_id', 'is', null); // Changed owner_id to user_id
     }
 
-    final response = await queryBuilder;
-    return response.map((json) => EntityCategoryModel.fromJson(json)).toList();
+    // Similar to fetchPersonalCategories, this needs re-evaluation.
+    // Returning all categories for now.
+    log('fetchProfessionalCategories called, returning all categories. Review if specific filtering is needed.', name: 'SupabaseCategoryRepository');
+    return fetchCategories();
   }
 
   @override
-  Future<EntityCategoryModel> updateCategory(
-      EntityCategoryModel category) async {
+  Future<EntityCategory> updateCategory( // Updated
+      EntityCategory category) async { // Updated
     final response = await _supabaseClient
-        .from('entity_categories')
+        .from('entity_categories') // Correct table name
         .update(category.toJson())
         .eq('id', category.id)
         .select()
         .single();
-    return EntityCategoryModel.fromJson(response);
+    return EntityCategory.fromJson(response); // Updated
   }
 
   @override
@@ -169,7 +143,8 @@ class SupabaseCategoryRepository implements CategoryRepository {
 
   @override
   Future<int> fetchUncategorisedEntitiesCount() async {
-    log('fetchUncategorisedEntitiesCount called, returning 0 (placeholder)', name: 'SupabaseCategoryRepository');
-    return 0; 
+    log('fetchUncategorisedEntitiesCount called, returning 0 (placeholder)',
+        name: 'SupabaseCategoryRepository');
+    return 0;
   }
 }

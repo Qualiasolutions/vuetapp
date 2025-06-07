@@ -6,44 +6,37 @@ part of 'entity_category_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$EntityCategoryModelImpl _$$EntityCategoryModelImplFromJson(
-        Map<String, dynamic> json) =>
-    _$EntityCategoryModelImpl(
+_$EntityCategoryImpl _$$EntityCategoryImplFromJson(Map<String, dynamic> json) =>
+    _$EntityCategoryImpl(
       id: json['id'] as String,
       name: json['name'] as String,
-      description: json['description'] as String?,
-      icon: json['icon'] as String?,
-      ownerId: json['owner_id'] as String?,
-      createdAt: json['created_at'] == null
-          ? null
-          : DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] == null
-          ? null
-          : DateTime.parse(json['updated_at'] as String),
-      color: json['color'] as String?,
-      priority: (json['priority'] as num?)?.toInt(),
-      lastAccessedAt: json['lastAccessedAt'] == null
-          ? null
-          : DateTime.parse(json['lastAccessedAt'] as String),
-      isProfessional: json['is_professional'] as bool? ?? false,
+      displayName: json['displayName'] as String,
+      iconName: json['iconName'] as String?,
+      colorHex: json['colorHex'] as String?,
+      sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
+      isDisplayedOnGrid: json['isDisplayedOnGrid'] as bool? ?? true,
+      appCategoryIntId: (json['appCategoryIntId'] as num?)?.toInt(),
       parentId: json['parentId'] as String?,
-      appCategoryId: (json['appCategoryId'] as num?)?.toInt(),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
     );
 
-Map<String, dynamic> _$$EntityCategoryModelImplToJson(
-        _$EntityCategoryModelImpl instance) =>
+Map<String, dynamic> _$$EntityCategoryImplToJson(
+        _$EntityCategoryImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'description': instance.description,
-      'icon': instance.icon,
-      'owner_id': instance.ownerId,
-      'created_at': instance.createdAt?.toIso8601String(),
-      'updated_at': instance.updatedAt?.toIso8601String(),
-      'color': instance.color,
-      'priority': instance.priority,
-      'lastAccessedAt': instance.lastAccessedAt?.toIso8601String(),
-      'is_professional': instance.isProfessional,
+      'displayName': instance.displayName,
+      'iconName': instance.iconName,
+      'colorHex': instance.colorHex,
+      'sortOrder': instance.sortOrder,
+      'isDisplayedOnGrid': instance.isDisplayedOnGrid,
+      'appCategoryIntId': instance.appCategoryIntId,
       'parentId': instance.parentId,
-      'appCategoryId': instance.appCategoryId,
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
     };

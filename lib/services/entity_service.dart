@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:developer' as developer;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vuet_app/models/entity_model.dart';
-import 'package:vuet_app/models/entity_category_model.dart';
+import 'package:vuet_app/models/entity_category_model.dart'; // Will be EntityCategory
 import 'package:vuet_app/models/entity_subcategory_model.dart';
 import 'package:vuet_app/models/hierarchical_category_display_model.dart';
 import 'package:vuet_app/repositories/entity_repository.dart';
 import 'package:vuet_app/repositories/category_repository.dart';
 import 'package:vuet_app/repositories/entity_subcategory_repository.dart';
 import 'package:vuet_app/services/auth_service.dart';
-import 'package:vuet_app/constants/default_categories.dart';
 // Import the main repository files, not the .g.dart files directly
 import 'package:vuet_app/repositories/supabase_entity_repository.dart';
 import 'package:vuet_app/repositories/supabase_category_repository.dart';
@@ -225,29 +224,39 @@ class EntityService {
     }
     
     try {
-      List<EntityCategoryModel> supabaseCategories = await _categoryRepository.fetchCategories();
+      // fetchCategories should now return List<EntityCategory> from the new 'entity_categories' table
+      List<EntityCategory> supabaseCategories = await _categoryRepository.fetchCategories();
       
-      final List<EntityCategoryModel> mergedCategories = List.from(supabaseCategories);
-      final Set<String> existingIds = supabaseCategories.map((cat) => cat.id).toSet();
+      // The merging logic with defaultCategories_UNUSED might be temporary or for seeding.
+      // For now, we assume supabaseCategories is the primary source.
+      // If defaultCategories_UNUSED is for fallback, that logic would be different.
+      // For simplicity, let's assume supabaseCategories is what we work with primarily.
+      // If `defaultCategories_UNUSED` is meant to augment, that logic needs careful review.
+      // Given the new DB table, this merging might be entirely replaced.
+      // For now, let's just use what's fetched from Supabase.
+      
+      final List<EntityCategory> categoriesToBuildHierarchyFrom = List.from(supabaseCategories);
 
-      for (final defaultCategory in defaultCategories) {
-        if (!existingIds.contains(defaultCategory.id)) {
-          // Ensure ownerId is null for defaults, as they are global.
-          // Also, add to existingIds to prevent re-adding if defaultCategories itself had duplicates by ID (though unlikely).
-          mergedCategories.add(defaultCategory.copyWith(ownerId: null)); 
-          existingIds.add(defaultCategory.id); 
-        }
-      }
-      
-      mergedCategories.sort((a, b) {
-        int priorityCompare = (a.priority ?? 99).compareTo(b.priority ?? 99);
+      // The old defaultCategories had 'parentId', the new EntityCategory doesn't directly.
+      // The hierarchy was built using parentId. If the new `entity_categories` table
+      // doesn't have a parent_id column (our DDL didn't add one), then _buildHierarchy
+      // will only return top-level items. This needs to be considered.
+      // For now, assuming the fetched categories are flat or _buildHierarchy handles it.
+      // The sorting should use the new model's fields.
+      categoriesToBuildHierarchyFrom.sort((a, b) {
+        int priorityCompare = (a.sortOrder).compareTo(b.sortOrder);
         if (priorityCompare != 0) {
           return priorityCompare;
         }
-        return (a.name).compareTo(b.name);
+        // Using internal 'name' for secondary sort, or 'displayName' if preferred for user-facing sort.
+        return (a.name).compareTo(b.name); 
       });
 
-      return _buildHierarchy(null, mergedCategories);
+      // The _buildHierarchy method expects parentId. Our current EntityCategory doesn't have parentId.
+      // This hierarchical logic will need significant rework if categories are flat from the DB
+      // or if hierarchy is defined differently.
+      // For now, passing the flat list.
+      return _buildHierarchy(null, categoriesToBuildHierarchyFrom);
     } catch (e) {
       _handleError('Error fetching or building hierarchical categories', e);
       return []; 
@@ -256,12 +265,20 @@ class EntityService {
 
   List<HierarchicalCategoryDisplayModel> _buildHierarchy(
     String? parentId, 
-    List<EntityCategoryModel> allCategories
+    List<EntityCategory> allCategories // Updated to EntityCategory
   ) {
     final List<HierarchicalCategoryDisplayModel> children = [];
-    final directChildren = allCategories.where((category) => category.parentId == parentId).toList();
+    // The EntityCategory model does not have parentId. This logic will not work as is.
+    // This will need to be refactored based on how hierarchy is now determined (if at all from this flat list).
+    // For now, to avoid errors, I'll assume no parentId means it's a top-level category.
+    // This will effectively make the hierarchy flat if no parentId field exists and is populated.
+    // UPDATE: EntityCategory now has parentId.
+    final directChildren = allCategories.where((category) {
+      return category.parentId == parentId;
+    }).toList();
 
     for (final category in directChildren) {
+      // If categories are flat, grandChildren will always be empty.
       final grandChildren = _buildHierarchy(category.id, allCategories);
       children.add(HierarchicalCategoryDisplayModel(
         category: category,

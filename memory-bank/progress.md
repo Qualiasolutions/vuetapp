@@ -1,5 +1,5 @@
 # Progress Tracking - Vuet Flutter Migration
-*Last Updated: January 7, 2025*
+*Last Updated: June 7, 2025*
 
 ## Phase 1: Foundation & Assessment ✅ IN PROGRESS
 
@@ -41,12 +41,6 @@
   - VuetDivider component
   - VuetValidators utility class
 
-- [x] **Assess current category system** in Flutter app ✅ COMPLETED
-  - Updated default_categories.dart with FAMILY and CHARITY_RELIGION
-  - Updated app_categories.dart with new structure
-  - Removed Documents category as specified
-  - Added Family as ID 1 as requested
-
 ### 🎯 FAMILY ENTITY IMPLEMENTATION ✅ COMPLETED
 - [x] **Family Entity Types** - All 5 entity types implemented with 0 syntax errors
   - Birthday, Anniversary, Patient, Appointment, FamilyMember
@@ -54,10 +48,21 @@
   - List screens with CRUD operations, search, and sample data
   - Navigation integration with family category screen
 
+### 🎯 TRANSPORT ENTITY IMPLEMENTATION ✅ COMPLETED
+- [x] **Transport Entity Types** - All 4 entity types implemented with Modern Palette styling
+  - Car, Public Transport, Train/Bus/Ferry, Rental Car
+  - Form screens with validation and Modern Palette styling
+  - List screens with CRUD operations, search, and sample data
+  - Navigation integration with transport category screen
+- [x] **Full data layer and UI integration with Supabase completed.**
+  - Repositories implemented with Supabase CRUD operations.
+  - Providers set up for repositories and data fetching.
+  - Form and List screens for all Transport entities integrated with providers.
+
 ### 📋 MEDIUM PRIORITY - Architecture Alignment
-- [x] **FAMILY Category Decision**: ✅ RESOLVED - Family entity system implemented
-- [ ] **Extra Categories Strategy**: Keep 14 categories or align with 13-category guides
-- [ ] **Schema-Driven Categories**: Replace hardcoded categories with backend-driven system
+- [x] **FAMILY Category Decision**: ✅ RESOLVED - Family entity system implemented. To be a backend category, not displayed on main UI grid.
+- [x] **Extra Categories Strategy**: ✅ RESOLVED - 'Documents' category eliminated. 'Charity & Religion' kept. Total 14 categories (including Family).
+- [x] **Schema-Driven Categories**: ✅ COMPLETED (Backend/Model Logic) - New `entity_categories` table created, populated, and extended with `app_category_int_id` and `parent_id`. Flutter models, repositories, and services updated. UI integration and `parent_id` data population are next.
 
 ### 📝 DOCUMENTATION COMPLETION
 - [ ] Complete remaining memory bank files based on findings
@@ -80,10 +85,10 @@
 | Food | 9 | ✅ Match | Ready |
 | Laundry | 10 | ✅ Match | Ready |
 | Finance | 11 | ✅ Match | Ready |
-| Transport | 12 | ✅ Match | Ready |
-| Charity & Religion | 13 | ⚠️ Extra | Decision needed |
-| Documents | 14 | ⚠️ Extra | Decision needed |
-| **FAMILY** | - | ❌ Missing | Add or map existing |
+| Transport | 12 | ✅ Match | ✅ Completed |
+| Charity & Religion | 13 | ✅ Kept | Ready for schema |
+| Documents | 14 | ❌ Eliminated | - |
+| **FAMILY** | New | ✅ Added | Ready for schema (not on main grid) |
 
 ### Key Backend Capabilities Confirmed
 - ✅ **Polymorphic Entities**: 50+ entity types with type-specific tables
@@ -95,8 +100,8 @@
 - ✅ **References/Tags**: Structured tagging system
 - ✅ **User Management**: Profiles, subscriptions, onboarding
 
-## Current Session Completed ✅ MAJOR MILESTONE
-### 🎯 CRITICAL - UI & Subcategory Pages ✅ COMPLETED
+## Current Session Completed ✅ IN PROGRESS
+### 🎯 CRITICAL - UI & Subcategory Pages ✅ IN PROGRESS
 - [x] **All 9 Category-Specific Screens Created**:
   1. PetsCategoryScreen - Shows Pets, Pet Appointments
   2. SocialInterestsCategoryScreen - Shows Hobbies, Social Plans, Events
@@ -113,27 +118,25 @@
 - [x] **Modern Palette Styling**: VuetHeader, VuetCategoryTile, VuetFAB consistently applied
 - [x] **Entity Type Grids**: Each category shows its specific entity types as tiles
 - [x] **Complete User Experience**: Setup → Introduction → Category Screen → Entity Types flow
+- [x] **PublicTransport List & Form Screens created**
+- [x] **TrainBusFerry List & Form Screens created**
+- [x] **RentalCar List Screen created** and integrated with data layer.
+- [x] **RentalCar Form Screen created** and integrated with data layer.
+- [x] **Transport Data Layer**: Repositories and Providers fully implemented with Supabase integration. All Transport UI screens now use this data layer.
 
 ## Next Session Priorities
-1. **Entity Models**: Create remaining entity models for all 9 categories
-2. **Entity List/Form Screens**: Implement CRUD screens for each entity type
-3. **Supabase Integration**: Replace sample data with real MCP database operations
-4. **Schema Integration**: Connect Flutter app to Supabase schema fully
+1.  **UI Integration for Schema-Driven Categories**:
+    *   Thoroughly review and refactor UI components (e.g., category grids in `categories_grid.dart`, various selectors) to fetch and display categories correctly from the `entity_categories` table via updated providers (e.g., `allEntityCategoriesProvider`, `hierarchicalCategoriesProvider`). Ensure `is_displayed_on_grid` and `sort_order` are respected.
+    *   Verify icon display logic now that `iconName` is available (e.g., in `HierarchicalCategorySelectorDialog` and other places).
+2.  **Populate `parent_id` Data (User Task)**: User to update `parent_id` values in the `entity_categories` table in Supabase to define actual category hierarchies.
+3.  **Proceed with Next Entity Category Implementation**: Based on `progress.md`, identify and implement the next highest priority entity category (e.g., Pets), ensuring it uses the new schema-driven and hierarchical category system.
+4.  **Update Memory Bank**: Ensure all memory bank files accurately reflect the current project state after these changes (this is ongoing).
 
 ## Blockers & Decisions Needed
-1. **FAMILY Category**: How to handle missing FAMILY category in backend?
-2. **Extra Categories**: Keep 14 categories or reduce to 13 per guides?
-3. **Migration Strategy**: Gradual refactor vs. complete rebuild?
-
-## Success Metrics for Phase 1
-- [x] Modern Palette theme implemented ✅
-- [x] Modern widget library created ✅
-- [x] Category system alignment strategy decided ✅
-- [x] Family entity system complete ✅
-- [x] Memory bank documentation complete ✅
-- [x] **UI & Subcategory pages populated** ✅ COMPLETED - All 9 category screens created
-- [ ] Complete entity system for all categories
-- [ ] Flutter app architecture assessment complete
+- (Resolved in this session) ~~FAMILY Category: How to handle missing FAMILY category in backend?~~
+- (Resolved in this session) ~~Extra Categories: Keep 14 categories or reduce to 13 per guides?~~
+- (Resolved) ~~**Integer Category IDs**: Confirm approach for mapping new UUID-based categories to legacy integer IDs if still required by parts of the system (e.g., `entitiesByCategoryProvider`). The plan is to add an integer ID column to `entity_categories`.~~ (This has been implemented by adding `app_category_int_id`).
+- **Migration Strategy**: Gradual refactor vs. complete rebuild? (Ongoing consideration)
 
 ---
 

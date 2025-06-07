@@ -6,7 +6,7 @@ part 'hierarchical_category_display_model.freezed.dart';
 @freezed
 class HierarchicalCategoryDisplayModel with _$HierarchicalCategoryDisplayModel {
   const factory HierarchicalCategoryDisplayModel({
-    required EntityCategoryModel category,
+    required EntityCategory category, // Updated from EntityCategoryModel
     required List<HierarchicalCategoryDisplayModel> children,
   }) = _HierarchicalCategoryDisplayModel;
 }

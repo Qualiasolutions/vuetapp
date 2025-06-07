@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/theme_config.dart';
 import '../../../ui/shared/widgets.dart';
 import '../../../models/transport_entities.dart';
+import '../../../providers/transport_providers.dart'; // Added import
 import 'package:go_router/go_router.dart';
 
 class TrainBusFerryFormScreen extends ConsumerStatefulWidget {
@@ -210,8 +211,7 @@ class _TrainBusFerryFormScreenState extends ConsumerState<TrainBusFerryFormScree
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
       );
 
-      // TODO: Save to Supabase using MCP tools
-      // For now, just show success and navigate back
+      await ref.read(trainBusFerryRepositoryProvider).saveTrainBusFerry(journey);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

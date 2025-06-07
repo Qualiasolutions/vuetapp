@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../config/theme_config.dart';
 import '../../../ui/shared/widgets.dart';
 import '../../../models/transport_entities.dart';
+import '../../../providers/transport_providers.dart'; // Added import
 import 'package:go_router/go_router.dart';
 
 class PublicTransportListScreen extends ConsumerStatefulWidget {
@@ -13,41 +14,35 @@ class PublicTransportListScreen extends ConsumerStatefulWidget {
 }
 
 class _PublicTransportListScreenState extends ConsumerState<PublicTransportListScreen> {
-  // Sample data for now - will be replaced with Supabase MCP integration
-  List<PublicTransport> _publicTransports = [
-    PublicTransport(
-      id: 1,
-      name: 'Daily Bus Route',
-      transportType: 'Bus',
-      routeNumber: '42',
-      operator: 'City Transport',
-      notes: 'Regular commute route',
-    ),
-    PublicTransport(
-      id: 2,
-      name: 'Metro Line',
-      transportType: 'Metro',
-      routeNumber: 'Blue Line',
-      operator: 'Metro Authority',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final allPublicTransportAsyncValue = ref.watch(allPublicTransportProvider);
+
     return Scaffold(
       appBar: const VuetHeader('Public Transport'),
       floatingActionButton: VuetFAB(
-        onPressed: () => context.go('/categories/transport/public/create'),
+        onPressed: () {
+          context.go('/categories/transport/public/create');
+        },
         tooltip: 'Add Public Transport',
       ),
-      body: _publicTransports.isEmpty
-          ? _buildEmptyState()
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: _publicTransports.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) => _buildPublicTransportCard(_publicTransports[index]),
-            ),
+      body: allPublicTransportAsyncValue.when(
+        data: (transports) {
+          if (transports.isEmpty) {
+            return _buildEmptyState();
+          }
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: transports.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) => _buildPublicTransportCard(transports[index]),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(
+          child: Text('Error fetching public transport: $error'),
+        ),
+      ),
     );
   }
 
@@ -346,25 +341,29 @@ class _PublicTransportListScreenState extends ConsumerState<PublicTransportListS
     );
   }
 
-  void _deleteTransport(PublicTransport transport) {
-    setState(() {
-      _publicTransports.removeWhere((t) => t.id == transport.id);
-    });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${transport.name} deleted'),
-        backgroundColor: AppColors.mediumTurquoise,
-        action: SnackBarAction(
-          label: 'Undo',
-          textColor: AppColors.white,
-          onPressed: () {
-            setState(() {
-              _publicTransports.add(transport);
-            });
-          },
-        ),
-      ),
-    );
+  void _deleteTransport(PublicTransport transport) async {
+    if (transport.id == null) return;
+
+    try {
+      await ref.read(publicTransportRepositoryProvider).deletePublicTransport(transport.id!);
+      ref.invalidate(allPublicTransportProvider); // Refresh the list
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${transport.name} deleted successfully!'),
+            backgroundColor: AppColors.mediumTurquoise,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting public transport: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

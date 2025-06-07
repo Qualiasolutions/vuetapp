@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vuet_app/models/entity_category_model.dart';
+import 'package:vuet_app/models/entity_category_model.dart'; // Will be EntityCategory
 import 'package:vuet_app/repositories/supabase_category_repository.dart';
 import 'package:vuet_app/config/app_categories.dart';
 
@@ -9,10 +9,11 @@ final personalCategoryDisplayGroupsProvider = Provider<List<CategoryDisplayGroup
 });
 
 // Provider for professional categories with StreamProvider for auto-refresh and autoDispose
-final professionalCategoriesProvider = StreamProvider.autoDispose<List<EntityCategoryModel>>((ref) async* {
+final professionalCategoriesProvider = StreamProvider.autoDispose<List<EntityCategory>>((ref) async* { // Updated to EntityCategory
   final repository = ref.read(supabaseCategoryRepositoryProvider);
   
   // Initial fetch
+  // Assuming fetchProfessionalCategories will be updated to return List<EntityCategory>
   yield await repository.fetchProfessionalCategories();
   
   // Poll for updates every 30 seconds
@@ -42,4 +43,4 @@ final uncategorisedEntitiesCountProvider = StreamProvider.autoDispose<int>((ref)
       continue;
     }
   }
-}); 
+});

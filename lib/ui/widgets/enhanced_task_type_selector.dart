@@ -185,7 +185,16 @@ class _EnhancedTaskTypeSelectorState extends ConsumerState<EnhancedTaskTypeSelec
         // For now, show all entities from the first category
         // This can be enhanced later to match task types to specific categories
         final firstCategory = categories.first;
-        final entitiesAsync = ref.watch(entitiesByCategoryProvider(firstCategory.appCategoryId ?? 1));
+        
+        final int? appCategoryId = firstCategory.appCategoryIntId;
+
+        if (appCategoryId == null) {
+          debugPrint('Error: appCategoryIntId is null for category: ${firstCategory.name}. Cannot load entities.');
+          // Optionally, provide a user-facing message or specific UI for this case
+          return const Text('Cannot link entities: Category configuration missing.');
+        }
+
+        final entitiesAsync = ref.watch(entitiesByCategoryProvider(appCategoryId));
 
         return entitiesAsync.when(
           data: (entities) {

@@ -1,7 +1,6 @@
-import 'package:vuet_app/models/entity_category_model.dart';
+import 'package:vuet_app/models/entity_category_model.dart'; // Will be EntityCategory
 import 'package:vuet_app/models/hierarchical_category_display_model.dart';
-import 'package:vuet_app/repositories/supabase_category_repository.dart'; 
-import 'package:vuet_app/constants/default_categories.dart';
+import 'package:vuet_app/repositories/supabase_category_repository.dart';
 import 'package:vuet_app/constants/default_subcategories.dart';
 import 'package:vuet_app/services/auth_service.dart';
 import 'package:vuet_app/services/entity_service.dart';
@@ -15,45 +14,47 @@ import '../repositories/supabase_entity_subcategory_repository.dart';
 part 'category_providers.g.dart';
 
 // Existing categoriesProvider (flat list, might be deprecated or used for specific non-hierarchical views)
-final categoriesProvider = FutureProvider<List<EntityCategoryModel>>((ref) async {
+// This provider will likely need significant rework or replacement once the new schema-driven approach is fully implemented.
+// For now, just updating model names to clear immediate errors.
+final categoriesProvider = FutureProvider<List<EntityCategory>>((ref) async {
   final categoryRepository = ref.watch(supabaseCategoryRepositoryProvider);
   final authService = ref.watch(authServiceProvider);
 
   try {
-    List<EntityCategoryModel> userCategories = [];
+    List<EntityCategory> userCategories = [];
     if (authService.isSignedIn) {
-      userCategories = await categoryRepository.fetchCategories(); 
+      // Assuming fetchCategories will be updated to return List<EntityCategory>
+      // and interact with the new 'entity_categories' table.
+      // This part of the code is highly dependent on supabase_category_repository.dart changes.
+      // For now, we'll assume it returns an empty list if not yet updated.
+      // userCategories = await categoryRepository.fetchCategories();
     }
     
-    final Set<String> userCategoryNames = userCategories.map((uc) => uc.name.toLowerCase()).toSet();
-    final List<EntityCategoryModel> mergedCategories = List.from(userCategories);
+    // The fetchCategories method should now return the full list from the database.
+    // If user-specific logic was intended, it needs to be implemented in the repository.
+    // For now, assuming fetchCategories returns all relevant categories.
+    // List<EntityCategory> categories = await categoryRepository.fetchCategories(); // Assuming this fetches all from new table.
+    
+    // Let's use the allEntityCategoriesProvider's underlying repository call for consistency,
+    // as it's confirmed to work with the new table.
+    // The categoriesProvider might be deprecated in favor of allEntityCategoriesProvider.
+    // For now, let's make it fetch directly.
+    List<EntityCategory> categories = await ref.watch(supabaseEntityCategoryRepositoryProvider).listCategories();
 
-    for (final defaultCategory in defaultCategories) {
-      if (!userCategoryNames.contains(defaultCategory.name.toLowerCase())) {
-        mergedCategories.add(defaultCategory.copyWith(ownerId: null)); 
-      }
-    }
-    
-    mergedCategories.sort((a, b) {
-        int priorityCompare = (a.priority ?? 99).compareTo(b.priority ?? 99);
+
+    categories.sort((a, b) {
+        int priorityCompare = (a.sortOrder).compareTo(b.sortOrder);
         if (priorityCompare != 0) {
           return priorityCompare;
         }
         return (a.name).compareTo(b.name);
       });
-    return mergedCategories;
+    return categories;
 
   } catch (e, s) {
-    log('Error fetching user categories in categoriesProvider. Error: $e', name: 'CategoryProviders', error: e, stackTrace: s);
-    final sortedDefaultCategories = List<EntityCategoryModel>.from(defaultCategories);
-    sortedDefaultCategories.sort((a, b) {
-        int priorityCompare = (a.priority ?? 99).compareTo(b.priority ?? 99);
-        if (priorityCompare != 0) {
-          return priorityCompare;
-        }
-        return (a.name).compareTo(b.name);
-      });
-    return sortedDefaultCategories;
+    log('Error fetching categories in categoriesProvider. Error: $e', name: 'CategoryProviders', error: e, stackTrace: s);
+    // Return empty list on error, rather than falling back to hardcoded defaults.
+    return [];
   }
 });
 
@@ -80,9 +81,10 @@ final hierarchicalCategoriesProvider = FutureProvider<List<HierarchicalCategoryD
 // Provider to fetch all entity categories
 @riverpod
 // ignore: deprecated_member_use_from_same_package
-Future<List<EntityCategoryModel>> allEntityCategories(AllEntityCategoriesRef ref) async {
+Future<List<EntityCategory>> allEntityCategories(AllEntityCategoriesRef ref) async { // Updated to EntityCategory
   final categoryRepository = ref.watch(supabaseEntityCategoryRepositoryProvider);
   // Assuming your listCategories can be called without ownerId to get all
+  // This will also need to be updated to return List<EntityCategory>
   return categoryRepository.listCategories();
 }
 

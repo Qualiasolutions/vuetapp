@@ -16,7 +16,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$HierarchicalCategoryDisplayModel {
-  EntityCategoryModel get category => throw _privateConstructorUsedError;
+  EntityCategory get category =>
+      throw _privateConstructorUsedError; // Updated from EntityCategoryModel
   List<HierarchicalCategoryDisplayModel> get children =>
       throw _privateConstructorUsedError;
 
@@ -36,10 +37,10 @@ abstract class $HierarchicalCategoryDisplayModelCopyWith<$Res> {
           HierarchicalCategoryDisplayModel>;
   @useResult
   $Res call(
-      {EntityCategoryModel category,
+      {EntityCategory category,
       List<HierarchicalCategoryDisplayModel> children});
 
-  $EntityCategoryModelCopyWith<$Res> get category;
+  $EntityCategoryCopyWith<$Res> get category;
 }
 
 /// @nodoc
@@ -65,7 +66,7 @@ class _$HierarchicalCategoryDisplayModelCopyWithImpl<$Res,
       category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
-              as EntityCategoryModel,
+              as EntityCategory,
       children: null == children
           ? _value.children
           : children // ignore: cast_nullable_to_non_nullable
@@ -77,8 +78,8 @@ class _$HierarchicalCategoryDisplayModelCopyWithImpl<$Res,
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $EntityCategoryModelCopyWith<$Res> get category {
-    return $EntityCategoryModelCopyWith<$Res>(_value.category, (value) {
+  $EntityCategoryCopyWith<$Res> get category {
+    return $EntityCategoryCopyWith<$Res>(_value.category, (value) {
       return _then(_value.copyWith(category: value) as $Val);
     });
   }
@@ -94,11 +95,11 @@ abstract class _$$HierarchicalCategoryDisplayModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {EntityCategoryModel category,
+      {EntityCategory category,
       List<HierarchicalCategoryDisplayModel> children});
 
   @override
-  $EntityCategoryModelCopyWith<$Res> get category;
+  $EntityCategoryCopyWith<$Res> get category;
 }
 
 /// @nodoc
@@ -123,7 +124,7 @@ class __$$HierarchicalCategoryDisplayModelImplCopyWithImpl<$Res>
       category: null == category
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
-              as EntityCategoryModel,
+              as EntityCategory,
       children: null == children
           ? _value._children
           : children // ignore: cast_nullable_to_non_nullable
@@ -142,8 +143,10 @@ class _$HierarchicalCategoryDisplayModelImpl
       : _children = children;
 
   @override
-  final EntityCategoryModel category;
+  final EntityCategory category;
+// Updated from EntityCategoryModel
   final List<HierarchicalCategoryDisplayModel> _children;
+// Updated from EntityCategoryModel
   @override
   List<HierarchicalCategoryDisplayModel> get children {
     if (_children is EqualUnmodifiableListView) return _children;
@@ -184,12 +187,12 @@ class _$HierarchicalCategoryDisplayModelImpl
 abstract class _HierarchicalCategoryDisplayModel
     implements HierarchicalCategoryDisplayModel {
   const factory _HierarchicalCategoryDisplayModel(
-          {required final EntityCategoryModel category,
+          {required final EntityCategory category,
           required final List<HierarchicalCategoryDisplayModel> children}) =
       _$HierarchicalCategoryDisplayModelImpl;
 
   @override
-  EntityCategoryModel get category;
+  EntityCategory get category; // Updated from EntityCategoryModel
   @override
   List<HierarchicalCategoryDisplayModel> get children;
 

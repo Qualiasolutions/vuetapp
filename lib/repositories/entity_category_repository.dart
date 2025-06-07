@@ -1,9 +1,9 @@
-import '../models/entity_category_model.dart';
+import '../models/entity_category_model.dart'; // Will be EntityCategory
 
 abstract class EntityCategoryRepository {
-  Future<EntityCategoryModel> createCategory(EntityCategoryModel category);
-  Future<EntityCategoryModel?> getCategory(String id);
-  Future<List<EntityCategoryModel>> listCategories({String? ownerId});
-  Future<EntityCategoryModel> updateCategory(EntityCategoryModel category);
+  Future<EntityCategory> createCategory(EntityCategory category); // Updated
+  Future<EntityCategory?> getCategory(String id); // Updated
+  Future<List<EntityCategory>> listCategories({String? ownerId}); // Updated
+  Future<EntityCategory> updateCategory(EntityCategory category); // Updated
   Future<void> deleteCategory(String id);
 }

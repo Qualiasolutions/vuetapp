@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/entity_category_model.dart';
+import '../models/entity_category_model.dart'; // Will be EntityCategory
 import 'entity_category_repository.dart';
 import 'base_supabase_repository.dart'; // Assuming you have this for common logic
 
@@ -18,23 +18,23 @@ class SupabaseEntityCategoryRepository extends BaseSupabaseRepository
   SupabaseEntityCategoryRepository(super.client);
 
   @override
-  Future<EntityCategoryModel> createCategory(EntityCategoryModel category) async {
+  Future<EntityCategory> createCategory(EntityCategory category) async { // Updated
     return executeQuery('createCategory', () async {
       final response = await from('entity_categories')
           .insert(category.toJson())
           .select()
           .single();
-      return EntityCategoryModel.fromJson(response);
+      return EntityCategory.fromJson(response); // Updated
     });
   }
 
   @override
-  Future<EntityCategoryModel?> getCategory(String id) async {
+  Future<EntityCategory?> getCategory(String id) async { // Updated
     return executeQuery('getCategory', () async {
       try {
         final response =
             await from('entity_categories').select().eq('id', id).single();
-        return EntityCategoryModel.fromJson(response);
+        return EntityCategory.fromJson(response); // Updated
       } catch (e) {
         // Handle cases where the category might not be found or other errors
         // print('Error fetching category $id: $e');
@@ -44,7 +44,7 @@ class SupabaseEntityCategoryRepository extends BaseSupabaseRepository
   }
 
   @override
-  Future<List<EntityCategoryModel>> listCategories(
+  Future<List<EntityCategory>> listCategories( // Updated
       {String? ownerId}) async {
     return executeQuery('listCategories', () async {
       // Start with select() which returns a PostgrestFilterBuilder
@@ -63,20 +63,20 @@ class SupabaseEntityCategoryRepository extends BaseSupabaseRepository
           
       // The response here is PostgrestList (which is List<Map<String, dynamic>>)
       return response
-          .map((json) => EntityCategoryModel.fromJson(json))
+          .map((json) => EntityCategory.fromJson(json)) // Updated
           .toList();
     });
   }
 
   @override
-  Future<EntityCategoryModel> updateCategory(EntityCategoryModel category) async {
+  Future<EntityCategory> updateCategory(EntityCategory category) async { // Updated
     return executeQuery('updateCategory', () async {
       final response = await from('entity_categories')
           .update(category.toJson())
           .eq('id', category.id)
           .select()
           .single();
-      return EntityCategoryModel.fromJson(response);
+      return EntityCategory.fromJson(response); // Updated
     });
   }
 
@@ -86,4 +86,4 @@ class SupabaseEntityCategoryRepository extends BaseSupabaseRepository
       await from('entity_categories').delete().eq('id', id);
     });
   }
-} 
+}
