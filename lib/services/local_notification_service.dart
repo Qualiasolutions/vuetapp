@@ -40,7 +40,8 @@ class LocalNotificationService extends ChangeNotifier {
   Future<void> initialize() async {
     // Skip initialization on web platform
     if (kIsWeb) {
-      debugPrint('LocalNotificationService: Skipping initialization on web platform');
+      debugPrint(
+          'LocalNotificationService: Skipping initialization on web platform');
       await _loadSettings(); // Still load settings from SharedPreferences
       return;
     }
@@ -54,11 +55,13 @@ class LocalNotificationService extends ChangeNotifier {
     // For simplicity, let's assume a common default if specific local timezone is not critical for stub.
     // This might need to be made more robust based on app requirements.
     try {
-        final String localTimeZoneName = tz.local.name; // Default to system's local if available
-        tz.setLocalLocation(tz.getLocation(localTimeZoneName));
+      final String localTimeZoneName =
+          tz.local.name; // Default to system's local if available
+      tz.setLocalLocation(tz.getLocation(localTimeZoneName));
     } catch (e) {
-        log("Failed to set local timezone automatically, defaulting to UTC: $e", error: e);
-        tz.setLocalLocation(tz.getLocation('Etc/UTC'));
+      log("Failed to set local timezone automatically, defaulting to UTC: $e",
+          error: e);
+      tz.setLocalLocation(tz.getLocation('Etc/UTC'));
     }
 
     // Load settings from shared preferences
@@ -67,31 +70,33 @@ class LocalNotificationService extends ChangeNotifier {
     // Initialize the notification plugin
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    
+
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
-    
-    const InitializationSettings initializationSettings = InitializationSettings(
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
-    
+
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: _onNotificationTapped,
     );
-    
+
     // Request notification permissions
     await _requestPermissions();
   }
 
   /// Request notification permissions
   Future<void> _requestPermissions() async {
-    if (!kIsWeb) { // Add kIsWeb check
+    if (!kIsWeb) {
+      // Add kIsWeb check
       if (Platform.isIOS) {
         await _flutterLocalNotificationsPlugin
             .resolvePlatformSpecificImplementation<
@@ -155,34 +160,36 @@ class LocalNotificationService extends ChangeNotifier {
   }) async {
     // Skip showing notifications on web platform
     if (kIsWeb) {
-      debugPrint('LocalNotificationService: Skipping showNotification on web platform');
+      debugPrint(
+          'LocalNotificationService: Skipping showNotification on web platform');
       return;
     }
 
     // Configure sound and vibration based on importance
     await _configureChannels();
-    
+
     final androidDetails = AndroidNotificationDetails(
       'vuet_notifications_${importance.toLowerCase()}',
       'Vuet ${importance.capitalize()} Notifications',
-      channelDescription: '${importance.capitalize()} priority notifications from Vuet',
+      channelDescription:
+          '${importance.capitalize()} priority notifications from Vuet',
       importance: _getImportanceLevel(importance),
       priority: _getPriorityLevel(importance),
       enableVibration: _vibrationEnabled,
       playSound: _soundEnabled,
     );
-    
+
     final iosDetails = DarwinNotificationDetails(
       presentSound: _soundEnabled,
       presentBadge: true,
       presentAlert: true,
     );
-    
+
     final platformDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
-    
+
     // Show the notification
     await _flutterLocalNotificationsPlugin.show(
       DateTime.now().millisecondsSinceEpoch.remainder(100000),
@@ -191,7 +198,7 @@ class LocalNotificationService extends ChangeNotifier {
       platformDetails,
       payload: payload,
     );
-    
+
     // Vibrate if enabled - temporarily disabled due to flutter_vibrate package issues
     if (_vibrationEnabled) {
       // _vibrate(importance);  // Commented out due to flutter_vibrate package issues
@@ -220,8 +227,8 @@ class LocalNotificationService extends ChangeNotifier {
               importance: Importance.high,
             ),
           );
-      
-      // Normal priority channel  
+
+      // Normal priority channel
       await _flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>()
@@ -233,7 +240,7 @@ class LocalNotificationService extends ChangeNotifier {
               importance: Importance.defaultImportance,
             ),
           );
-      
+
       // Low priority channel
       await _flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
@@ -287,44 +294,48 @@ class LocalNotificationService extends ChangeNotifier {
   }) async {
     // Skip scheduling notifications on web platform
     if (kIsWeb) {
-      debugPrint('LocalNotificationService: Skipping scheduleNotification on web platform');
+      debugPrint(
+          'LocalNotificationService: Skipping scheduleNotification on web platform');
       return;
     }
 
     // Configure sound and vibration based on importance
     await _configureChannels();
-    
+
     final androidDetails = AndroidNotificationDetails(
       'vuet_notifications_${importance.toLowerCase()}',
       'Vuet ${importance.capitalize()} Notifications',
-      channelDescription: '${importance.capitalize()} priority notifications from Vuet',
+      channelDescription:
+          '${importance.capitalize()} priority notifications from Vuet',
       importance: _getImportanceLevel(importance),
       priority: _getPriorityLevel(importance),
       enableVibration: _vibrationEnabled,
       playSound: _soundEnabled,
     );
-    
+
     final iosDetails = DarwinNotificationDetails(
       presentSound: _soundEnabled,
       presentBadge: true,
       presentAlert: true,
     );
-    
+
     final platformDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
-    
+
     // Schedule the notification
     await _flutterLocalNotificationsPlugin.zonedSchedule(
-      DateTime.now().millisecondsSinceEpoch.remainder(100000), // Unique ID for the notification
+      DateTime.now()
+          .millisecondsSinceEpoch
+          .remainder(100000), // Unique ID for the notification
       title,
       body,
       convertToTZDateTime(scheduledDate), // Use the corrected conversion method
       platformDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      // uiLocalNotificationDateInterpretation has been removed for iOS in later versions,
-      // the interpretation is handled by the TZDateTime object itself.
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
       payload: payload,
     );
   }
@@ -333,7 +344,8 @@ class LocalNotificationService extends ChangeNotifier {
   Future<void> cancelNotification(int notificationId) async {
     // Skip canceling notifications on web platform
     if (kIsWeb) {
-      debugPrint('LocalNotificationService: Skipping cancelNotification on web platform');
+      debugPrint(
+          'LocalNotificationService: Skipping cancelNotification on web platform');
       return;
     }
 
@@ -357,27 +369,27 @@ class LocalNotificationService extends ChangeNotifier {
     // If scheduled time is in the past, schedule for the next minute to avoid issues
     // Or handle as per specific app logic (e.g., schedule for next day at same time)
     if (scheduledTZDate.isBefore(now)) {
-        // This logic might need to be more sophisticated based on requirements
-        // For a simple reminder, scheduling it a minute from now if it's past due might be one approach.
-        // Or, if it's a specific date/time reminder that's passed, perhaps it shouldn't be scheduled.
-        // For now, let's adjust it to be at least a few seconds in the future from 'now'
-        // to ensure it's a valid schedule time if the original time was very close to 'now' or slightly past.
-        log("Scheduled date for notification was in the past. Adjusting to be in the near future.");
-        // return now.add(const Duration(seconds: 5)); // Simple adjustment
-        // Let's try to keep the original time but on the next valid occurrence if it's for today but past
-        // Or if it's a past date, this example just schedules it for a minute from now.
-        // This part depends heavily on the desired behavior for past due reminders.
-        
-        // A safer bet for generic scheduling of a past due item is to schedule it "soon"
-        // Or to decide based on policy (e.g. if more than X time past, don't schedule)
-        // For this fix, we ensure it's at least 'now' or slightly after.
-        if (scheduledTZDate.isBefore(now)) {
-             // If it's for today but earlier, or a past day.
-             // Let's try to schedule it for the same time tomorrow if it's a daily type thing,
-             // or just default to "now + 5 seconds" if that logic is too complex for here.
-             // For simplicity, if in past, make it 5 seconds from now.
-             return now.add(const Duration(seconds: 10));
-        }
+      // This logic might need to be more sophisticated based on requirements
+      // For a simple reminder, scheduling it a minute from now if it's past due might be one approach.
+      // Or, if it's a specific date/time reminder that's passed, perhaps it shouldn't be scheduled.
+      // For now, let's adjust it to be at least a few seconds in the future from 'now'
+      // to ensure it's a valid schedule time if the original time was very close to 'now' or slightly past.
+      log("Scheduled date for notification was in the past. Adjusting to be in the near future.");
+      // return now.add(const Duration(seconds: 5)); // Simple adjustment
+      // Let's try to keep the original time but on the next valid occurrence if it's for today but past
+      // Or if it's a past date, this example just schedules it for a minute from now.
+      // This part depends heavily on the desired behavior for past due reminders.
+
+      // A safer bet for generic scheduling of a past due item is to schedule it "soon"
+      // Or to decide based on policy (e.g. if more than X time past, don't schedule)
+      // For this fix, we ensure it's at least 'now' or slightly after.
+      if (scheduledTZDate.isBefore(now)) {
+        // If it's for today but earlier, or a past day.
+        // Let's try to schedule it for the same time tomorrow if it's a daily type thing,
+        // or just default to "now + 5 seconds" if that logic is too complex for here.
+        // For simplicity, if in past, make it 5 seconds from now.
+        return now.add(const Duration(seconds: 10));
+      }
     }
     return scheduledTZDate;
   }
@@ -385,7 +397,7 @@ class LocalNotificationService extends ChangeNotifier {
   // Helper method _nextInstanceOfTime is replaced by convertToTZDateTime
   // And the TZDateTime stub is removed.
 
-  // static dynamic get _local => 
+  // static dynamic get _local =>
   //     tz.TZDateTime.now(tz.local); // This was part of the stub, not needed directly here.
 }
 

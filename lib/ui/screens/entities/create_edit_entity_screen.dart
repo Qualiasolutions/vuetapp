@@ -6,6 +6,8 @@ import 'package:vuet_app/config/entity_form_fields.dart';
 import 'package:vuet_app/providers/entity_providers.dart';
 import 'package:vuet_app/providers/auth_providers.dart';
 import 'package:vuet_app/providers/entity_actions_provider.dart';
+import 'package:vuet_app/providers/family_member_providers.dart';
+import 'package:vuet_app/models/family_entities.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -34,6 +36,7 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
   EntitySubtype? _selectedSubtype;
   bool _isLoading = false;
   String? _errorMessage;
+  String? _selectedFamilyMemberId; // MANDATORY: Entity must be assigned to family member
 
   final Map<String, TextEditingController> _textControllers = {};
   final Map<String, dynamic> _dropdownSelectedValues = {};
@@ -110,6 +113,14 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
       return;
     }
     
+    // CRITICAL VALIDATION: Family member assignment is mandatory
+    if (_selectedFamilyMemberId == null || _selectedFamilyMemberId!.isEmpty) {
+      setState(() {
+        _errorMessage = 'Family member assignment is required. Every entity must be connected to a family member.';
+      });
+      return;
+    }
+    
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -138,6 +149,9 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
       // Collect custom field values
       final Map<String, dynamic> customFieldsData = {};
       final fields = entityFormFields[_selectedSubtype] ?? [];
+      
+      // MANDATORY: Store family member assignment in custom fields
+      customFieldsData['assignedFamilyMemberId'] = _selectedFamilyMemberId!;
       
       for (var fieldDef in fields) {
         if (FormFieldDefinition.textTypes.contains(fieldDef.type)) {
@@ -888,6 +902,201 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
     );
   }
 
+  /// MANDATORY: Family Member Selection Card
+  /// Core requirement: Every entity MUST be assigned to a family member
+  Widget _buildFamilyMemberSelectionCard() {
+    final familyMembersAsync = ref.watch(familyMembersProvider);
+    
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: _selectedFamilyMemberId == null ? Colors.red.shade300 : Colors.grey.shade300,
+          width: _selectedFamilyMemberId == null ? 2 : 1,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.family_restroom,
+                  color: _getEntityTypeColor(_selectedSubtype),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Assign to Family Member *',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: _getEntityTypeColor(_selectedSubtype),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.star,
+                  size: 12,
+                  color: Colors.red.shade600,
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Every entity must be connected to a family member',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            familyMembersAsync.when(
+              data: (familyMembers) {
+                if (familyMembers.isEmpty) {
+                  return Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.orange.shade200),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.warning, color: Colors.orange.shade600),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'No family members found. Please add family members first.',
+                                style: TextStyle(color: Colors.orange.shade700),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          // Navigate to add family member
+                          Navigator.of(context).pushNamed('/family/add');
+                        },
+                        icon: const Icon(Icons.add),
+                        label: const Text('Add Family Member'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _getEntityTypeColor(_selectedSubtype),
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                
+                return DropdownButtonFormField<String>(
+                  value: _selectedFamilyMemberId,
+                  decoration: InputDecoration(
+                    labelText: 'Select Family Member',
+                    border: const OutlineInputBorder(),
+                    errorText: _selectedFamilyMemberId == null ? 'Family member selection is required' : null,
+                  ),
+                  items: familyMembers.map((member) {
+                    return DropdownMenuItem<String>(
+                      value: member.id?.toString(),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 16,
+                            backgroundColor: _getEntityTypeColor(_selectedSubtype)?.withOpacity(0.2),
+                            child: Text(
+                              '${member.firstName[0]}${member.lastName.isNotEmpty ? member.lastName[0] : ''}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: _getEntityTypeColor(_selectedSubtype),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${member.firstName} ${member.lastName}',
+                                  style: const TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                                if (member.relationship != null)
+                                  Text(
+                                    member.relationship!,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedFamilyMemberId = value;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select a family member for this entity';
+                    }
+                    return null;
+                  },
+                );
+              },
+              loading: () => const Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  SizedBox(width: 12),
+                  Text('Loading family members...'),
+                ],
+              ),
+              error: (error, stack) => Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.error_outline, color: Colors.red),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Error loading family members: $error',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildFormContent() {
     if (!_isEditMode && _selectedSubtype != null && _textControllers.isEmpty && (_selectedSubtype == widget.initialSubtype)) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -960,6 +1169,11 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
                 ),
               ),
             ),
+            
+            const SizedBox(height: 16),
+            
+            // MANDATORY: Family Member Assignment Card
+            _buildFamilyMemberSelectionCard(),
             
             const SizedBox(height: 24),
             
@@ -1249,6 +1463,8 @@ class CreateEditEntityScreenState extends ConsumerState<CreateEditEntityScreen> 
                 _descriptionController.text = _existingEntity!.description!;
               }
               _selectedSubtype = _existingEntity!.subtype;
+              // Load existing family member assignment
+              _selectedFamilyMemberId = _existingEntity!.customFields?['assignedFamilyMemberId'];
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (mounted && _selectedSubtype != null) {
                   _initializeFormFields(_selectedSubtype!, entity: _existingEntity);

@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.vuetapp.vuet_app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     // Updated NDK version to match plugin requirements
     ndkVersion = "27.0.12077973"
 
@@ -49,8 +49,8 @@ android {
         applicationId = "com.vuetapp.vuet_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 23
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }

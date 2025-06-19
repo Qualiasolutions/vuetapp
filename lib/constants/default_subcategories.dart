@@ -357,8 +357,8 @@ final List<EntitySubcategoryModel> travelSubcategories = [
     tagName: 'trip',
   ),
   // Entries from previous default_subcategories, may overlap or be specific aspects of Trip
-  EntitySubcategoryModel(id: 'accommodations', categoryId: 'travel', name: 'accommodations', displayName: 'Accommodations', icon: 'hotel', color: '#FF8C00', entityTypeIds: ['ACCOMMODATION'], tagName: 'accommodation'), // Generic
-  EntitySubcategoryModel(id: 'attractions', categoryId: 'travel', name: 'attractions', displayName: 'Attractions', icon: 'photo_camera', color: '#FF8C00', entityTypeIds: ['PLACE'], tagName: 'attraction'), // Generic
+  const EntitySubcategoryModel(id: 'accommodations', categoryId: 'travel', name: 'accommodations', displayName: 'Accommodations', icon: 'hotel', color: '#FF8C00', entityTypeIds: ['ACCOMMODATION'], tagName: 'accommodation'), // Generic
+  const EntitySubcategoryModel(id: 'attractions', categoryId: 'travel', name: 'attractions', displayName: 'Attractions', icon: 'photo_camera', color: '#FF8C00', entityTypeIds: ['PLACE'], tagName: 'attraction'), // Generic
   EntitySubcategoryModel(id: 'drive_time', categoryId: 'travel', name: 'drive_time', displayName: 'Drive Time', icon: _iconPath('drive_time'), color: '#7E57C2', entityTypeIds: ['DriveTime'], tagName: 'drive_time'),
   EntitySubcategoryModel(id: 'flight', categoryId: 'travel', name: 'flight', displayName: 'Flight', icon: _iconPath('flight'), color: '#7E57C2', entityTypeIds: ['Flight'], tagName: 'flight'),
   EntitySubcategoryModel(id: 'holiday_travel', categoryId: 'travel', name: 'holiday_travel', displayName: 'Holiday (Travel)', icon: _iconPath('holiday_travel'), color: '#7E57C2', entityTypeIds: ['Holiday'], tagName: 'holiday_travel'), // differentiate from social Holiday
@@ -415,10 +415,10 @@ final List<EntitySubcategoryModel> healthBeautySubcategories = [
   ),
   // Entries from previous default_subcategories
   EntitySubcategoryModel(id: 'appointment', categoryId: 'health_beauty', name: 'appointment', displayName: 'Appointment', icon: _iconPath('appointment'), color: '#66BB6A', entityTypeIds: ['Appointment'], tagName: 'appointment'),
-  EntitySubcategoryModel(id: 'beauty_generic', categoryId: 'health_beauty', name: 'beauty_generic', displayName: 'Beauty (Generic)', icon: 'spa', color: '#9370DB', entityTypeIds: ['BEAUTY'], tagName: 'beauty_generic'), // Generic
-  EntitySubcategoryModel(id: 'fitness_activity', categoryId: 'health_beauty', name: 'fitness_activity', displayName: 'Fitness Activity', icon: 'fitness_center', color: '#9370DB', entityTypeIds: ['FITNESS_ACTIVITY'], tagName: 'fitness_activity'), // Generic
+  const EntitySubcategoryModel(id: 'beauty_generic', categoryId: 'health_beauty', name: 'beauty_generic', displayName: 'Beauty (Generic)', icon: 'spa', color: '#9370DB', entityTypeIds: ['BEAUTY'], tagName: 'beauty_generic'), // Generic
+  const EntitySubcategoryModel(id: 'fitness_activity', categoryId: 'health_beauty', name: 'fitness_activity', displayName: 'Fitness Activity', icon: 'fitness_center', color: '#9370DB', entityTypeIds: ['FITNESS_ACTIVITY'], tagName: 'fitness_activity'), // Generic
   EntitySubcategoryModel(id: 'health_goal', categoryId: 'health_beauty', name: 'health_goal', displayName: 'Health Goal', icon: _iconPath('health_goal'), color: '#66BB6A', entityTypeIds: ['HealthGoal'], tagName: 'health_goal'),
-  EntitySubcategoryModel(id: 'medical_generic', categoryId: 'health_beauty', name: 'medical_generic', displayName: 'Medical (Generic)', icon: 'local_hospital', color: '#9370DB', entityTypeIds: ['MEDICAL'], tagName: 'medical_generic'), // Generic
+  const EntitySubcategoryModel(id: 'medical_generic', categoryId: 'health_beauty', name: 'medical_generic', displayName: 'Medical (Generic)', icon: 'local_hospital', color: '#9370DB', entityTypeIds: ['MEDICAL'], tagName: 'medical_generic'), // Generic
   EntitySubcategoryModel(id: 'patient', categoryId: 'health_beauty', name: 'patient', displayName: 'Patient', icon: _iconPath('patient'), color: '#66BB6A', entityTypeIds: ['Patient'], tagName: 'patient'),
 ];
 
@@ -475,9 +475,9 @@ final List<EntitySubcategoryModel> homeSubcategories = [
     tagName: 'contractor',
   ),
   // Entries from previous default_subcategories
-  EntitySubcategoryModel(id: 'cleaning_home', categoryId: 'home', name: 'cleaning_home', displayName: 'Cleaning (Home)', icon: 'cleaning_services', color: '#FF7043', entityTypeIds: ['CLEANING'], tagName: 'cleaning_home'), // Generic
-  EntitySubcategoryModel(id: 'cooking_home', categoryId: 'home', name: 'cooking_home', displayName: 'Cooking (Home)', icon: 'restaurant', color: '#FF7043', entityTypeIds: ['COOKING'], tagName: 'cooking_home'), // Generic
-  EntitySubcategoryModel(id: 'home_maintenance_tasks', categoryId: 'home', name: 'home_maintenance_tasks', displayName: 'Home Maintenance Tasks', icon: 'home_repair_service', color: '#FF7043', entityTypeIds: ['HOME_MAINTENANCE'], tagName: 'home_maintenance_tasks'), // Generic
+  const EntitySubcategoryModel(id: 'cleaning_home', categoryId: 'home', name: 'cleaning_home', displayName: 'Cleaning (Home)', icon: 'cleaning_services', color: '#FF7043', entityTypeIds: ['CLEANING'], tagName: 'cleaning_home'), // Generic
+  const EntitySubcategoryModel(id: 'cooking_home', categoryId: 'home', name: 'cooking_home', displayName: 'Cooking (Home)', icon: 'restaurant', color: '#FF7043', entityTypeIds: ['COOKING'], tagName: 'cooking_home'), // Generic
+  const EntitySubcategoryModel(id: 'home_maintenance_tasks', categoryId: 'home', name: 'home_maintenance_tasks', displayName: 'Home Maintenance Tasks', icon: 'home_repair_service', color: '#FF7043', entityTypeIds: ['HOME_MAINTENANCE'], tagName: 'home_maintenance_tasks'), // Generic
 ];
 
 // --- GARDEN ---
@@ -504,7 +504,7 @@ final List<EntitySubcategoryModel> gardenSubcategories = [
   ),
   // Entries from previous default_subcategories
   EntitySubcategoryModel(id: 'garden_generic', categoryId: 'garden', name: 'garden_generic', displayName: 'Garden (Generic)', icon: _iconPath('garden_generic'), color: '#8BC34A', entityTypeIds: ['Garden'], tagName: 'garden_generic'), // This was 'Garden' before, now made generic
-  EntitySubcategoryModel(id: 'gardening_tasks', categoryId: 'garden', name: 'gardening_tasks', displayName: 'Gardening Tasks', icon: 'yard', color: '#8BC34A', entityTypeIds: ['GARDENING'], tagName: 'gardening_tasks'), // Generic
+  const EntitySubcategoryModel(id: 'gardening_tasks', categoryId: 'garden', name: 'gardening_tasks', displayName: 'Gardening Tasks', icon: 'yard', color: '#8BC34A', entityTypeIds: ['GARDENING'], tagName: 'gardening_tasks'), // Generic
 ];
 
 // --- FOOD ---

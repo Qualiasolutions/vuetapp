@@ -19,7 +19,8 @@ import 'package:vuet_app/ui/screens/tasks/task_detail_screen.dart';
 import 'package:vuet_app/ui/screens/auth/auth_wrapper.dart';
 import 'package:vuet_app/ui/screens/auth/update_password_screen.dart';
 import 'package:vuet_app/ui/screens/notifications/notifications_screen.dart';
-import 'package:vuet_app/ui/screens/calendar/calendar_screen.dart'; // Changed to CalendarScreen for Home
+// Enhanced Calendar Home Screen removed due to compilation issues
+import 'package:vuet_app/ui/screens/calendar/calendar_screen.dart'; // Calendar screen
 import 'package:vuet_app/ui/screens/categories/categories_grid.dart'; // Changed to CategoriesGrid for Categories
 // import 'package:vuet_app/ui/screens/home/modernized_home_screen.dart'; // No longer needed
 // import 'package:vuet_app/ui/screens/categories/categories_screen.dart'; // No longer needed
@@ -54,7 +55,6 @@ import 'package:vuet_app/ui/screens/categories/laundry_category_screen.dart';
 import 'package:vuet_app/ui/screens/categories/finance_category_screen.dart';
 import 'package:vuet_app/ui/screens/categories/charity_category_screen.dart';
 import 'package:vuet_app/ui/screens/categories/transport_category_screen.dart';
-
 
 // Navigator key
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -230,8 +230,8 @@ Future<void> main() async {
 class VuetApp extends ConsumerStatefulWidget {
   const VuetApp({super.key});
 
-@override
-ConsumerState<VuetApp> createState() => _VuetAppState();
+  @override
+  ConsumerState<VuetApp> createState() => _VuetAppState();
 }
 
 class _VuetAppState extends ConsumerState<VuetApp> {
@@ -247,7 +247,8 @@ class _VuetAppState extends ConsumerState<VuetApp> {
       // Ensure context is still valid if this callback is delayed
       if (_rootNavigatorKey.currentContext != null &&
           _rootNavigatorKey.currentContext!.mounted) {
-        DeepLinkHandler.initialize(_rootNavigatorKey.currentContext, authService);
+        DeepLinkHandler.initialize(
+            _rootNavigatorKey.currentContext, authService);
       } else {
         // Fallback or log if context is not available
         DeepLinkHandler.initialize(null, authService); // Or handle error
@@ -391,7 +392,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
     _widgetOptions = <Widget>[
-      const CalendarScreen(), // HOME (first) - Changed from ModernizedHomeScreen
+      const CalendarScreen(), // HOME (first) - Calendar screen
       const CategoriesGrid(), // CATEGORIES (second) - Changed from CategoriesScreen
       const RedesignedListsScreen(), // LISTS (third)
       const LanaChatScreen(), // LANA (fourth)
