@@ -5,7 +5,8 @@
 CREATE TABLE IF NOT EXISTS public.tags (
     code TEXT PRIMARY KEY,
     label TEXT NOT NULL,
-    category_id INTEGER REFERENCES public.entity_categories(id),
+    -- entity_categories.id is UUID, so use the same type for FK
+    category_id UUID REFERENCES public.entity_categories(id),
     icon_name TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
