@@ -1,38 +1,147 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:vuet_app/services/task_service.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:vuet_app/models/task_model.dart';
+import 'package:vuet_app/providers/task_providers.dart';
+import 'package:vuet_app/repositories/supabase_task_repository.dart';
+import 'package:vuet_app/config/supabase_config.dart';
+import 'package:vuet_app/ui/shared/widgets.dart';
+import 'package:vuet_app/ui/screens/tasks/create_task_screen.dart';
+import 'package:vuet_app/ui/screens/tasks/task_detail_screen.dart';
+import 'package:vuet_app/config/theme_config.dart';
+import 'package:vuet_app/ui/widgets/modern_components.dart';
+
+/// Provider for tasks filtered by tag
+final tagFilteredTasksProvider = FutureProvider.family<List<TaskModel>, String>(
+  (ref, tagCode) async {
+    final supabase = SupabaseConfig.client;
+    final repository = ref.watch(taskRepositoryProvider);
+    
+    // First get all entity IDs that have this tag
+    final entityTagsResponse = await supabase
+        .from('entity_tags')
+        .select('entity_id')
+        .eq('tag_code', tagCode);
+    
+    if (entityTagsResponse.isEmpty) {
+      return [];
+    }
+    
+    // Extract entity IDs
+    final entityIds = entityTagsResponse.map((e) => e['entity_id'] as String).toList();
+    
+    // Get all tasks related to these entities
+    return await repository.getTasksByEntityIds(entityIds);
+  },
+);
+
+/// Provider for refreshing tag-filtered tasks
+final tagFilterRefreshProvider = StateProvider.family<bool, String>((ref, _) => false);
 
 /// Screen that displays tasks filtered by a specific tag
-class TagFilterTaskScreen extends ConsumerWidget {
+class TagFilterTaskScreen extends ConsumerStatefulWidget {
   /// The category name for display purposes
   final String categoryName;
   
   /// The subcategory name for display purposes
   final String subcategoryName;
   
-  /// The tag name to filter by
-  final String tagName;
+  /// The tag code to filter by (e.g., "PETS__FEEDING")
+  final String tagCode;
+  
+  /// Optional entity ID to return to after task creation
+  final String? entityId;
 
   /// Constructor
   const TagFilterTaskScreen({
     super.key,
     required this.categoryName,
     required this.subcategoryName,
-    required this.tagName,
+    required this.tagCode,
+    this.entityId,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final taskService = ref.watch(taskServiceProvider);
+  ConsumerState<TagFilterTaskScreen> createState() => _TagFilterTaskScreenState();
+}
+
+class _TagFilterTaskScreenState extends ConsumerState<TagFilterTaskScreen> {
+  late final ScrollController _scrollController;
+  bool _isRefreshing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _refreshTasks() async {
+    if (_isRefreshing) return;
+    
+    setState(() {
+      _isRefreshing = true;
+    });
+    
+    // Toggle refresh state to force provider to refresh
+    ref.read(tagFilterRefreshProvider(widget.tagCode).notifier).state = 
+      !ref.read(tagFilterRefreshProvider(widget.tagCode));
+    
+    // Wait for a moment to show the refresh indicator
+    await Future.delayed(const Duration(milliseconds: 800));
+    
+    setState(() {
+      _isRefreshing = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Watch the refresh trigger
+    ref.watch(tagFilterRefreshProvider(widget.tagCode));
+    
+    // Get the tasks filtered by tag
+    final tasksAsync = ref.watch(tagFilteredTasksProvider(widget.tagCode));
     
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: AppColors.backgroundGrey,
       appBar: AppBar(
-        title: Text(subcategoryName),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.subcategoryName,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              widget.categoryName,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        foregroundColor: AppColors.darkJungleGreen,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _refreshTasks,
+            tooltip: 'Refresh tasks',
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(
@@ -41,78 +150,127 @@ class TagFilterTaskScreen extends ConsumerWidget {
           ),
         ),
       ),
-      body: FutureBuilder<List<TaskModel>>(
-        // TODO: Implement actual tag-based filtering in TaskService
-        // This is a placeholder that will show all tasks for now
-        future: taskService.getTasks(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error loading tasks: ${snapshot.error}',
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
-          
-          final tasks = snapshot.data ?? [];
-          
-          // In the future, filter tasks by tag here
-          // For now, we'll show all tasks with a message
-          
+      body: tasksAsync.when(
+        data: (tasks) {
           if (tasks.isEmpty) {
             return _buildEmptyState(context);
           }
           
-          return Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                color: Colors.amber.shade100,
-                child: Row(
-                  children: [
-                    const Icon(Icons.info_outline, color: Colors.orange),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Showing all tasks. Tag filtering for "$tagName" will be implemented soon.',
-                        style: const TextStyle(fontSize: 14),
+          return RefreshIndicator(
+            onRefresh: _refreshTasks,
+            child: Column(
+              children: [
+                // Task count indicator
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  color: Colors.white,
+                  child: Row(
+                    children: [
+                      Icon(Icons.tag, size: 16, color: Theme.of(context).primaryColor),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '${tasks.length} ${tasks.length == 1 ? 'task' : 'tasks'} with "${widget.subcategoryName}" tag',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade800,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    final task = tasks[index];
-                    return _buildTaskCard(context, task);
-                  },
+                
+                // Tasks list
+                Expanded(
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16),
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = tasks[index];
+                      return _buildTaskCard(context, task);
+                    },
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to create task screen with pre-filled tag
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Create task with $tagName tag coming soon'),
+              ],
             ),
           );
         },
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        error: (error, stackTrace) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: Colors.red.shade400,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Error loading tasks',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  error.toString(),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: _refreshTasks,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Try Again'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateToCreateTask(context),
         backgroundColor: Theme.of(context).primaryColor,
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void _navigateToCreateTask(BuildContext context) {
+    // Navigate to create task screen with pre-filled tag
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateTaskScreen(
+          initialTagCode: widget.tagCode,
+          initialCategoryName: widget.categoryName,
+          initialSubcategoryName: widget.subcategoryName,
+          entityId: widget.entityId,
+        ),
+      ),
+    ).then((created) {
+      if (created == true) {
+        // Refresh the tasks list if a task was created
+        _refreshTasks();
+      }
+    });
   }
 
   Widget _buildEmptyState(BuildContext context) {
@@ -129,7 +287,7 @@ class TagFilterTaskScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'No $subcategoryName tasks yet',
+              'No ${widget.subcategoryName} tasks yet',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
@@ -138,7 +296,7 @@ class TagFilterTaskScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Create your first task with the $tagName tag',
+              'Create your first task with the ${widget.subcategoryName} tag',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey.shade600,
@@ -147,18 +305,13 @@ class TagFilterTaskScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: () {
-                // Navigate to create task screen with pre-filled tag
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Create task with $tagName tag coming soon'),
-                  ),
-                );
-              },
+              onPressed: () => _navigateToCreateTask(context),
               icon: const Icon(Icons.add),
               label: const Text('Create Task'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
               ),
             ),
           ],
@@ -173,168 +326,74 @@ class TagFilterTaskScreen extends ConsumerWidget {
         task.dueDate!.isBefore(DateTime.now()) &&
         !isCompleted;
         
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: () {
-          // Navigate to task detail screen
-          // TODO: Implement navigation to task detail
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('View task details coming soon: ${task.title}'),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Status indicator/checkbox
-              Container(
-                margin: const EdgeInsets.only(top: 2),
-                child: InkWell(
-                  onTap: () {
-                    // Toggle task completion status
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          isCompleted
-                              ? 'Task marked as incomplete'
-                              : 'Task marked as complete',
-                        ),
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isCompleted
-                            ? Colors.green
-                            : isOverdue
-                                ? Colors.red
-                                : Colors.grey.shade400,
-                        width: 2,
-                      ),
-                      color: isCompleted ? Colors.green : Colors.transparent,
-                    ),
-                    child: isCompleted
-                        ? const Icon(
-                            Icons.check,
-                            size: 16,
-                            color: Colors.white,
-                          )
-                        : null,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              
-              // Task content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Title
-                    Text(
-                      task.title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        decoration:
-                            isCompleted ? TextDecoration.lineThrough : null,
-                        color: isCompleted ? Colors.grey : Colors.black,
-                      ),
-                    ),
-                    
-                    // Description if available
-                    if (task.description != null &&
-                        task.description!.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        task.description!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                    
-                    const SizedBox(height: 8),
-                    
-                    // Due date and priority indicators
-                    Row(
-                      children: [
-                        if (task.dueDate != null) ...[
-                          Icon(
-                            Icons.calendar_today,
-                            size: 14,
-                            color: isOverdue ? Colors.red : Colors.grey.shade600,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            _formatDate(task.dueDate!),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isOverdue
-                                  ? Colors.red
-                                  : Colors.grey.shade600,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                        ],
-                        
-                        // Priority indicator
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: _getPriorityColor(task.priority)
-                                .withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            task.priority.capitalize(),
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: _getPriorityColor(task.priority),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return VuetTaskCard(
+      task: task,
+      onTap: () => _navigateToTaskDetail(context, task),
+      onStatusChanged: (newStatus) => _updateTaskStatus(task, newStatus),
     );
   }
 
-  Color _getPriorityColor(String priority) {
-    switch (priority.toLowerCase()) {
-      case 'high':
-        return Colors.red;
-      case 'medium':
-        return Colors.orange;
-      case 'low':
-        return Colors.green;
-      default:
-        return Colors.blue;
+  void _navigateToTaskDetail(BuildContext context, TaskModel task) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TaskDetailScreen(taskId: task.id),
+      ),
+    ).then((updated) {
+      if (updated == true) {
+        // Refresh the tasks list if the task was updated
+        _refreshTasks();
+      }
+    });
+  }
+
+  Future<void> _updateTaskStatus(TaskModel task, String newStatus) async {
+    try {
+      final repository = ref.read(taskRepositoryProvider);
+      await repository.updateTask(
+        task.id,
+        {'status': newStatus},
+      );
+      
+      // Show success message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              newStatus == 'completed'
+                  ? 'Task marked as complete'
+                  : 'Task marked as incomplete',
+            ),
+            backgroundColor: newStatus == 'completed'
+                ? Colors.green
+                : AppColors.primaryBlue,
+            behavior: SnackBarBehavior.floating,
+            action: SnackBarAction(
+              label: 'UNDO',
+              textColor: Colors.white,
+              onPressed: () {
+                _updateTaskStatus(
+                  task,
+                  newStatus == 'completed' ? 'pending' : 'completed',
+                );
+              },
+            ),
+          ),
+        );
+      }
+      
+      // Refresh the tasks list
+      _refreshTasks();
+    } catch (e) {
+      // Show error message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error updating task: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -353,12 +412,13 @@ class TagFilterTaskScreen extends ConsumerWidget {
       return 'Yesterday';
     }
     
-    return '${date.day}/${date.month}/${date.year}';
+    return DateFormat('MMM d, yyyy').format(date);
   }
 }
 
 extension StringExtension on String {
   String capitalize() {
+    if (isEmpty) return this;
     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }
