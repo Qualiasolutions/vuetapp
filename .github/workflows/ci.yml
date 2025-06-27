@@ -1,33 +1,93 @@
-name: Flutter CI/CD
+# .github/workflows/ci.yml
+# Continuous Integration workflow for validating code quality
+# Runs on all pushes and PRs to check formatting, analysis, tests, and build
+
+name: Flutter CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ '**' ]  # Run on all branches
   pull_request:
-    branches: [ main, master ]
+    branches: [ '**' ]  # Run on all PRs
 
 jobs:
-  build:
-    name: Build and Test
+  validate:
+    name: Validate Code
     runs-on: ubuntu-latest
+    timeout-minutes: 10  # Shorter timeout for faster feedback
     
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.x'
-        channel: 'stable'
-        
-    - name: Install dependencies
-      run: flutter pub get
+      # Step 1: Check out the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
       
-    - name: Analyze project source
-      run: flutter analyze
+      # Step 2: Setup Flutter with caching
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+          channel: 'stable'
+          cache: true
       
-    - name: Run tests
-      run: flutter test
+      # Step 3: Cache pub dependencies
+      - name: Cache Pub Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-pub-
       
-    - name: Build Web
-      run: flutter build web --release
+      # Step 4: Install dependencies
+      - name: Install Dependencies
+        run: flutter pub get
+      
+      # Step 5: Check code formatting
+      - name: Check Formatting
+        run: dart format --output=none --set-exit-if-changed .
+      
+      # Step 6: Generate code with build_runner
+      - name: Generate Code
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+      
+      # Step 7: Analyze the code for issues
+      - name: Analyze Code
+        run: flutter analyze
+      
+      # Step 8: Run tests in parallel
+      - name: Run Tests
+        run: flutter test --coverage
+      
+      # Step 9: Upload coverage reports
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/lcov.info
+          fail_ci_if_error: false
+      
+      # Step 10: Build web app (faster build for validation only)
+      - name: Build Web App
+        run: flutter build web --release --web-renderer html --dart-define=FLUTTER_ENV=development
+      
+      # Step 11: Verify build artifacts
+      - name: Verify Build Artifacts
+        run: |
+          if [ ! -d "build/web" ]; then
+            echo "Web build failed to produce artifacts"
+            exit 1
+          fi
+      
+      # Step 12: Comment on PR with results
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { issue: { number: issue_number }, repo: { owner, repo } } = context;
+            github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body: '✅ CI checks passed! The code has been formatted, analyzed, tested, and successfully built.'
+            });
