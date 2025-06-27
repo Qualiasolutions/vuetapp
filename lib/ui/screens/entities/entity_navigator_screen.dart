@@ -10,6 +10,7 @@ import 'package:vuet_app/ui/screens/entities/tabs/entity_messages_tab.dart';
 import 'package:vuet_app/ui/screens/entities/tabs/entity_home_tab.dart';
 import 'package:vuet_app/ui/screens/entities/create_edit_entity_screen.dart';
 import 'package:vuet_app/ui/widgets/modern_components.dart';
+import 'package:vuet_app/ui/widgets/i_want_to_menu.dart'; // NEW
 
 // Tab configuration for different entity types
 class EntityTab {
@@ -209,6 +210,12 @@ class _EntityNavigatorScreenState extends ConsumerState<EntityNavigatorScreen>
                     IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () => _navigateToEdit(context, entity),
+                    ),
+                    // "I WANT TO" quick-actions menu
+                    IconButton(
+                      icon: const Icon(Icons.lightbulb_outline),
+                      tooltip: 'I WANT TO…',
+                      onPressed: () => IWantToMenu.show(context, entity),
                     ),
                     PopupMenuButton<String>(
                       onSelected: (value) => _handleMenuAction(context, entity, value),

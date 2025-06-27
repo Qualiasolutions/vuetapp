@@ -1,0 +1,118 @@
+# .github/workflows/deploy.yml
+# Automated workflow for building and deploying the Flutter web app to Firebase
+# This workflow runs on push to main branch and pull requests
+# It will only deploy to Firebase on pushes to main (not PRs)
+
+name: Build and Deploy Flutter Web
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15  # Set a timeout to prevent hung builds
+    
+    steps:
+      # Step 1: Check out the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for proper versioning
+      
+      # Step 2: Setup Java for Flutter
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      
+      # Step 3: Setup Flutter with caching
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'  # Specify Flutter version
+          channel: 'stable'
+          cache: true  # Enable caching for faster builds
+      
+      # Step 4: Cache pub dependencies
+      - name: Cache Pub Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-pub-
+      
+      # Step 5: Install dependencies
+      - name: Install Dependencies
+        run: flutter pub get
+      
+      # Step 6: Generate code with build_runner
+      - name: Generate Code
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+        continue-on-error: false  # Fail if code generation fails
+      
+      # Step 7: Analyze the code for issues
+      - name: Analyze Code
+        run: flutter analyze
+        continue-on-error: true  # Don't fail the build on analysis issues, but report them
+      
+      # Step 8: Run tests
+      - name: Run Tests
+        run: flutter test
+        continue-on-error: true  # Don't fail the build on test failures, but report them
+      
+      # Step 9: Build web app
+      - name: Build Web App
+        run: flutter build web --release --web-renderer canvaskit
+      
+      # Step 10: Deploy to Firebase (only on main branch)
+      - name: Deploy to Firebase
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          channelId: live
+          projectId: vuettttt  # Replace with your Firebase project ID
+        env:
+          FIREBASE_CLI_PREVIEWS: hostingchannels
+      
+      # Step 11: Notify on success/failure
+      - name: Notify on Success
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: deployments
+          SLACK_COLOR: good
+          SLACK_TITLE: 'Vuet App Deployment Successful'
+          SLACK_MESSAGE: 'Flutter web app has been successfully deployed to Firebase'
+          SLACK_FOOTER: 'GitHub Actions'
+      
+      - name: Notify on Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: deployments
+          SLACK_COLOR: danger
+          SLACK_TITLE: 'Vuet App Deployment Failed'
+          SLACK_MESSAGE: 'Flutter web app deployment to Firebase failed'
+          SLACK_FOOTER: 'GitHub Actions'
+
+# REQUIRED SECRETS:
+# 1. FIREBASE_SERVICE_ACCOUNT: Create a Firebase service account with Hosting Admin permissions
+#    - Go to Firebase Console > Project Settings > Service accounts
+#    - Generate new private key, download the JSON file
+#    - In GitHub repo: Settings > Secrets > New repository secret
+#    - Name it FIREBASE_SERVICE_ACCOUNT and paste the entire JSON content
+#
+# 2. SLACK_WEBHOOK (optional): For notifications
+#    - Create a Slack app with incoming webhooks
+#    - Copy the webhook URL
+#    - Add it as a GitHub secret named SLACK_WEBHOOK
