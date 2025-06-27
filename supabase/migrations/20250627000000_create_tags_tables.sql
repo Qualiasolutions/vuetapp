@@ -14,14 +14,14 @@ CREATE TABLE IF NOT EXISTS public.tags (
 
 -- Create entity_tags junction table for many-to-many relationship
 CREATE TABLE IF NOT EXISTS public.entity_tags (
-    entity_uuid UUID NOT NULL REFERENCES public.entities(uuid) ON DELETE CASCADE,
+    entity_id   UUID NOT NULL REFERENCES public.entities(id) ON DELETE CASCADE,
     tag_code TEXT NOT NULL REFERENCES public.tags(code) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    PRIMARY KEY (entity_uuid, tag_code)
+    PRIMARY KEY (entity_id, tag_code)
 );
 
 -- Create indexes for performance
-CREATE INDEX IF NOT EXISTS idx_entity_tags_entity_uuid ON public.entity_tags USING btree (entity_uuid);
+CREATE INDEX IF NOT EXISTS idx_entity_tags_entity_id   ON public.entity_tags USING btree (entity_id);
 CREATE INDEX IF NOT EXISTS idx_entity_tags_tag_code ON public.entity_tags USING gin (tag_code gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS idx_tags_category_id ON public.tags USING btree (category_id);
 
@@ -65,8 +65,8 @@ CREATE POLICY "Allow read access for entity owners or members" ON public.entity_
     USING (
         EXISTS (
             SELECT 1 FROM public.entities e
-            LEFT JOIN public.entity_members em ON e.uuid = em.entity_uuid
-            WHERE e.uuid = entity_uuid AND (e.owner = auth.uid() OR em.member = auth.uid())
+            LEFT JOIN public.entity_members em ON e.id = em.entity_id
+            WHERE e.id = entity_id AND (e.owner = auth.uid() OR em.member = auth.uid())
         )
     );
 
@@ -76,8 +76,8 @@ CREATE POLICY "Allow insert for entity owners or members" ON public.entity_tags
     WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.entities e
-            LEFT JOIN public.entity_members em ON e.uuid = em.entity_uuid
-            WHERE e.uuid = entity_uuid AND (e.owner = auth.uid() OR em.member = auth.uid())
+            LEFT JOIN public.entity_members em ON e.id = em.entity_id
+            WHERE e.id = entity_id AND (e.owner = auth.uid() OR em.member = auth.uid())
         )
     );
 
@@ -87,8 +87,8 @@ CREATE POLICY "Allow delete for entity owners or members" ON public.entity_tags
     USING (
         EXISTS (
             SELECT 1 FROM public.entities e
-            LEFT JOIN public.entity_members em ON e.uuid = em.entity_uuid
-            WHERE e.uuid = entity_uuid AND (e.owner = auth.uid() OR em.member = auth.uid())
+            LEFT JOIN public.entity_members em ON e.id = em.entity_id
+            WHERE e.id = entity_id AND (e.owner = auth.uid() OR em.member = auth.uid())
         )
     );
 
