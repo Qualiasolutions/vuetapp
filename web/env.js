@@ -31,10 +31,10 @@
   const ENV = {
     // Development environment
     development: {
-      SUPABASE_URL: 'https://cqsboamhfmwezeftifzk.supabase.co',
-      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxc2JvYW1oZm13ZXplZnRpZnprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAzNjUwNzgsImV4cCI6MjA2NTk0MTA3OH0.eoXSn3XTgcfPSUGv4TZ1C87GTHn3cb24eF3WDPtWjPs',
+      SUPABASE_URL: 'https://tkmvvaapumqkbbtokxjv.supabase.co',
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRrbXZ2YWFwdW1xa2JidG9reGp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExNTQ2NTAsImV4cCI6MjA2NjczMDY1MH0.7GBgJlQbjKpInd7jSXZihhvSdGmu2gVM1jRKHYKsqPI',
       SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxc2JvYW1oZm13ZXplZnRpZnprIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDM2NTA3OCwiZXhwIjoyMDY1OTQxMDc4fQ.VBPakQ5zrXiuDrJa-aOjn_ShFMv1s7LbPj77yYIlqGw',
-      SUPABASE_PROJECT_ID: 'cqsboamhfmwezeftifzk',
+      SUPABASE_PROJECT_ID: 'tkmvvaapumqkbbtokxjv',
       FLUTTER_ENV: 'development',
       API_BASE_URL: 'https://api-dev.vuet.ai/v1',
       ENABLE_ANALYTICS: false,
